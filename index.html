@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'none'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1F5F45">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Emerald City Estates: an original offline property-trading board game on real greater Seattle streets. Buy, build homes and towers, trade and outlast 1-5 computer players.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Emerald Estates">
+  <meta name="format-detection" content="telephone=no">
+  <title>Emerald City Estates</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+  <div id="app" class="ui-app">
+    <div id="splash" class="ui-splash">Emerald City Estates</div>
+    <main id="screens" class="ui-screens">
+      <section id="screen-home" class="ui-screen ui-screen-home" hidden></section>
+      <section id="screen-setup" class="ui-screen ui-screen-setup" hidden></section>
+      <section id="screen-game" class="ui-screen ui-screen-game" hidden></section>
+      <section id="screen-settings" class="ui-screen ui-screen-settings" hidden></section>
+      <section id="screen-howto" class="ui-screen ui-screen-howto" hidden></section>
+    </main>
+  </div>
+  <div id="dialogs" class="ui-dialogs"></div>
+  <div id="banner" class="ui-banner" hidden></div>
+  <div id="errorbar" class="ui-errorbar" role="alert" hidden></div>
+  <noscript><p class="ui-noscript">Emerald City Estates needs JavaScript to run.</p></noscript>
+  <script src="game.js"></script>
+</body>
+</html>
