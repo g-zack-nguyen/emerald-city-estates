@@ -1,5 +1,5 @@
 /*! Emerald City Estates offline copy - made by tools/build/build_pages.js, do not edit */
-/*! build 1b6d8b1be4be65c7: 9 files, each checked against its sha256 */
+/*! build afaf364841804c28: 9 files, each checked against its sha256 */
 (function eceServiceWorker(BUILD, FILES) {
   'use strict';
   var PREFIX = 'emeraldcityestates-';
@@ -102,14 +102,14 @@
       }
     })());
   });
-})("1b6d8b1be4be65c7", [
-  ["apple-touch-icon.png","2af8619f42f2f1123a6affbf045a2f3f44f1aeaa71ea636fccd979ae15908125"],
-  ["favicon.png","afd1e2ffb2ced43f21777b2ed1f4bdf250b5126dfc1942b918f5d3a6f1ceaf44"],
-  ["game.css","8eb4f2ef85ba22fe779a6dad25cdef1346de8027e06d139a1ba89b53982480f8"],
-  ["game.js","8603c2b7c2cd4e2fa7e9415284104a2f6ca467e86ff9105f74f4497e4ca7ae98"],
-  ["icon-192.png","872a332a8f032cc886dc36e6eacf91c4f640ddc11774811223b6df58b0a32cfc"],
-  ["icon-512.png","f97b78b1bf833a2af70bbbd723098d69cc2fe86671226755534014c7e16277ae"],
-  ["icon-maskable-512.png","def84231d3d65377363ef0293652826bd974d7db457c25ea8c6078c0182e4659"],
-  ["index.html","a7a1eff079812e89ccf67521f06ab33b41924e1e15aba790afd387a2294dce4e"],
-  ["manifest.webmanifest","023598acf61fc4fbc82f87c3703b3b85e082c7fdbc69a7b6b9f2346bcd61bb64"]
+})("afaf364841804c28", [
+  ["apple-touch-icon.png","b0c13fb5a7a82426834ad1c02300f25f096b1e48bfc2b48b887a89df78d37c94"],
+  ["favicon.png","92e54593d2bc300e509c98bbbd11548c1da90f339ffa630ab21ba1b33caa8c86"],
+  ["game.css","0bf921ac66237abcf5da9cf1709e01431d56c0eff2ff6ef2f6e94ee156e56125"],
+  ["game.js","0bce6e3e26e119868694a3db5368f2c5f16fc574bf1ea0067c90d299cb467399"],
+  ["icon-192.png","f21f5c9e8c438a9592f3375365bf16048b8828b4bb596bd87bd78473112c1751"],
+  ["icon-512.png","10ab7b508e393e6af47e61981e37ace4f44efd9236968d60348c57aa6aca691a"],
+  ["icon-maskable-512.png","6bf1f8eb367f0ca304e5d41da751a7b7b3b06fe94ab6de179e18168309ef4148"],
+  ["index.html","cf0121c92953e420f2ac9ecff76a32d1735434faf62725bb42f505ff138bba70"],
+  ["manifest.webmanifest","c028cf489e13a0ae35ac891f0c0a4766dda12a97a32fcd0f6e9e2c15158a300c"]
 ]);

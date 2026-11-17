@@ -30,8 +30,8 @@ No account, no ads, no tracking. The game sends nothing anywhere: your progress 
 
 ## About
 
-An original game; no affiliation with any company. The streets and places are real, all in the greater Seattle
-area; no brands are used.
+An original game; no affiliation with any company. The streets and places are real: all in the greater Seattle
+area except Diablo Dam, one of the Skagit River dams that help power Seattle. No brands are used.
 
-Version 1.0.0 (build 1b6d8b1be4be65c7). These files are the finished game for GitHub Pages; a new version
+Version 1.1.0 (build afaf364841804c28). These files are the finished game for GitHub Pages; a new version
 replaces all of them.
