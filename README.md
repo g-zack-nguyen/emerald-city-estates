@@ -33,5 +33,8 @@ No account, no ads, no tracking. The game sends nothing anywhere: your progress 
 An original game; no affiliation with any company. The streets and places are real: all in the greater Seattle
 area except Diablo Dam, one of the Skagit River dams that help power Seattle. No brands are used.
 
-Version 1.1.0 (build afaf364841804c28). These files are the finished game for GitHub Pages; a new version
+Two themes, picked on New game: Emerald City (Puget Sound) and Day 1 (an office campus in South Lake Union and
+Bellevue; each building name has a typo on purpose).
+
+Version 1.2.0 (build 9ffe2896adf4a1ab). These files are the finished game for GitHub Pages; a new version
 replaces all of them.

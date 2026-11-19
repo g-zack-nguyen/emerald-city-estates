@@ -1,7 +1,7 @@
-/*! Emerald City Estates 1.1.0 (build afaf364841804c28). An original game; no affiliation with any company. */
+/*! Emerald City Estates 1.2.0 (build 9ffe2896adf4a1ab). An original game; no affiliation with any company. */
 (function (ECE) {
   'use strict';
-  ECE.BUILD = 'afaf364841804c28';
+  ECE.BUILD = '9ffe2896adf4a1ab';
 })(window.ECE = window.ECE || {});
 ;
 (function (ECE) {
@@ -262,6 +262,11 @@
       { id: 'sam',  name: 'Salmon Sam',  token: 'salmon',    persona: 'bold',      blurb: 'Bids high, keeps little cash.' }
     ],
 
+    themes: [
+      { id: 'emerald', name: 'Emerald City' },
+      { id: 'day1', name: 'Day 1' }
+    ],
+
     levels: [
       { id: 'easy', name: 'Easy' },
       { id: 'normal', name: 'Normal' },
@@ -287,9 +292,268 @@
 (function (ECE) {
   'use strict';
 
+  var B = ECE.BoardData, C = ECE.CardData, G = ECE.Glossary || {};
+  var P = G.places || {};
+
+  function list(a) { return Array.isArray(a) ? a.slice() : []; }
+
+  var spaces = {};
+  for (var i = 0; i < B.SPACES.length; i++) {
+    var s = B.SPACES[i], o = { name: s.name, label: s.label && s.label.length ? list(s.label) : [s.name] };
+    if (typeof s.area === 'string') o.area = s.area;
+    if (typeof s.about === 'string') o.about = s.about;
+    if (typeof s.note === 'string') o.note = s.note;
+    spaces[String(i)] = o;
+  }
+
+  var districts = {};
+  for (var d = 0; d < B.DISTRICTS.length; d++) {
+    var D = B.DISTRICTS[d];
+    districts[D.id] = { name: D.name, tag: D.tag, color: D.color };
+  }
+
+  var decks = {};
+  ['rain', 'buzz'].forEach(function (id) {
+    var deck = C.DECKS[id], cards = {};
+    for (var k = 0; k < deck.cards.length; k++) cards[deck.cards[k].id] = deck.cards[k].text;
+    decks[id] = { name: deck.name, cards: cards };
+  });
+
+  var computers = (G.computers || []).map(function (c) { return { name: c.name, blurb: c.blurb }; });
+  var tokens = {};
+  (G.tokens || []).forEach(function (t) { tokens[t.id] = t.name; });
+
+  ECE.ThemeData = ECE.ThemeData || {};
+  ECE.ThemeData.emerald = {
+    id: 'emerald',
+    name: 'Emerald City',
+    blurb: 'Puget Sound: real streets from Tacoma to Medina.',
+    title: (G.game && G.game.name) || 'Emerald City Estates',
+    home: { place: 'Greater Seattle', tagline: (G.game && G.game.tagline) || '', coords: '47.61° N · 122.33° W' },
+    credits: 'An original game. Street names are real places; no brands.',
+    spaces: spaces,
+    districts: districts,
+    decks: decks,
+    computers: computers,
+    tokens: tokens,
+    words: {
+      start: B.SPACES[B.START].name, traffic: B.SPACES[B.TRAFFIC].name, rest: B.SPACES[B.REST].name, bridge: B.SPACES[B.BRIDGE].name,
+      drivingBy: P.drivingBy || 'Just driving by', rainFund: P.rainFund || 'Rain Fund', carpool: P.carpool || 'Carpool Pass',
+      carpools: (P.carpool || 'Carpool Pass') + 'es', stuck: 'stuck in traffic', leaveStuck: 'leave traffic', leftStuck: 'left traffic',
+      street: 'street', streets: 'streets'
+    },
+    kinds: { street: 'street', start: 'Payday', traffic: 'Traffic jam', rest: 'Rest stop', bridge: 'Drawbridge', ferry: 'Ferry dock',
+      bus: 'Bus transit stop', train: 'Train station', utility: 'Utility', toll: 'Toll', tax: 'Tax', card: 'Card space' },
+    phrases: [],
+    terms: [],
+    reasons: {},
+    places: []
+  };
+})(window.ECE = window.ECE || {});
+;
+(function (ECE) {
+  'use strict';
+
+  ECE.ThemeData = ECE.ThemeData || {};
+  ECE.ThemeData.day1 = {
+    id: 'day1',
+    name: 'Day 1',
+    blurb: 'Campus life in South Lake Union and Bellevue.',
+    title: 'Day 1 Estates',
+    home: {
+      place: 'South Lake Union · Bellevue',
+      tagline: 'Buy the campus, build homes and towers, and end the day on top.',
+      coords: '47.62° N · 122.34° W'
+    },
+    credits: 'An original game. Real streets; each building name has a typo on purpose. No brands.',
+    howto: {
+      goal: 'Buy campus buildings on real Seattle and Bellevue streets, collect rent, build homes and towers, and end the day on top.'
+    },
+
+    spaces: {
+      '0': { name: 'Day 1', label: ['Day 1'], note: 'Payday at the Day 1 sign! Get $250 each time you pass or land here.',
+        about: 'A Day 1 sign marks the start of every lap around campus.' },
+      '1': { name: 'Rozanne', label: ['Rozanne', 'Westlake'], area: 'South Lake Union', street: 'Westlake Ave N',
+        about: 'One of two neighbours on Westlake Ave N between John St and Thomas St.' },
+      '2': { name: 'Meeting Invite', label: ['Meeting', 'Invite'] },
+      '3': { name: 'Houzton', label: ['Houzton', 'Westlake'], area: 'South Lake Union', street: 'Westlake Ave N',
+        about: 'A mid-rise office beside its neighbour on Westlake Ave N.' },
+      '4': { name: 'Gatzby', label: ['Gatzby', 'Westlake'], area: 'South Lake Union', street: 'Westlake Ave N',
+        about: 'A mid-rise office further up Westlake Ave N, toward the lake.' },
+      '5': { name: 'Streetcar Stop', label: ['Streetcar', 'Stop'], area: 'South Lake Union',
+        about: 'Streetcars run from downtown to South Lake Union and Lake Union Park.' },
+      '6': { name: 'Daily Parking', label: ['Daily', 'Parking'], note: 'Pay $125.',
+        about: 'Parking near the towers is paid by the day.' },
+      '7': { name: 'Unizorn', label: ['Unizorn', 'Thomas St'], area: 'South Lake Union', street: 'Thomas St',
+        about: 'An office on Thomas St, close to Denny Park.' },
+      '8': { name: 'Mercer Mess', label: ['Mercer', 'Mess'], area: 'Mercer',
+        note: 'Sent here? You are stuck in traffic. Just driving by? Nothing happens.',
+        about: 'Seattle news has long called the traffic on Mercer St the Mercer Mess.' },
+      '9': { name: 'Ameliza', label: ['Ameliza', 'Fairview'], area: 'South Lake Union', street: 'Fairview Ave N',
+        about: 'A newer office on Fairview Ave N, on a block shared with an older one.' },
+      '10': { name: 'Houzini', label: ['Houzini', 'Fairview'], area: 'South Lake Union', street: 'Fairview Ave N',
+        about: 'Keeps the rooflines of two old landmark buildings on its block.' },
+      '11': { name: 'Water Cooler', label: ['Water', 'Cooler'] },
+      '12': { name: 'Van Vorzt', label: ['Van Vorzt', 'Terry Ave'], area: 'South Lake Union', street: 'Terry Ave N',
+        about: 'A brick building on Terry Ave N that was once a mattress factory.' },
+      '13': { name: 'Crickez', label: ['Crickez', 'Terry Ave'], area: 'South Lake Union', street: 'Terry Ave N',
+        about: 'A mid-rise office on Terry Ave N, a few blocks from the lake.' },
+      '14': { name: 'Campus Power', label: ['Campus', 'Power'], area: 'Campus',
+        about: 'Keeps every desk, screen and charger on campus running.' },
+      '15': { name: 'Wainzright', label: ['Wainzright', 'Terry Ave'], area: 'South Lake Union', street: 'Terry Ave N',
+        about: 'An office building along Terry Ave N in South Lake Union.' },
+      '16': { name: 'Campus Shuttle', label: ['Campus', 'Shuttle'], area: 'South Lake Union',
+        about: 'Hop on: a shuttle loops the campus all day.' },
+      '17': { name: 'Dawzon', label: ['Dawzon', 'Boren Ave'], area: 'South Lake Union', street: 'Boren Ave N',
+        about: 'Its kitchens are built to look like big shipping boxes.' },
+      '18': { name: 'Rubzy', label: ['Rubzy', 'Boren Ave'], area: 'South Lake Union', street: 'Boren Ave N',
+        about: 'Its elevator lobbies look like the inside of shipping containers.' },
+      '19': { name: 'Fionza', label: ['Fionza', 'Boren Ave'], area: 'South Lake Union', street: 'Boren Ave N',
+        about: 'An office on Boren Ave N that shares its block with a newer office.' },
+      '20': { name: 'Banana Break', label: ['Banana', 'Break'],
+        note: 'Take a break. With the Snack Fund house rule on, collect the Snack Fund.',
+        about: 'Free bananas on weekdays, and plenty of office dogs nearby.' },
+      '21': { name: 'Mayzday', label: ['Mayzday', 'Howell St'], area: 'Denny Triangle', street: 'Howell St',
+        about: 'An office on Howell St in the Denny Triangle, close to I-5.' },
+      '22': { name: 'Meeting Invite', label: ['Meeting', 'Invite'] },
+      '23': { name: 'Ozcar', label: ['Ozcar', 'Stewart St'], area: 'Denny Triangle', street: 'Stewart St',
+        about: 'An office on Stewart St in the Denny Triangle, east of Westlake Ave.' },
+      '24': { name: 'LowFlyingHawz', label: ['LowFlying', 'Hawz'], area: 'Denny Triangle', street: 'Boren Ave',
+        about: 'An office on Boren Ave in the Denny Triangle, south of Denny Way.' },
+      '25': { name: 'Eastside Shuttle', label: ['Eastside', 'Shuttle'], area: 'Denny Triangle',
+        about: 'Crosses Lake Washington on the floating bridge to Bellevue.' },
+      '26': { name: 'Cold Brew Tap', label: ['Cold Brew', 'Tap'], area: 'Campus',
+        about: 'Cold brew on tap, refilled all day for busy teams.' },
+      '27': { name: 'Otzer', label: ['Otzer', '5th Ave'], area: 'Denny Regrade', street: '5th Ave',
+        about: 'An office on 5th Ave, on the land where Denny Hill once stood.' },
+      '28': { name: 'Bridge Up!', label: ['Bridge', 'Up!'], area: 'Montlake Bridge',
+        note: 'The Montlake Bridge is up. Go to the Mercer Mess; no salary.',
+        about: 'The Montlake drawbridge opens for boats, near the 520 on-ramps.' },
+      '29': { name: 'Frontiez', label: ['Frontiez', '7th Ave'], area: 'Denny Regrade', street: '7th Ave',
+        about: 'An office tower on 7th Ave, north of the tallest towers.' },
+      '30': { name: 'Dopzler', label: ['Dopzler', '7th Ave'], area: 'Denny Regrade', street: '7th Ave',
+        about: 'A glass tower at Westlake and 7th Ave with its own outdoor dog park.' },
+      '31': { name: 'Water Cooler', label: ['Water', 'Cooler'] },
+      '32': { name: 'Everezt', label: ['Everezt', '106th Ave'], area: 'Bellevue', street: '106th Ave NE',
+        about: 'An office on 106th Ave NE in the middle of downtown Bellevue.' },
+      '33': { name: 'Tahzoe', label: ['Tahzoe', 'NE 10th St'], area: 'Bellevue', street: 'NE 10th St',
+        about: 'One of two twin towers on NE 10th St, set around a public plaza.' },
+      '34': { name: 'Zonic', label: ['Zonic', '108th Ave'], area: 'Bellevue', street: '108th Ave NE',
+        about: 'Opened on 108th Ave NE, steps from the Bellevue Transit Center.' },
+      '35': { name: 'Bellevue Transit Center', label: ['Bellevue', 'Transit'], area: 'Bellevue', street: 'NE 6th St',
+        about: 'Buses meet on NE 6th St, a short walk from the office towers.' },
+      '36': { name: 'Gracez', label: ['Gracez', '108th Ave'], area: 'Bellevue', street: '108th Ave NE',
+        about: 'Part of a group of office towers at NE 4th St and 108th Ave NE.' },
+      '37': { name: '520 Bridge Toll', label: ['520', 'Toll'], note: 'Pay $85.',
+        about: 'The commute toll on the floating bridge across Lake Washington.' },
+      '38': { name: 'Maverich', label: ['Maverich', 'NE 4th St'], area: 'Bellevue', street: 'NE 4th St',
+        about: 'Faces NE 4th St, in the same group of towers as its neighbour.' },
+      '39': { name: 'Bingzo', label: ['Bingzo', '108th Ave'], area: 'Bellevue', street: '108th Ave NE',
+        about: 'Free bananas are handed out right by its door on 108th Ave NE.' }
+    },
+
+    districts: {
+      tacoma: { name: 'Westlake Ave', tag: 'WL', color: '#089D92' },
+      everett: { name: 'Fairview Ave', tag: 'FV', color: '#8ABBFB' },
+      westseattle: { name: 'Terry Ave', tag: 'TE', color: '#347A4E' },
+      ballard: { name: 'Boren Ave', tag: 'BO', color: '#9F8310' },
+      capitolhill: { name: 'Denny Triangle', tag: 'DT', color: '#FAA859' },
+      downtown: { name: 'Denny Regrade', tag: 'DR', color: '#B6000D' },
+      bellevue: { name: 'Downtown Bellevue', tag: 'DB', color: '#5E457C' },
+      medina: { name: 'City Center South', tag: 'CS', color: '#DC17D1' }
+    },
+
+    decks: {
+      rain: {
+        name: 'Meeting Invite',
+        cards: {
+          rc1: 'Your next meeting is across campus. Advance to Wainzright.',
+          rc2: 'Wrong floor! Go back 4 spaces.',
+          rc3: 'The Montlake Bridge is up. Go to the Mercer Mess. No salary.',
+          rc4: 'Bike Pass. Leave the Mercer Mess for free. Keep this card until you use it.',
+          rc5: 'Catch the next shuttle, streetcar or bus. Advance to the nearest transit stop.',
+          rc6: 'Three meetings in a row! Advance to the nearest campus service.',
+          rc7: 'Team offsite in Bellevue. Advance to Bingzo.',
+          rc8: 'Payday! Advance to Day 1.',
+          rc9: 'Demo day! Your team shows its project. Advance to Fionza.',
+          rc10: 'Team trivia night. Advance to LowFlyingHawz.',
+          rc11: 'New badge readers on every door. Pay $35 per home and $90 per tower you own.',
+          rc12: 'Your hackathon project wins first prize. Collect $120.',
+          rc13: 'You left your badge at home. Pay $30 for a day pass.',
+          rc14: 'It is your work anniversary! Collect $20 from each player.'
+        }
+      },
+      buzz: {
+        name: 'Water Cooler',
+        cards: {
+          lb1: 'A coworker says thanks with a gift card. Collect $110.',
+          lb2: 'You find $30 in your old conference tote bag.',
+          lb3: 'Your turn to restock the team snack shelf. Pay $45.',
+          lb4: 'Your chili wins the office cook-off. Collect $45.',
+          lb5: 'Team lunch is on you this time. Pay $40.',
+          lb6: 'You sell your old standing desk. Collect $60.',
+          lb7: 'You bring donuts to the morning stand-up. Pay each player $15.',
+          lb8: 'Your talk at a tech conference is a hit. Collect $140.',
+          lb9: 'Building safety check. Pay $30 per home and $80 per tower you own.',
+          lb10: 'Fresh start on a new team. Advance to Day 1.',
+          lb11: 'Two inches of snow and the whole city crawls. Go to the Mercer Mess. No salary.',
+          lb12: 'Bike Pass. Leave the Mercer Mess for free. Keep this card until you use it.',
+          lb13: 'Your referral bonus comes in. Collect $80.',
+          lb14: 'You forgot your lunch. Pay $25 at the food truck.'
+        }
+      }
+    },
+
+    computers: [
+      { name: 'Finance Fran', blurb: 'Loves a good trade.' },
+      { name: 'Engineer Leo', blurb: 'Builds as soon as he can.' },
+      { name: 'Analyst Max', blurb: 'Always keeps a cash cushion.' },
+      { name: 'Recruiter Rosa', blurb: 'Pays extra to finish a district.' },
+      { name: 'Sales Sam', blurb: 'Bids high, keeps little cash.' }
+    ],
+    wholeNames: true,
+
+    words: {
+      start: 'Day 1', traffic: 'Mercer Mess', rest: 'Banana Break', bridge: 'Bridge Up!',
+      trafficThe: 'the Mercer Mess',
+      drivingBy: 'Just driving by', rainFund: 'Snack Fund', carpool: 'Bike Pass', carpools: 'Bike Passes',
+      stuck: 'stuck in traffic', leaveStuck: 'leave traffic', leftStuck: 'left traffic',
+      street: 'building', streets: 'buildings',
+      boardTitle: 'Day 1 Estates', homePlace: 'South Lake Union · Bellevue', homeCoords: '47.62° N · 122.34° W',
+      bigButton: 'the big blue button'
+    },
+
+    kinds: { start: 'Payday', traffic: 'Traffic jam', rest: 'Break time', bridge: 'Drawbridge', ferry: 'Shuttle stop',
+      bus: 'Bus transit stop', train: 'Streetcar stop', utility: 'Campus service', toll: 'Toll', tax: 'Fee',
+      card: 'Card space', street: 'building' },
+
+    phrases: [['to Mercer Mess', 'to the Mercer Mess']],
+
+    terms: [['no buildings', 'no homes or towers'], ['No buildings', 'No homes'], ['with buildings', 'with homes or towers'],
+      ['the buildings on', 'the homes on'], ['Buildings', 'Homes and towers'], ['buildings', 'homes and towers'], ['building', 'home'],
+      ['utilities', 'campus services'], ['Utilities', 'Campus services'], ['utility', 'campus service'], ['Utility', 'Campus service'],
+      ['taxes', 'fees'], ['Taxes', 'Fees'], ['tax', 'fee'], ['Tax', 'Fee']],
+
+    reasons: {
+      'I\'ll wait for the next boat.': 'I\'ll wait for the next quarter.',
+      'Deal. My rainy-day fund approves.': 'Deal. My budget approves.',
+      'Too rich for my rainy-day fund.': 'Too rich for my budget.',
+      'Deal! Full speed upstream.': 'Deal! Let\'s close it today.',
+      'Nope. I swim my own way.': 'Nope. I\'ll find a better deal.'
+    },
+
+    places: ['Lake Union', 'Lake Washington', 'Portage Bay', 'Union Bay', 'Bellevue', 'Meydenbauer Bay', 'Belltown',
+      'South Lake Union', 'Denny Triangle', 'Eastlake', 'Capitol Hill', 'Montlake', 'Medina', 'Clyde Hill',
+      'Mercer Island', 'Lake Union Park', 'Denny Park', 'Downtown Park']
+  };
+})(window.ECE = window.ECE || {});
+;
+(function (ECE) {
+  'use strict';
+
   var W = window;
 
-  ECE.VERSION = '1.1.0';
+  ECE.VERSION = '1.2.0';
 
   function money(n) {
     var v = Math.round(Number(n));
@@ -474,6 +738,7 @@
   var PHASES = ['roll', 'buy', 'auction', 'card', 'debt', 'trade', 'end', 'over'];
   var LEVELS = ['easy', 'normal', 'hard'];
   var DEBT_REASONS = ['rent', 'tax', 'card', 'repairs', 'each', 'traffic'];
+  var THEME_ID = /^[a-z][a-z0-9]{1,15}$/;
 
   var KIND = [], OWNABLE = [], DIST = [], PRICE = [];
   for (var si = 0; si < N; si++) {
@@ -552,6 +817,7 @@
     SC[15] = c; SC[16] = c.turns; SC[17] = c.trades; SC[18] = c.auctions; SC[19] = c.bankrupt;
     SC[20] = s.log; SC[21] = s.log.length; SC[22] = s.props; SC[23] = s.decks; SC[24] = s.players;
     SC[25] = s.declined; SC[26] = Object.prototype.hasOwnProperty.call(s, 'declined');
+    SC[27] = s.setDice; SC[28] = Object.prototype.hasOwnProperty.call(s, 'setDice');
     var ps = s.players, k = 0, i;
     for (i = 0; i < ps.length; i++) {
       var p = ps[i];
@@ -577,6 +843,7 @@
     var c = SC[15];
     s.counters = c; c.turns = SC[16]; c.trades = SC[17]; c.auctions = SC[18]; c.bankrupt = SC[19];
     if (SC[26]) { if (s.declined !== SC[25]) s.declined = SC[25]; } else if (s.declined !== undefined) delete s.declined;
+    if (SC[28]) { if (s.setDice !== SC[27]) s.setDice = SC[27]; } else if (s.setDice !== undefined) delete s.setDice;
     var log = SC[20], i;
     s.log = log;
     if (logSaved) {
@@ -1412,9 +1679,17 @@
     return null;
   }
 
+  function setPair(q) {
+    var d = Array.isArray(q) && q.length ? q[0] : null;
+    return !!d && Array.isArray(d) && d.length === 2 && isInt(d[0]) && isInt(d[1]) && d[0] >= 1 && d[0] <= 6 && d[1] >= 1 && d[1] <= 6;
+  }
+
   function doRoll(s, p, ev) {
     if (s.phase !== 'roll') return 'You cannot roll now.';
-    var a = Rng.int(s.rng, 6) + 1, b = Rng.int(s.rng, 6) + 1, dbl = a === b;
+    var q = s.setDice, a, b;
+    if (setPair(q)) { a = q[0][0]; b = q[0][1]; s.setDice = q.slice(1); }
+    else { a = Rng.int(s.rng, 6) + 1; b = Rng.int(s.rng, 6) + 1; }
+    var dbl = a === b;
     s.dice = [a, b];
     s.rolled = true;
     ev.push({ t: 'dice', p: p.id, d: [a, b], doubles: dbl, forRent: false });
@@ -1825,12 +2100,19 @@
       counters: { turns: 0, trades: 0, auctions: 0, bankrupt: 0 },
       declined: []
     };
+    if (themeId(opts.theme)) s.theme = opts.theme;
     if (rules.limit.kind === 'rounds' && rules.limit.value <= 1) {
       s.limitHit = true;
       s.log.push({ t: 'limit', kind: 'rounds' });
     }
     s.log.push({ t: 'turn', p: players[0].id, round: 1 });
     return s;
+  }
+  function themeId(t) {
+    var list = (ECE.Glossary && ECE.Glossary.themes) || [];
+    if (typeof t !== 'string') return false;
+    for (var i = 0; i < list.length; i++) if (list[i] && list[i].id === t) return true;
+    return false;
   }
 
 
@@ -2094,6 +2376,12 @@
     if (!isInt(c.turns) || c.turns < 0 || !isInt(c.trades) || c.trades < 0 || !isInt(c.auctions) || c.auctions < 0) out.push('counters ' + JSON.stringify(c));
     if (!Array.isArray(s.log) || s.log.length > RULES.logMax) out.push('log missing or too long');
     checkDeclined(s, out);
+    if (s.setDice !== undefined) {
+      var sd = s.setDice, sdOk = Array.isArray(sd);
+      for (i = 0; sdOk && i < sd.length; i++) sdOk = setPair([sd[i]]);
+      if (!sdOk) out.push('setDice is not a list of dice pairs (each 1-6)');
+    }
+    if (s.theme !== undefined && !(typeof s.theme === 'string' && THEME_ID.test(s.theme))) out.push('theme ' + (typeof s.theme === 'string' ? s.theme.slice(0, 24) : typeof s.theme));
     var lk = s.rules.limit.kind;
     if (lk !== 'none' && lk !== 'minutes' && lk !== 'rounds') out.push('limit kind ' + lk);
     if (!isInt(s.turn) || s.turn < 0 || s.turn >= ps.length) { out.push('turn ' + s.turn); return; }
@@ -3795,7 +4083,7 @@
   var GAME_NAME = 'Emerald City Estates';
 
   var SETTINGS = { speed: 'normal', sound: true, volume: 0.6, rain: false, tips: true, reduceMotion: 'auto', closeUp: false };
-  var SETUP = { name: 'You', token: 'orca', opponents: 3, level: 'normal', limit: 'none', auctions: true, rainFund: false };
+  var SETUP = { name: 'You', token: 'orca', opponents: 3, level: 'normal', limit: 'none', auctions: true, rainFund: false, theme: 'emerald' };
   var STATS = { played: 0, won: 0, bestNet: 0, bestRank: 0, fastestWin: 0 };
   var SPEEDS = ['normal', 'fast', 'instant'];
   var MOTION = ['auto', 'on', 'off'];
@@ -3803,6 +4091,8 @@
   var LIMITS_DEFAULT = ['none', 'm10', 'm15', 'r20', 'r30', 'r40'];
   var LIMITS_OLD = ['m30', 'm60', 'm90'];
   var TOKENS_DEFAULT = ['ferry', 'coffee', 'salmon', 'umbrella', 'evergreen', 'orca', 'bicycle', 'seaplane'];
+  var THEMES_DEFAULT = ['emerald'];
+  var THEME_ID = /^[a-z][a-z0-9]{1,15}$/;
   var PERSONAS_DEFAULT = ['trader', 'builder', 'saver', 'collector', 'bold'];
   var PHASES = ['roll', 'buy', 'auction', 'card', 'debt', 'trade', 'end', 'over'];
   var DECK_IDS = ['rain', 'buzz'];
@@ -3830,6 +4120,7 @@
     return out;
   }
   function tokenIds() { var G = gloss(); return ids(G && G.tokens, TOKENS_DEFAULT); }
+  function themeIds() { var G = gloss(), out = ids(G && G.themes, THEMES_DEFAULT).slice(); if (out.indexOf('emerald') < 0) out.unshift('emerald'); return out; }
   function personaIds() {
     var G = gloss(), out = [];
     if (G && G.computers) for (var i = 0; i < G.computers.length; i++) if (G.computers[i] && G.computers[i].persona) out.push(G.computers[i].persona);
@@ -4066,7 +4357,8 @@
     level: function (v, d) { return cleanEnum(v, levelIds(), d); },
     limit: function (v, d) { return cleanEnum(v, limitIds(), d); },
     auctions: cleanBool,
-    rainFund: cleanBool
+    rainFund: cleanBool,
+    theme: function (v, d) { return cleanEnum(v, themeIds(), d); }
   };
   var statsSpec = {
     played: function (v, d) { return cleanNum(v, 0, 1e9, d, true); },
@@ -4390,8 +4682,9 @@
         if (isObj(ev)) out.log.push(ev);
       }
     }
+    if (own(g, 'theme') && typeof g.theme === 'string' && THEME_ID.test(g.theme)) out.theme = g.theme;
     for (var x in g) {
-      if (own(g, x) && !own(out, x) && own(ek.top, x) && !badKey(x) && GAME_KEYS.indexOf(x) < 0) {
+      if (own(g, x) && !own(out, x) && own(ek.top, x) && !badKey(x) && GAME_KEYS.indexOf(x) < 0 && x !== 'theme') {
         var y = generic(g[x], 1);
         if (y !== undefined) out[x] = y;
       }
@@ -4737,6 +5030,11 @@
 
   function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
 
+  function themeName(id) {
+    var G = gloss(), list = (G && G.themes) || [];
+    for (var i = 0; i < list.length; i++) if (list[i] && list[i].id === id && typeof list[i].name === 'string') return list[i].name;
+    return '';
+  }
   function summary(save) {
     var s = isObj(save) ? save : {};
     var stats = isObj(s.stats) ? s.stats : {};
@@ -4747,10 +5045,12 @@
     if (g && Array.isArray(g.players)) for (var i = 0; i < g.players.length; i++) if (isObj(g.players[i]) && g.players[i].kind === 'human') { you = g.players[i]; break; }
     var round = g && typeof g.round === 'number' ? g.round : 0;
     var over = !!(g && g.phase === 'over');
+    var theme = g && typeof g.theme === 'string' && themeIds().indexOf(g.theme) >= 0 ? g.theme : 'emerald';
+    var tName = theme !== 'emerald' ? themeName(theme) : '';
     var text = (played ? plural(played, 'game', 'games') + ' played, ' + won + ' won.' : 'No games played yet.')
-      + (g && !over ? ' A game in progress: round ' + round + (you && typeof you.cash === 'number' ? ', you have ' + (ECE.Util ? ECE.Util.money(you.cash) : '$' + you.cash) : '') + '.' : ' No game in progress.');
+      + (g && !over ? (tName ? ' A ' + tName + ' game in progress: round ' : ' A game in progress: round ') + round + (you && typeof you.cash === 'number' ? ', you have ' + (ECE.Util ? ECE.Util.money(you.cash) : '$' + you.cash) : '') + '.' : ' No game in progress.');
     return {
-      played: played, won: won, inProgress: !!g && !over, round: round,
+      played: played, won: won, inProgress: !!g && !over, round: round, theme: theme,
       players: g && Array.isArray(g.players) ? g.players.length : 0,
       name: isObj(s.setup) && typeof s.setup.name === 'string' ? s.setup.name : '',
       cash: you && typeof you.cash === 'number' ? you.cash : 0,
@@ -5327,29 +5627,54 @@
   };
 
   Dom.space = function (i) {
-    var B = ECE.BoardData;
+    var B = Dom.board();
     return B && B.SPACES ? B.SPACES[i] || null : null;
+  };
+  Dom.board = function () { return ECE.Theme ? ECE.Theme.board() : ECE.BoardData; };
+  Dom.cards = function () { return ECE.Theme ? ECE.Theme.cards() : ECE.CardData; };
+  Dom.gloss = function () { return ECE.Theme ? ECE.Theme.glossary() : ECE.Glossary; };
+  Dom.art = function () { return ECE.Theme ? ECE.Theme.art() : ECE.Art; };
+  Dom.word = function (key, dflt) {
+    var w = ECE.Theme ? ECE.Theme.word(key) : '';
+    return w || dflt || '';
+  };
+  Dom.streetWord = function (plural, cap) {
+    var w = Dom.word(plural ? 'streets' : 'street', plural ? 'streets' : 'street');
+    return cap ? w.charAt(0).toUpperCase() + w.slice(1) : w;
+  };
+  Dom.say = function (line) {
+    if (!line || !ECE.Theme || typeof ECE.Theme.say !== 'function') return line;
+    try { return ECE.Theme.say(line); } catch (e) { Dom.report(e, 'theme.say'); return line; }
   };
 
   Dom.spaceName = function (i) {
     var s = Dom.space(i);
     return s ? s.name : 'space ' + i;
   };
+  Dom.spaceNameNodes = function (i) {
+    var s = Dom.space(i), nm = s ? s.name : 'space ' + i;
+    var lb = s && Array.isArray(s.label) ? s.label : null;
+    if (!lb || lb.length < 2 || /\s/.test(nm) || lb.join('') !== nm || lb.some(function (p) { return !p; })) return nm;
+    var out = [];
+    for (var k = 0; k < lb.length; k++) { if (k) out.push(Dom.h('wbr')); out.push(lb[k]); }
+    return out;
+  };
 
   Dom.tagColors = function (color) {
-    if (ECE.Art && typeof ECE.Art.tagColors === 'function') { try { return ECE.Art.tagColors(color); } catch (e) { } }
+    var A = Dom.art();
+    if (A && typeof A.tagColors === 'function') { try { return A.tagColors(color); } catch (e) { } }
     return { fill: color, text: '#FFFFFF' };
   };
 
   Dom.tag = function (districtId, extraCls) {
-    var d = ECE.BoardData && ECE.BoardData.district(districtId);
+    var Bd = Dom.board(), d = Bd && Bd.district(districtId);
     var el = Dom.h('span', { cls: 'ui-tag' + (extraCls ? ' ' + extraCls : ''), 'aria-hidden': 'true' }, d ? d.tag : '');
     if (d) { var tc = Dom.tagColors(d.color); el.style.backgroundColor = tc.fill; el.style.color = tc.text; }
     return el;
   };
 
   Dom.spaceIcon = function (i) {
-    var s = Dom.space(i);
+    var s = ECE.BoardData && ECE.BoardData.SPACES ? ECE.BoardData.SPACES[i] || null : null;
     if (!s) return null;
     switch (s.kind) {
       case 'transit': return s.mode === 'ferry' ? 'ferry' : s.mode === 'bus' ? 'bus' : 'train';
@@ -5368,19 +5693,20 @@
     if (!name) return null;
     var wrap = Dom.h('span', { cls: 'ui-tag ui-tag-icon ui-tag-' + s.kind, 'aria-hidden': 'true' });
     var svg = Dom.s('svg', { viewBox: '0 0 24 24', width: 22, height: 22, focusable: 'false' });
-    if (ECE.Art && typeof ECE.Art.icon === 'function') { try { ECE.Art.icon(svg, name, 12, 12, 24); } catch (e) { Dom.report(e, 'art.icon'); } }
+    var A = Dom.art();
+    if (A && typeof A.icon === 'function') { try { A.icon(svg, name, 12, 12, 24); } catch (e) { Dom.report(e, 'art.icon'); } }
     wrap.appendChild(svg);
     return wrap;
   };
 
   Dom.tokenName = function (id) {
-    var list = (ECE.Glossary && ECE.Glossary.tokens) || [];
+    var G = Dom.gloss(), list = (G && G.tokens) || [];
     for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i].name;
     return id || '';
   };
 
   function artToken(id, size, color) {
-    var A = ECE.Art;
+    var A = Dom.art();
     if (!A) return null;
     var tries = ['tokenIcon', 'tokenSvg', 'tokenGlyph', 'token', 'glyph'];
     for (var i = 0; i < tries.length; i++) {
@@ -5515,6 +5841,12 @@
     try { return el.matches(':focus-visible'); } catch (e) { return true; }
   };
 
+  Dom.tabKey = function () {
+    var b = null;
+    try { b = ECE.Util && typeof ECE.Util.browser === 'function' ? ECE.Util.browser() : null; } catch (e) { b = null; }
+    return b && b.name === 'safari' && b.os === 'mac' ? 'Tab (Option-Tab in Safari)' : 'Tab';
+  };
+
   Dom.focus = function (el) {
     if (!el || typeof el.focus !== 'function') return;
     try { el.focus({ preventScroll: true }); } catch (e) { try { el.focus(); } catch (e2) { } }
@@ -5541,6 +5873,405 @@
 
   Dom.wait = function (ms) {
     return new Promise(function (res) { setTimeout(res, Math.max(0, ms | 0)); });
+  };
+})(window.ECE = window.ECE || {});
+;
+(function (ECE) {
+  'use strict';
+
+  var DEFAULT = 'emerald';
+  var ID_RE = /^[a-z][a-z0-9]{1,15}$/;
+  var SPACE_KEYS = ['name', 'label', 'area', 'about', 'street', 'note'];
+  var WORD_KEYS = ['start', 'traffic', 'rest', 'bridge', 'drivingBy', 'rainFund', 'carpool', 'carpools', 'stuck', 'leaveStuck', 'leftStuck', 'street', 'streets'];
+  var CORNER_WORDS = { start: 'START', traffic: 'TRAFFIC', rest: 'REST', bridge: 'BRIDGE' };
+  var PHRASE_WORDS = ['carpools', 'carpool', 'rainFund', 'stuck', 'leaveStuck', 'leftStuck'];
+  var TERM_WORDS = ['streets', 'street'];
+
+  var active = DEFAULT;
+  var built = {};
+  var listeners = [];
+  var metaBase = null;
+
+  function own(o, k) { return !!o && typeof o === 'object' && Object.prototype.hasOwnProperty.call(o, k); }
+  function str(v) { return typeof v === 'string' && v.length > 0; }
+  function isPlain(v) { return !!v && typeof v === 'object' && !Array.isArray(v); }
+  function copy(v) {
+    if (Array.isArray(v)) return v.map(copy);
+    if (!isPlain(v)) return v;
+    var o = {};
+    for (var k in v) if (own(v, k)) o[k] = copy(v[k]);
+    return o;
+  }
+  function merge(base, over) {
+    if (!isPlain(over)) return over === undefined ? copy(base) : copy(over);
+    var o = isPlain(base) ? copy(base) : {};
+    for (var k in over) {
+      if (!own(over, k) || over[k] === undefined) continue;
+      o[k] = isPlain(over[k]) && isPlain(o[k]) ? merge(o[k], over[k]) : copy(over[k]);
+    }
+    return o;
+  }
+  function assign(a, b) { for (var k in b) if (own(b, k)) a[k] = b[k]; return a; }
+  function esc(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function TD() { return ECE.ThemeData || {}; }
+  function report(e, where) {
+    try { if (ECE.Dom && typeof ECE.Dom.report === 'function') ECE.Dom.report(e, where); } catch (x) { }
+  }
+
+  function has(id) { return str(id) && ID_RE.test(id) && isPlain(TD()[id]); }
+  function norm(id) { return has(id) ? id : DEFAULT; }
+  function pick(id) { return id === undefined || id === null ? active : norm(id); }
+  function ids() {
+    var G = ECE.Glossary || {}, out = [DEFAULT], gl = Array.isArray(G.themes) ? G.themes : [];
+    for (var i = 0; i < gl.length; i++) {
+      var id = gl[i] && gl[i].id;
+      if (has(id) && out.indexOf(id) < 0) out.push(id);
+    }
+    return out;
+  }
+  function glossName(id) {
+    var gl = (ECE.Glossary && ECE.Glossary.themes) || [];
+    for (var i = 0; i < gl.length; i++) if (gl[i] && gl[i].id === id) return gl[i].name;
+    return '';
+  }
+  function list() {
+    return ids().map(function (id) {
+      var d = data(id);
+      return { id: id, name: str(d.name) ? d.name : glossName(id) || id, blurb: str(d.blurb) ? d.blurb : '' };
+    });
+  }
+  function of(state) { return state && typeof state === 'object' ? norm(state.theme) : DEFAULT; }
+
+  function tables(id) {
+    id = pick(id);
+    if (built[id]) return built[id];
+    var B = ECE.BoardData, C = ECE.CardData, G = ECE.Glossary || {};
+    var base = TD()[DEFAULT] || {};
+    var t = { id: id };
+    if (id === DEFAULT) {
+      t.data = base;
+      t.board = B; t.cards = C; t.glossary = G;
+      t.words = assign({}, base.words || {});
+      t.phraseRe = null; t.districtRe = null; t.termRe = null; t.reasons = {};
+      built[id] = t;
+      return t;
+    }
+    var raw = TD()[id] || {};
+    var d = t.data = merge(base, raw);
+    var rw = isPlain(raw.words) ? raw.words : {}, rh = isPlain(raw.home) ? raw.home : {};
+    d.home = isPlain(d.home) ? d.home : {};
+    if (!str(raw.title) && str(rw.boardTitle)) d.title = rw.boardTitle;
+    if (!str(rh.place) && str(rw.homePlace)) d.home.place = rw.homePlace;
+    if (!str(rh.coords) && str(rw.homeCoords)) d.home.coords = rw.homeCoords;
+    var spaces = B.SPACES.map(function (s, i) {
+      var o = assign({}, s), ts = (d.spaces && d.spaces[String(i)]) || {};
+      for (var k = 0; k < SPACE_KEYS.length; k++) {
+        var key = SPACE_KEYS[k];
+        if (ts[key] !== undefined) o[key] = copy(ts[key]);
+      }
+      if (!Array.isArray(o.label) || !o.label.length) o.label = [o.name];
+      return o;
+    });
+    var byId = {};
+    var districts = B.DISTRICTS.map(function (dd) {
+      var o = assign({}, dd), td = (d.districts && d.districts[dd.id]) || {};
+      if (str(td.name)) o.name = td.name;
+      if (str(td.tag)) o.tag = td.tag;
+      if (str(td.color)) o.color = td.color;
+      o.spaces = dd.spaces.slice();
+      byId[o.id] = o;
+      return o;
+    });
+    var board = assign({}, B);
+    board.SPACES = spaces;
+    board.DISTRICTS = districts;
+    board.district = function (did) { return byId[did] || null; };
+    board.districtOf = function (i) { var s = spaces[i]; return s && s.district ? byId[s.district] || null : null; };
+    t.board = board;
+    var decks = {};
+    ['rain', 'buzz'].forEach(function (dk) {
+      var src = C.DECKS[dk], td = (d.decks && d.decks[dk]) || {}, texts = td.cards || {};
+      decks[dk] = assign(assign({}, src), {
+        name: str(td.name) ? td.name : src.name,
+        cards: src.cards.map(function (c) { return assign(assign({}, c), { text: str(texts[c.id]) ? texts[c.id] : c.text }); })
+      });
+    });
+    t.cards = {
+      DECKS: decks,
+      card: function (dk, cid) {
+        var l = decks[dk] ? decks[dk].cards : [];
+        for (var i = 0; i < l.length; i++) if (l[i].id === cid) return l[i];
+        return null;
+      }
+    };
+    var words = assign({}, base.words || {});
+    assign(words, isPlain(raw.words) ? raw.words : {});
+    for (var w in CORNER_WORDS) {
+      if (own(CORNER_WORDS, w) && !(isPlain(raw.words) && str(raw.words[w]))) words[w] = spaces[B[CORNER_WORDS[w]]].name;
+    }
+    t.words = words;
+    var gl = assign({}, G);
+    gl.places = assign(assign({}, G.places || {}), { start: words.start, traffic: words.traffic, drivingBy: words.drivingBy, rest: words.rest, bridge: words.bridge, rainFund: words.rainFund, carpool: words.carpool });
+    gl.decks = { rain: decks.rain.name, buzz: decks.buzz.name };
+    gl.computers = (G.computers || []).map(function (c, k) {
+      var tc = (Array.isArray(d.computers) && d.computers[k]) || {};
+      return assign(assign({}, c), { name: str(tc.name) ? tc.name : c.name, blurb: str(tc.blurb) ? tc.blurb : c.blurb });
+    });
+    gl.tokens = (G.tokens || []).map(function (tk) {
+      var nm = d.tokens && d.tokens[tk.id];
+      return assign(assign({}, tk), { name: str(nm) ? nm : tk.name });
+    });
+    gl.game = assign(assign({}, G.game || {}), d.home && str(d.home.tagline) ? { tagline: d.home.tagline } : {});
+    t.glossary = gl;
+    var pairs = [], seen = {};
+    var bw = base.words || {};
+    PHRASE_WORDS.forEach(function (k) { if (str(bw[k]) && str(words[k]) && bw[k] !== words[k]) pairs.push([bw[k], words[k]]); });
+    (Array.isArray(raw.phrases) ? raw.phrases : []).forEach(function (p) { if (Array.isArray(p) && str(p[0]) && typeof p[1] === 'string') pairs.push([p[0], p[1]]); });
+    var phraseMap = {};
+    pairs.sort(function (a, b) { return b[0].length - a[0].length; }).forEach(function (p) { if (!seen[p[0]]) { seen[p[0]] = true; phraseMap[p[0]] = p[1]; } });
+    var keys = Object.keys(phraseMap);
+    t.phraseMap = phraseMap;
+    t.phraseRe = keys.length ? new RegExp(keys.map(esc).join('|'), 'g') : null;
+    var termMap = {};
+    TERM_WORDS.forEach(function (k) {
+      if (!(str(bw[k]) && str(words[k]) && bw[k] !== words[k])) return;
+      termMap[bw[k]] = words[k];
+      termMap[bw[k].charAt(0).toUpperCase() + bw[k].slice(1)] = words[k].charAt(0).toUpperCase() + words[k].slice(1);
+    });
+    (Array.isArray(raw.terms) ? raw.terms : []).forEach(function (p) { if (Array.isArray(p) && str(p[0]) && typeof p[1] === 'string' && !own(termMap, p[0])) termMap[p[0]] = p[1]; });
+    var tKeys = Object.keys(termMap).sort(function (a, b) { return b.length - a.length; });
+    t.termMap = termMap;
+    t.termRe = tKeys.length ? new RegExp('(^|[^A-Za-z0-9])(' + tKeys.map(esc).join('|') + ')(?![A-Za-z0-9])', 'g') : null;
+    var dMap = {};
+    B.DISTRICTS.forEach(function (dd) { if (byId[dd.id].name !== dd.name) dMap[dd.name] = byId[dd.id].name; });
+    var dKeys = Object.keys(dMap).sort(function (a, b) { return b.length - a.length; });
+    t.districtMap = dMap;
+    t.districtRe = dKeys.length ? new RegExp('\\b(?:' + dKeys.map(esc).join('|') + ')\\b', 'g') : null;
+    t.reasons = isPlain(raw.reasons) ? raw.reasons : {};
+    built[id] = t;
+    return t;
+  }
+
+  function data(id) { return tables(id).data || {}; }
+  function board(id) { return tables(id).board; }
+  function cards(id) { return tables(id).cards; }
+  function glossary(id) { return tables(id).glossary; }
+  function space(i, id) { var S = board(id).SPACES; return S[i] || null; }
+  function spaceName(i, id) { var s = space(i, id); return s ? s.name : 'space ' + i; }
+  function district(did, id) { return board(id).district(did); }
+  function districtOf(i, id) { return board(id).districtOf(i); }
+  function card(deck, cid, id) { return cards(id).card(deck, cid); }
+  function deckName(deck, id) { var d = cards(id).DECKS[deck]; return d ? d.name : ''; }
+  function word(key, id) {
+    var w = tables(id).words[key];
+    if (str(w)) return w;
+    var b = (TD()[DEFAULT] && TD()[DEFAULT].words) || {};
+    return str(b[key]) ? b[key] : '';
+  }
+  function computer(k, id) {
+    var list = glossary(id).computers || [];
+    if (typeof k === 'number') return list[k] || null;
+    for (var i = 0; i < list.length; i++) if (list[i].id === k) return list[i];
+    return null;
+  }
+
+  function withNames(t, fn) {
+    var B = ECE.BoardData, C = ECE.CardData, G = ECE.Glossary || {}, saved = [];
+    function put(obj, key, val) {
+      if (!obj || obj[key] === val) return;
+      saved.push([obj, key, own(obj, key), obj[key]]);
+      obj[key] = val;
+    }
+    try {
+      var S = t.board.SPACES;
+      for (var i = 0; i < B.SPACES.length; i++) { put(B.SPACES[i], 'name', S[i].name); put(B.SPACES[i], 'area', S[i].area); }
+      ['rain', 'buzz'].forEach(function (dk) {
+        var src = C.DECKS[dk], th = t.cards.DECKS[dk];
+        put(src, 'name', th.name);
+        for (var k = 0; k < src.cards.length; k++) put(src.cards[k], 'text', th.cards[k].text);
+      });
+      if (G.places) put(G.places, 'drivingBy', t.words.drivingBy);
+      return fn();
+    } finally {
+      for (var j = saved.length - 1; j >= 0; j--) {
+        var r = saved[j];
+        if (r[2]) r[0][r[1]] = r[3]; else delete r[0][r[1]];
+      }
+    }
+  }
+  function rephrase(s, t) {
+    if (!s) return s;
+    if (t.phraseRe) s = s.replace(t.phraseRe, function (m) { return own(t.phraseMap, m) ? t.phraseMap[m] : m; });
+    return terms(s, t);
+  }
+  function terms(s, t) {
+    if (!s || !t.termRe) return s;
+    return s.replace(t.termRe, function (m, pre, w) { return pre + (own(t.termMap, w) ? t.termMap[w] : w); });
+  }
+  var NAME_MARK = /\u0002(\d+)\u0003/g;
+  function text(state, ev, viewerId) {
+    var R = ECE.Rules;
+    if (!R || typeof R.text !== 'function') return '';
+    var id = of(state);
+    if (id === DEFAULT) return R.text(state, ev, viewerId);
+    try {
+      var t = tables(id), e = ev;
+      if (ev && ev.t === 'tradeNo' && str(ev.reason)) { e = assign({}, ev); e.reason = reason(ev.reason, id); }
+      var names = [], masked = assign({}, state);
+      masked.players = (Array.isArray(state.players) ? state.players : []).map(function (p, k) {
+        var q = assign({}, p);
+        names.push(p && typeof p.name === 'string' ? p.name : '');
+        q.name = '\u0002' + k + '\u0003';
+        return q;
+      });
+      var line = rephrase(withNames(t, function () { return R.text(masked, e, viewerId); }), t);
+      line = line.replace(NAME_MARK, function (m, k) { return names[+k] !== undefined ? names[+k] : m; });
+      return line.replace(/([.!?])\.$/, '$1');
+    } catch (err) {
+      report(err, 'theme.text');
+      return R.text(state, ev, viewerId);
+    }
+  }
+  function reason(line, id) {
+    id = pick(id);
+    if (id === DEFAULT || !str(line)) return line;
+    var t = tables(id);
+    if (own(t.reasons, line) && typeof t.reasons[line] === 'string') return t.reasons[line];
+    var out = t.districtRe ? line.replace(t.districtRe, function (m) { return own(t.districtMap, m) ? t.districtMap[m] : m; }) : line;
+    return rephrase(out, t);
+  }
+  function say(line, id) {
+    id = pick(id);
+    if (id === DEFAULT || !str(line)) return line;
+    return rephrase(line, tables(id));
+  }
+
+  function themeArt(id) { var TA = ECE.ThemeArt; return id !== DEFAULT && TA && isPlain(TA[id]) ? TA[id] : null; }
+  function art(id) {
+    id = pick(id);
+    var A = ECE.Art, TA = themeArt(id);
+    if (!A || !TA) return A;
+    var t = tables(id);
+    if (t.art && t.artSrc === TA && t.artBase === A) return t.art;
+    var f = Object.create(A);
+    for (var k in TA) if (own(TA, k) && k !== 'COLORS' && k !== 'colors' && k !== 'map') f[k] = TA[k];
+    f.COLORS = assign(assign({}, A.COLORS || {}), isPlain(TA.COLORS) ? TA.COLORS : isPlain(TA.colors) ? TA.colors : {});
+    f.theme = id;
+    t.art = f; t.artSrc = TA; t.artBase = A;
+    return f;
+  }
+  function map(id) {
+    id = pick(id);
+    var TA = themeArt(id);
+    if (TA && own(TA, 'map')) return TA.map || null;
+    return ECE.SoundMap || null;
+  }
+  function hook(name, id) {
+    var TA = themeArt(pick(id));
+    return TA && typeof TA[name] === 'function' ? TA[name] : null;
+  }
+  function preview(svg, w, h, id) {
+    id = pick(id);
+    if (!svg || typeof svg.setAttribute !== 'function') return false;
+    try {
+      var f = hook('preview', id);
+      if (f) {
+        svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+        f(svg, w, h);
+        return true;
+      }
+      var A = art(id);
+      if (!A || typeof A.centre !== 'function') return false;
+      svg.setAttribute('viewBox', '0 2.38 5.88 2.7');
+      A.centre(svg, { x: 0, y: 0, w: 5.88, h: 9.88 }, {});
+      var q = typeof svg.querySelector === 'function' ? function (s) { return svg.querySelector(s); } : function () { return null; };
+      var t = q('.ece-title'), rain = q('.ece-rain');
+      if (t && t.parentNode) t.parentNode.removeChild(t);
+      if (rain) rain.setAttribute('visibility', 'hidden');
+      return true;
+    } catch (e) { report(e, 'theme.preview'); return false; }
+  }
+  function forSave(save) {
+    var g = save && typeof save === 'object' ? save.game : null;
+    if (g && typeof g === 'object' && g.phase !== 'over' && Array.isArray(g.players)) return of(g);
+    var su = save && typeof save === 'object' ? save.setup : null;
+    return su && typeof su === 'object' ? norm(su.theme) : DEFAULT;
+  }
+
+  function applyDom(id) {
+    if (typeof document === 'undefined' || !document || !document.documentElement) return;
+    var root = document.documentElement, cl = root.classList;
+    if (cl) {
+      var all = ids();
+      for (var k in TD()) if (own(TD(), k) && all.indexOf(k) < 0) all.push(k);
+      for (var i = 0; i < all.length; i++) if (all[i] !== id && cl.contains('theme-' + all[i])) cl.remove('theme-' + all[i]);
+      if (!cl.contains('theme-' + id)) cl.add('theme-' + id);
+    }
+    try {
+      var meta = typeof document.querySelector === 'function' ? document.querySelector('meta[name="theme-color"]') : null;
+      if (meta) {
+        if (metaBase === null) metaBase = meta.getAttribute('content') || '';
+        var TA = themeArt(id), want = TA && str(TA.metaColor) ? TA.metaColor : metaBase;
+        if (meta.getAttribute('content') !== want) meta.setAttribute('content', want);
+      }
+    } catch (e) { report(e, 'theme.meta'); }
+  }
+  function set(id) {
+    var next = norm(id), prev = active;
+    active = next;
+    applyDom(next);
+    if (prev !== next) {
+      for (var i = 0; i < listeners.length; i++) { try { listeners[i](next, prev); } catch (e) { report(e, 'theme.onChange'); } }
+    }
+    return next;
+  }
+  function onChange(fn) { if (typeof fn === 'function') listeners.push(fn); }
+  function reset() { built = {}; active = DEFAULT; }
+
+  function missing(id) {
+    var out = [];
+    if (!has(id) || id === DEFAULT) return out;
+    var raw = TD()[id], B = ECE.BoardData, C = ECE.CardData, G = ECE.Glossary || {};
+    ['name', 'blurb', 'title', 'credits'].forEach(function (k) { if (!str(raw[k])) out.push(k); });
+    ['place', 'tagline', 'coords'].forEach(function (k) { if (!(isPlain(raw.home) && str(raw.home[k]))) out.push('home.' + k); });
+    for (var i = 0; i < B.SPACES.length; i++) {
+      var s = B.SPACES[i], ts = isPlain(raw.spaces) ? raw.spaces[String(i)] : null;
+      if (!isPlain(ts) || !str(ts.name)) { out.push('spaces.' + i + '.name'); continue; }
+      if (!Array.isArray(ts.label) || !ts.label.length) out.push('spaces.' + i + '.label');
+      if (typeof s.about === 'string' && !str(ts.about)) out.push('spaces.' + i + '.about');
+      if (typeof s.note === 'string' && !str(ts.note)) out.push('spaces.' + i + '.note');
+      if (typeof s.area === 'string' && !str(ts.area)) out.push('spaces.' + i + '.area');
+    }
+    B.DISTRICTS.forEach(function (dd) {
+      var td = isPlain(raw.districts) ? raw.districts[dd.id] : null;
+      ['name', 'tag', 'color'].forEach(function (k) { if (!(isPlain(td) && str(td[k]))) out.push('districts.' + dd.id + '.' + k); });
+    });
+    ['rain', 'buzz'].forEach(function (dk) {
+      var td = isPlain(raw.decks) ? raw.decks[dk] : null;
+      if (!(isPlain(td) && str(td.name))) out.push('decks.' + dk + '.name');
+      C.DECKS[dk].cards.forEach(function (c) { if (!(isPlain(td) && isPlain(td.cards) && str(td.cards[c.id]))) out.push('decks.' + dk + '.cards.' + c.id); });
+    });
+    (G.computers || []).forEach(function (c, k) {
+      var tc = Array.isArray(raw.computers) ? raw.computers[k] : null;
+      ['name', 'blurb'].forEach(function (f) { if (!(isPlain(tc) && str(tc[f]))) out.push('computers.' + k + '.' + f); });
+    });
+    WORD_KEYS.forEach(function (k) { if (!CORNER_WORDS[k] && !(isPlain(raw.words) && str(raw.words[k]))) out.push('words.' + k); });
+    return out;
+  }
+
+  ECE.Theme = {
+    DEFAULT: DEFAULT,
+    WORD_KEYS: WORD_KEYS.slice(),
+    ids: ids, list: list, has: has, of: of,
+    current: function () { return active; },
+    set: set, onChange: onChange, reset: reset,
+    data: data, board: board, cards: cards, glossary: glossary,
+    space: space, spaceName: spaceName, district: district, districtOf: districtOf,
+    card: card, deckName: deckName, word: word, computer: computer,
+    text: text, reason: reason, say: say,
+    art: art, map: map, hook: hook, preview: preview, forSave: forSave,
+    missing: missing,
+    _merge: merge
   };
 })(window.ECE = window.ECE || {});
 ;
@@ -6015,10 +6746,18 @@
       out.word = { x: cx + sf * 0.02, y: py0 + ph / 2 + sf * 0.36, size: sf, text: word };
       out.salary = { x: cx, y: y + 0.875, size: 0.27, text: '+' + (info.salary || '') };
       txt(g, cx, out.salary.y, out.salary.text, out.salary.size, { 'font-weight': 700, fill: '#0A5A3D', 'class': 'ece-start-salary' });
-      el('circle', { cx: r3(x + 0.29), cy: r3(y + 1.31), r: 0.04, fill: 'none', stroke: INK, 'stroke-width': 0.014 }, g);
-      line('M' + r3(x + 0.29) + ' ' + r3(y + 1.27) + 'V' + r3(y + 1.35), 0.01);
-      line('M' + r3(x + 0.35) + ' ' + r3(y + 1.31) + 'H' + r3(x + s - 0.32), 0.018, '#7A5A22');
-      line('M' + r3(x + s - 0.44) + ' ' + r3(y + 1.25) + 'L' + r3(x + s - 0.32) + ' ' + r3(y + 1.31) + 'L' + r3(x + s - 0.44) + ' ' + r3(y + 1.37), 0.018, '#7A5A22');
+      if (info.dir === 'down') {
+        var ax = x + s - 0.2;
+        el('circle', { cx: r3(ax), cy: r3(y + 0.99), r: 0.04, fill: 'none', stroke: INK, 'stroke-width': 0.014 }, g);
+        line('M' + r3(ax - 0.04) + ' ' + r3(y + 0.99) + 'H' + r3(ax + 0.04), 0.01);
+        line('M' + r3(ax) + ' ' + r3(y + 1.05) + 'V' + r3(y + s - 0.1), 0.018, '#7A5A22');
+        line('M' + r3(ax - 0.06) + ' ' + r3(y + s - 0.22) + 'L' + r3(ax) + ' ' + r3(y + s - 0.1) + 'L' + r3(ax + 0.06) + ' ' + r3(y + s - 0.22), 0.018, '#7A5A22');
+      } else {
+        el('circle', { cx: r3(x + 0.29), cy: r3(y + 1.31), r: 0.04, fill: 'none', stroke: INK, 'stroke-width': 0.014 }, g);
+        line('M' + r3(x + 0.29) + ' ' + r3(y + 1.27) + 'V' + r3(y + 1.35), 0.01);
+        line('M' + r3(x + 0.35) + ' ' + r3(y + 1.31) + 'H' + r3(x + s - 0.32), 0.018, '#7A5A22');
+        line('M' + r3(x + s - 0.44) + ' ' + r3(y + 1.25) + 'L' + r3(x + s - 0.32) + ' ' + r3(y + 1.31) + 'L' + r3(x + s - 0.44) + ' ' + r3(y + 1.37), 0.018, '#7A5A22');
+      }
     } else if (kind === 'traffic') {
       bg('#E2E7E8');
       var sw = 0.34, sh = 0.25, sx = x + s - 0.11 - sw, sy = y + 0.14;
@@ -6276,17 +7015,47 @@
     var X = rc.x, Y = rc.y, W = rc.w, H = rc.h;
     el('rect', { x: X + 0.06, y: Y + 0.06, width: W - 0.12, height: H - 0.12, rx: 0.12, fill: 'none', stroke: COLORS.hair, 'stroke-width': 0.012, 'stroke-opacity': 0.7, 'class': 'ece-frame' }, g);
     el('rect', { x: X + 0.11, y: Y + 0.11, width: W - 0.22, height: H - 0.22, rx: 0.09, fill: 'none', stroke: COLORS.hair, 'stroke-width': 0.008, 'stroke-opacity': 0.38, 'class': 'ece-frame' }, g);
-    var tg = title(g, X + W / 2, Y + H * 0.085, opts.title || 'Emerald City Estates');
+    var an = centreAnchors(rc, opts), tg;
+    if (opts.heart) {
+      var holder = el('g', { 'class': 'ece-title-at', transform: 'translate(' + r3(an.titleAt.x) + ' ' + r3(an.titleAt.y) + ') scale(' + r3(an.titleAt.s) + ')' }, g);
+      tg = title(holder, 0, 0, opts.title || 'Emerald City Estates');
+      an.titleHolder = holder;
+    } else tg = title(g, X + W / 2, Y + H * 0.085, opts.title || 'Emerald City Estates');
+    an.g = g;
+    an.title = tg;
+    return an;
+  }
+  function centreAnchors(rc, opts) {
+    var X = rc.x, Y = rc.y, W = rc.w, H = rc.h, B = opts && opts.heart;
+    if (!B) {
+      return {
+        shore: Y + H * 0.43,
+        dice: [{ x: X + W / 2 - 0.46, y: Y + H * 0.735 }, { x: X + W / 2 + 0.46, y: Y + H * 0.735 }],
+        diceSize: 0.74,
+        piles: { rain: { x: X + W * 0.2, y: Y + H * 0.885 }, buzz: { x: X + W * 0.8, y: Y + H * 0.885 } },
+        pileSize: { w: 1.06, h: 1.4 },
+        jar: { x: X + W / 2, y: Y + H * 0.848, w: 0.84, h: 0.98 },
+        cardSpot: { x: X + W / 2, y: Y + H * 0.47 }
+      };
+    }
+    var cx = B.x + B.w / 2, foot = Y + H - 0.12;
+    var pw = Math.max(0.72, Math.min(1.06, (B.w - 2.05) / 2.4)), ph = pw * 1.4 / 1.06;
+    var py = foot - 0.08 - ph / 2;
+    var ds = 0.74 * Math.max(0.8, Math.min(1, pw / 1.06 + 0.1));
+    var jarW = 0.84, jarH = 0.98;
+    var jar = { x: cx, y: foot - 0.4 - jarH / 2, w: jarW, h: jarH };
+    var dy = opts.jar ? jar.y - jarH / 2 - 0.16 - ds / 2 : py;
     return {
-      g: g,
-      title: tg,
       shore: Y + H * 0.43,
-      dice: [{ x: X + W / 2 - 0.46, y: Y + H * 0.735 }, { x: X + W / 2 + 0.46, y: Y + H * 0.735 }],
-      diceSize: 0.74,
-      piles: { rain: { x: X + W * 0.2, y: Y + H * 0.885 }, buzz: { x: X + W * 0.8, y: Y + H * 0.885 } },
-      pileSize: { w: 1.06, h: 1.4 },
-      jar: { x: X + W / 2, y: Y + H * 0.848, w: 0.84, h: 0.98 },
-      cardSpot: { x: X + W / 2, y: Y + H * 0.47 }
+      dice: [{ x: cx - ds * 0.62, y: dy }, { x: cx + ds * 0.62, y: dy }],
+      diceSize: ds,
+      piles: { rain: { x: B.x + 0.14 + pw / 2, y: py }, buzz: { x: B.x + B.w - 0.14 - pw / 2, y: py } },
+      pileSize: { w: pw, h: ph },
+      jar: jar,
+      cardSpot: { x: cx, y: Y + H * 0.45 },
+      titleAt: { x: cx, y: Y + 0.64, s: Math.min(1, (B.w - 0.24) / 3.9) },
+      north: B.w >= 4.3 ? { x: B.x + B.w - 0.38, y: Y + 1.66 } : null,
+      heart: { x: B.x, y: B.y, w: B.w, h: B.h }
     };
   }
 
@@ -6554,6 +7323,7 @@
     tree: tree,
     corner: corner,
     centre: centre,
+    centreAnchors: centreAnchors,
     title: title,
     die: die,
     pile: pile,
@@ -6611,7 +7381,7 @@
   var HIGHWAYS = [
     [[6.3, -0.3], [6.25, 0.6], [5.95, 1.5], [5.45, 2.6], [5.18, 3.4], [5.02, 4.4], [4.98, 5.4], [4.95, 6.2], [4.98, 6.9], [5.0, 7.25], [5.06, 7.8], [5.2, 8.5], [5.26, 9.1], [5.15, 9.8], [5.05, 10.6], [4.98, 11.4], [4.6, 12.3], [4.1, 12.8], [3.6, 13.05], [2.9, 13.5], [2.6, 14.3]],
     [[5.18, 3.4], [5.7, 3.95], [6.05, 4.55], [6.45, 5.3], [6.62, 5.9], [6.7, 6.6], [6.68, 7.3], [6.5, 8.2], [6.25, 9.0], [5.9, 9.25], [5.26, 9.1]],
-    [[4.98, 7.55], [5.3, 7.52], [5.7, 7.5], [5.95, 7.47], [6.2, 7.52], [6.45, 7.55], [6.68, 7.5], [7.2, 7.6], [7.75, 7.9], [8.6, 8.1], [10.3, 8.3]],
+    [[4.98, 7.55], [5.3, 7.52], [5.7, 7.5], [5.95, 7.47], [6.2, 7.52], [6.45, 7.55], [6.68, 7.5], [7.2, 7.6], [7.75, 7.9], [8.6, 8.1], [10.3, 8.3], [11.35, 9.2], [12.6, 9.55]],
     [[4.98, 6.4], [5.2, 6.55], [5.48, 6.62], [5.9, 6.66], [6.28, 6.66], [6.7, 6.45], [7.2, 6.2], [7.75, 6.15], [8.6, 6.0]],
     [[3.6, 13.05], [2.8, 12.9], [2.36, 12.95], [1.9, 12.9], [1.5, 12.6], [1.1, 12.0], [0.9, 10.8], [1.1, 9.4], [1.2, 8.4]]];
   var FERRIES = [[[4.84, 7.26], [4.2, 7.0], [3.5, 6.62], [3.02, 6.42]], [[4.18, 8.7], [3.8, 8.85], [3.4, 9.02]],
@@ -6717,7 +7487,7 @@
   function painter(cv, win) {
     var ctx = cv.getContext('2d'), s = cv.width / win.w;
     var X = function (x) { return (x - win.x) * s; }, Y = function (y) { return (y - win.y) * s; };
-    return { ctx: ctx, s: s, X: X, Y: Y, W: cv.width, H: cv.height, poly: function (pts, closed) {
+    return { ctx: ctx, s: s, lw: win.lw || 1, X: X, Y: Y, W: cv.width, H: cv.height, poly: function (pts, closed) {
       trace(pts, closed !== false, function (x, y) { ctx.moveTo(X(x), Y(y)); },
         function (a, b, c2, d2, x, y) { ctx.bezierCurveTo(X(a), Y(b), X(c2), Y(d2), X(x), Y(y)); });
       if (closed !== false) ctx.closePath();
@@ -6787,7 +7557,7 @@
         for (var m = 0; m < S.lakeIslands.length; m++) { ctx.beginPath(); poly(S.lakeIslands[m]); ctx.fill(); }
         ctx.save();
         ctx.lineCap = 'round';
-        for (var cn = 0; cn < CANALS.length; cn++) { ctx.beginPath(); poly(CANALS[cn], false); ctx.lineWidth = 0.05 * s; ctx.strokeStyle = '#174E60'; ctx.stroke(); }
+        for (var cn = 0; cn < CANALS.length; cn++) { ctx.beginPath(); poly(CANALS[cn], false); ctx.lineWidth = 0.05 * s * P.lw; ctx.strokeStyle = '#174E60'; ctx.stroke(); }
         ctx.restore();
       },
       function () {
@@ -6871,7 +7641,7 @@
     ] };
   }
   function fine(st, win) {
-    var ctx = st.ctx, P = painter(st.cv, win), s = P.s, X = P.X, Y = P.Y, W = P.W, H = P.H, poly = P.poly, S = shapes();
+    var ctx = st.ctx, P = painter(st.cv, win), s = P.s, X = P.X, Y = P.Y, W = P.W, H = P.H, poly = P.poly, S = shapes(), sl = s * P.lw;
     ctx.imageSmoothingEnabled = true;
     try { ctx.imageSmoothingQuality = 'high'; } catch (e) { }
     ctx.drawImage(st.half, 0, 0, W, H);
@@ -6883,19 +7653,19 @@
       if (pat) { ctx.globalAlpha = 0.5; ctx.fillStyle = pat; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
     }
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    for (var rv = 0; rv < RIVERS.length; rv++) { ctx.beginPath(); poly(RIVERS[rv], false); ctx.lineWidth = Math.max(1, 0.03 * s); ctx.strokeStyle = 'rgba(40, 110, 130, 0.9)'; ctx.stroke(); }
-    for (var tn = 0; tn < TOWNS.length; tn++) town(ctx, TOWNS[tn], X, Y, s);
+    for (var rv = 0; rv < RIVERS.length; rv++) { ctx.beginPath(); poly(RIVERS[rv], false); ctx.lineWidth = Math.max(1, 0.03 * sl); ctx.strokeStyle = 'rgba(40, 110, 130, 0.9)'; ctx.stroke(); }
+    for (var tn = 0; tn < TOWNS.length; tn++) town(ctx, TOWNS[tn], X, Y, s, sl);
     for (var hw = 0; hw < HIGHWAYS.length; hw++) {
       ctx.beginPath(); poly(HIGHWAYS[hw], false);
-      ctx.lineWidth = Math.max(1.5, 0.046 * s); ctx.strokeStyle = 'rgba(8, 16, 12, 0.35)'; ctx.stroke();
-      ctx.lineWidth = Math.max(1, 0.022 * s); ctx.strokeStyle = 'rgba(226, 204, 150, 0.6)'; ctx.stroke();
+      ctx.lineWidth = Math.max(1.5, 0.046 * sl); ctx.strokeStyle = 'rgba(8, 16, 12, 0.35)'; ctx.stroke();
+      ctx.lineWidth = Math.max(1, 0.022 * sl); ctx.strokeStyle = 'rgba(226, 204, 150, 0.6)'; ctx.stroke();
     }
     ctx.restore();
     var bridges = [[[5.5, 7.505], [5.96, 7.47]], [[6.2, 7.52], [6.38, 7.53]], [[5.48, 6.62], [6.28, 6.66]], [[2.86, 12.91], [2.36, 12.95]]];
     for (var br = 0; br < bridges.length; br++) {
       ctx.beginPath(); ctx.moveTo(X(bridges[br][0][0]), Y(bridges[br][0][1])); ctx.lineTo(X(bridges[br][1][0]), Y(bridges[br][1][1]));
-      ctx.lineWidth = Math.max(1.5, 0.045 * s); ctx.strokeStyle = 'rgba(4, 14, 20, 0.45)'; ctx.stroke();
-      ctx.lineWidth = Math.max(1, 0.022 * s); ctx.strokeStyle = 'rgba(232, 222, 196, 0.8)'; ctx.stroke();
+      ctx.lineWidth = Math.max(1.5, 0.045 * sl); ctx.strokeStyle = 'rgba(4, 14, 20, 0.45)'; ctx.stroke();
+      ctx.lineWidth = Math.max(1, 0.022 * sl); ctx.strokeStyle = 'rgba(232, 222, 196, 0.8)'; ctx.stroke();
     }
   }
   function finish(st, win, dpr) {
@@ -6907,11 +7677,11 @@
     ctx.save();
     ctx.beginPath();
     for (var fr = 0; fr < FERRIES.length; fr++) P.poly(FERRIES[fr], false);
-    if (typeof ctx.setLineDash === 'function') ctx.setLineDash([0.07 * P.s, 0.06 * P.s]);
-    ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1, 0.014 * P.s); ctx.strokeStyle = 'rgba(232, 243, 244, 0.55)';
+    if (typeof ctx.setLineDash === 'function') ctx.setLineDash([0.07 * P.s * P.lw, 0.06 * P.s * P.lw]);
+    ctx.lineCap = 'round'; ctx.lineWidth = Math.max(1, 0.014 * P.s * P.lw); ctx.strokeStyle = 'rgba(232, 243, 244, 0.55)';
     ctx.stroke();
     ctx.restore();
-    if (st.cards && st.fl) frost(ctx, st.fl, P.W, P.H, P.s, P.X, P.Y, st.cards);
+    if (st.cards && st.fl) frost(ctx, st.fl, P.W, P.H, P.s, P.X, P.Y, st.cards, P.lw);
   }
   function draw(win, pxW, pxH, opts) {
     var job = steps(win, pxW, pxH, opts);
@@ -7018,7 +7788,8 @@
     return cv;
   }
 
-  function town(ctx, t, X, Y, s) {
+  function town(ctx, t, X, Y, s, sl) {
+    sl = sl || s;
     var cx = X(t[0]), cy = Y(t[1]), rx = t[2] * s, ry = t[3] * s, ang = t[4] * Math.PI / 180;
     var R = Math.max(rx, ry);
     ctx.save();
@@ -7030,15 +7801,15 @@
     var sg = ctx.createRadialGradient(0, 0, 0, 0, 0, R);
     sg.addColorStop(0, 'rgba(222, 228, 220, 0.2)'); sg.addColorStop(0.55, 'rgba(222, 228, 220, 0.12)'); sg.addColorStop(1, 'rgba(222, 228, 220, 0)');
     ctx.rotate(ang);
-    var step = 0.055 * s;
+    var step = 0.055 * sl;
     if (step >= 2) {
       ctx.beginPath();
       for (var v = -R; v <= R; v += step) { ctx.moveTo(v, -R); ctx.lineTo(v, R); ctx.moveTo(-R, v); ctx.lineTo(R, v); }
-      ctx.lineWidth = Math.max(0.5, s * 0.004); ctx.strokeStyle = sg; ctx.stroke();
+      ctx.lineWidth = Math.max(0.5, sl * 0.004); ctx.strokeStyle = sg; ctx.stroke();
     }
     ctx.beginPath();
     for (var a = -R; a <= R; a += step * 5) { ctx.moveTo(a, -R); ctx.lineTo(a, R); ctx.moveTo(-R, a); ctx.lineTo(R, a); }
-    ctx.lineWidth = Math.max(0.8, s * 0.008); ctx.strokeStyle = sg; ctx.stroke();
+    ctx.lineWidth = Math.max(0.8, sl * 0.008); ctx.strokeStyle = sg; ctx.stroke();
     ctx.restore();
   }
 
@@ -7066,11 +7837,12 @@
   function shadows(P, cards) {
     var ctx = P.ctx;
     ctx.save();
-    ctx.shadowColor = 'rgba(0, 8, 12, 0.62)'; ctx.shadowBlur = 0.16 * P.s; ctx.shadowOffsetY = 0.05 * P.s;
+    ctx.shadowColor = 'rgba(0, 8, 12, 0.62)'; ctx.shadowBlur = 0.16 * P.s * P.lw; ctx.shadowOffsetY = 0.05 * P.s * P.lw;
     cardsPath(ctx, P.X, P.Y, P.s, cards); ctx.fillStyle = '#0B1A20'; ctx.fill();
     ctx.restore();
   }
-  function frost(ctx, fl, W, H, s, X, Y, cards) {
+  function frost(ctx, fl, W, H, s, X, Y, cards, lw) {
+    lw = lw || 1;
     ctx.save();
     cardsPath(ctx, X, Y, s, cards); ctx.clip();
     ctx.imageSmoothingEnabled = true;
@@ -7078,7 +7850,7 @@
     for (var j = 0; j < cards.length; j++) {
       var c2 = cards[j], x = X(c2.x), y = Y(c2.y), cw = c2.w * s, ch = c2.h * s;
       if (c2.tint) { ctx.globalAlpha = 0.05; ctx.fillStyle = c2.tint; ctx.fillRect(x, y, cw, ch); ctx.globalAlpha = 1; }
-      ctx.fillStyle = 'rgba(12, 22, 26, 0.1)'; ctx.fillRect(x, y + ch - 0.02 * s, cw, 0.02 * s);
+      ctx.fillStyle = 'rgba(12, 22, 26, 0.1)'; ctx.fillRect(x, y + ch - 0.02 * s * lw, cw, 0.02 * s * lw);
       var sh = ctx.createLinearGradient(x, y, x + cw * 0.35, y + ch);
       sh.addColorStop(0, 'rgba(255, 255, 255, 0.22)'); sh.addColorStop(0.45, 'rgba(255, 255, 255, 0.04)'); sh.addColorStop(1, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = sh; ctx.fillRect(x, y, cw, ch);
@@ -7182,51 +7954,96 @@
 
   var SERIF = 'ui-serif, "New York", "Iowan Old Style", "Palatino Linotype", Palatino, P052, "Book Antiqua", Georgia, "Times New Roman", serif';
 
+  var WIDE_NAMES = {
+    'Elliott Bay': { at: [4.36, 7.5], rot: -8 },
+    'Lake Washington': { at: [5.74, 6.72], rot: -87 },
+    'BALLARD': { sides: ['e', 'n', 'w'] },
+    'CAPITOL HILL': { sides: ['w', 'n', 'e'] },
+    'DOWNTOWN': { sides: ['w', 's', 'e'] },
+    'WEST SEATTLE': { sides: ['w', 'e', 's'] },
+    'MEDINA': { sides: ['e', 'n'] },
+    'BELLEVUE': { sides: ['e', 's'] }
+  };
+
   function overlay(parent, opts) {
     var el = opts.el, S = shapes();
     var g = el('g', { 'class': 'ece-map-vector' }, parent);
     var o = opts.offset || { x: 0, y: 0 };
-    var tf = 'translate(' + r3(-o.x) + ' ' + r3(-o.y) + ')';
+    var mp = opts.map && opts.map.z > 0 ? opts.map : null;
+    var z = mp ? mp.z : 1;
+    var P = function (x, y) { return mp ? { x: (x - o.x) * z + mp.x, y: (y - o.y) * z + mp.y } : { x: x - o.x, y: y - o.y }; };
+    var tf = mp ? 'translate(' + r3(mp.x) + ' ' + r3(mp.y) + ') scale(' + r3(z) + ')' + (o.x || o.y ? ' translate(' + r3(-o.x) + ' ' + r3(-o.y) + ')' : '')
+      : 'translate(' + r3(-o.x) + ' ' + r3(-o.y) + ')';
     if (opts.lines !== false) {
       var geo = el('g', { transform: tf, 'class': 'ece-map-lines' }, g);
       var coast = svgPath(S.sound, true);
       for (var i = 0; i < S.islands.length; i++) coast += svgPath(S.islands[i], true);
       for (var l = 0; l < S.lakes.length; l++) coast += svgPath(S.lakes[l], true);
       for (var m = 0; m < S.lakeIslands.length; m++) coast += svgPath(S.lakeIslands[m], true);
-      el('path', { d: coast, fill: 'none', stroke: '#CFEAEE', 'stroke-width': 0.012, opacity: 0.42, 'stroke-linejoin': 'round' }, geo);
+      el('path', { d: coast, fill: 'none', stroke: '#CFEAEE', 'stroke-width': r3(0.012 / z), opacity: 0.42, 'stroke-linejoin': 'round' }, geo);
       var fr = '';
       for (var f = 0; f < FERRIES.length; f++) fr += svgPath(FERRIES[f], false);
-      el('path', { d: fr, fill: 'none', stroke: '#E8F3F4', 'stroke-width': 0.014, 'stroke-dasharray': '0.07 0.06', opacity: 0.55, 'stroke-linecap': 'round' }, geo);
+      el('path', { d: fr, fill: 'none', stroke: '#E8F3F4', 'stroke-width': r3(0.014 / z), 'stroke-dasharray': r3(0.07 / z) + ' ' + r3(0.06 / z), opacity: 0.55, 'stroke-linecap': 'round' }, geo);
     }
     if (opts.names !== false) {
-      var minF = opts.minFont || 0.165;
-      for (var n = 0; n < NAMES.length; n++) {
-        var nm = NAMES[n], water = nm[3] === 'water';
-        var mv = opts.nameAt && opts.nameAt[nm[0]];
-        var at = { x: (mv ? mv[0] : nm[1]) - o.x, y: (mv ? mv[1] : nm[2]) - o.y };
-        var lg = el('g', { transform: 'translate(' + r3(at.x) + ' ' + r3(at.y) + ')' + (nm[4] ? ' rotate(' + nm[4] + ')' : ''), 'class': 'ece-map-name' }, g);
+      var minF = opts.minFont || 0.165, fit = typeof opts.fit === 'function' ? opts.fit : null;
+      var order = NAMES.slice();
+      if (fit) order.sort(function (a, b) { return (a[3] && a[3] !== 'water' ? 0 : 1) - (b[3] && b[3] !== 'water' ? 0 : 1); });
+      for (var n = 0; n < order.length; n++) {
+        var nm = order[n], water = nm[3] === 'water';
+        var mv = opts.nameAt && opts.nameAt[nm[0]], wn = fit ? WIDE_NAMES[nm[0]] : null;
+        var src = mv || (wn && wn.at) || [nm[1], nm[2]], rot = wn && wn.rot !== undefined ? wn.rot : nm[4];
+        var at = P(src[0], src[1]);
         var col = nm[3] && opts.colors && opts.colors[nm[3]];
         var size = water ? Math.max(minF, 0.2) : Math.max(minF, 0.165);
+        var tw = (opts.em ? opts.em(nm[0]) : nm[0].length * 0.66) * size + nm[0].length * (water ? 0.03 : 0.045);
+        var sides = nm[5] ? (wn && wn.sides ? wn.sides : [nm[5]]) : [''];
+        var side = null, shift = 0, SH = [0, -0.12, 0.12, -0.24, 0.24];
+        for (var si = 0; si < sides.length && side === null; si++) {
+          var slides = fit && (sides[si] === 'n' || sides[si] === 's') ? SH : [0];
+          for (var sj = 0; sj < slides.length && side === null; sj++) {
+            if (!fit || fit(nameBox(at, sides[si], tw, size, rot || 0, water, !!col, slides[sj]))) { side = sides[si]; shift = slides[sj]; }
+          }
+        }
+        if (side === null) continue;
+        var lg = el('g', { transform: 'translate(' + r3(at.x) + ' ' + r3(at.y) + ')' + (rot ? ' rotate(' + rot + ')' : ''), 'class': 'ece-map-name', 'data-name': nm[0] }, g);
         var attrs = water ? { 'font-family': SERIF, 'font-style': 'italic', 'font-weight': 400, fill: '#A9D3DE', 'letter-spacing': 0.03, opacity: 0.92 }
           : { 'font-weight': 650, fill: '#F1F5F2', 'letter-spacing': 0.045, opacity: col ? 0.94 : 0.62 };
         attrs.stroke = water ? '#0A2C3B' : '#0B1A14'; attrs['stroke-width'] = 0.03; attrs['paint-order'] = 'stroke'; attrs['stroke-linejoin'] = 'round';
         attrs['stroke-opacity'] = 0.55;
-        var side = nm[5];
-        if (side) attrs['text-anchor'] = side === 'w' ? 'end' : 'start';
-        opts.text(lg, side === 'w' ? -0.1 : side ? 0.1 : 0, size * 0.36, nm[0], size, attrs);
+        var tx = side === 'w' ? -0.1 : side === 'e' ? 0.1 : shift, ty = size * 0.36;
+        if (side === 'n') ty = -0.14;
+        else if (side === 's') ty = 0.14 + size * 0.72;
+        if (side === 'w') attrs['text-anchor'] = 'end';
+        else if (side === 'e') attrs['text-anchor'] = 'start';
+        opts.text(lg, tx, ty, nm[0], size, attrs);
         if (col) {
-          var w = (opts.em ? opts.em(nm[0]) : nm[0].length * 0.66) * size + nm[0].length * 0.045;
-          el('circle', { cx: side ? 0 : r3(-w / 2 - 0.1), cy: 0, r: 0.045, fill: col, stroke: '#F4F8F6', 'stroke-width': 0.016 }, lg);
+          el('circle', { cx: side ? 0 : r3(-tw / 2 - 0.1), cy: 0, r: 0.045, fill: col, stroke: '#F4F8F6', 'stroke-width': 0.016 }, lg);
         }
       }
     }
     return g;
   }
+  function nameBox(at, side, tw, size, rot, water, dot, shift) {
+    var up = size * 0.78, down = water ? size * 0.3 : size * 0.06, x0, x1, y0, y1, sh = shift || 0;
+    if (side === 'e') { x0 = dot ? -0.07 : 0.06; x1 = 0.1 + tw + 0.03; y0 = size * 0.36 - up; y1 = size * 0.36 + down; }
+    else if (side === 'w') { x0 = -0.1 - tw - 0.03; x1 = dot ? 0.07 : -0.06; y0 = size * 0.36 - up; y1 = size * 0.36 + down; }
+    else if (side === 'n') { x0 = Math.min(-0.07, sh - tw / 2 - 0.03); x1 = Math.max(0.07, sh + tw / 2 + 0.03); y0 = -0.14 - up; y1 = 0.07; }
+    else if (side === 's') { x0 = Math.min(-0.07, sh - tw / 2 - 0.03); x1 = Math.max(0.07, sh + tw / 2 + 0.03); y0 = -0.07; y1 = 0.14 + size * 0.72 + down; }
+    else { x0 = -tw / 2 - (dot ? 0.2 : 0.03); x1 = tw / 2 + 0.03; y0 = size * 0.36 - up; y1 = size * 0.36 + down; }
+    var a = (rot || 0) * Math.PI / 180, c = Math.cos(a), s2 = Math.sin(a), xs = [], ys = [];
+    [[x0, y0], [x1, y0], [x1, y1], [x0, y1]].forEach(function (p) { xs.push(at.x + p[0] * c - p[1] * s2); ys.push(at.y + p[0] * s2 + p[1] * c); });
+    var bx = Math.min.apply(null, xs), by = Math.min.apply(null, ys);
+    return { x: bx, y: by, w: Math.max.apply(null, xs) - bx, h: Math.max.apply(null, ys) - by };
+  }
 
-  function flat(parent, el) {
+  function flat(parent, el, opts) {
     var S = shapes(), Lo = (ECE.BoardData && ECE.BoardData.LAYOUT) || { widthUnits: 10, heightUnits: 14 };
-    var g = el('g', { 'class': 'ece-map-flat' }, parent);
-    el('rect', { x: 0, y: 0, width: Lo.widthUnits, height: Lo.heightUnits, rx: 0.24, fill: '#2E4D37' }, g);
+    var g0 = el('g', { 'class': 'ece-map-flat' }, parent);
+    var bw = opts && opts.W > 0 ? opts.W : Lo.widthUnits, bh = opts && opts.H > 0 ? opts.H : Lo.heightUnits;
+    el('rect', { x: 0, y: 0, width: bw, height: bh, rx: 0.24, fill: '#2E4D37' }, g0);
+    var mp = opts && opts.map && opts.map.z > 0 && (opts.map.z !== 1 || opts.map.x || opts.map.y) ? opts.map : null;
+    var g = mp ? el('g', { transform: 'translate(' + r3(mp.x) + ' ' + r3(mp.y) + ') scale(' + r3(mp.z) + ')' }, g0) : g0;
     var water = svgPath(S.sound, true);
     for (var i = 0; i < S.islands.length; i++) water += svgPath(S.islands[i], true);
     el('path', { d: water, fill: '#0D405A', 'fill-rule': 'evenodd' }, g);
@@ -7236,7 +8053,7 @@
     var li = '';
     for (var m = 0; m < S.lakeIslands.length; m++) li += svgPath(S.lakeIslands[m], true);
     if (li) el('path', { d: li, fill: '#2E4D37' }, g);
-    return g;
+    return g0;
   }
 
   function northArrow(parent, x, y, s, opts) {
@@ -7277,6 +8094,2094 @@
 (function (ECE) {
   'use strict';
 
+  var NS = 'http://www.w3.org/2000/svg';
+  var FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif';
+  var DISPLAY = '-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif';
+  var HAND = '"Marker Felt", "Chalkboard SE", "Bradley Hand", "Segoe Print", "Comic Sans MS", "Comic Neue", cursive';
+
+  function base() {
+    var A = ECE.Art, n = 0;
+    while (A && A.theme && n++ < 4) {
+      var p = Object.getPrototypeOf(A);
+      if (!p || p === Object.prototype) break;
+      A = p;
+    }
+    return A || null;
+  }
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    if (attrs) {
+      for (var k in attrs) {
+        if (!Object.prototype.hasOwnProperty.call(attrs, k)) continue;
+        var v = attrs[k];
+        if (v === null || v === undefined || k === 'style') continue;
+        e.setAttribute(k, String(v));
+      }
+    }
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function r3(n) { return Math.round(n * 1000) / 1000; }
+  function txt(parent, x, y, s, size, attrs) {
+    var a = { x: r3(x), y: r3(y), 'font-size': r3(size), 'text-anchor': 'middle' };
+    if (attrs) for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) a[k] = attrs[k];
+    var t = el('text', a, parent);
+    t.textContent = s;
+    return t;
+  }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function lum(hex) {
+    var m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ''));
+    var v = m ? parseInt(m[1], 16) : 0;
+    var ch = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map(function (x) { x /= 255; return x <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+  }
+  function contrast(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  function mix(a, b, t) {
+    var x = parseInt(String(a).replace('#', ''), 16) || 0, y = parseInt(String(b).replace('#', ''), 16) || 0, o = '#';
+    for (var sh = 16; sh >= 0; sh -= 8) {
+      var p = (x >> sh) & 255, q = (y >> sh) & 255, n = Math.round(p + (q - p) * t);
+      o += (n < 16 ? '0' : '') + n.toString(16);
+    }
+    return o.toUpperCase();
+  }
+  function hexOk(c) { return /^#[0-9a-f]{6}$/i.test(String(c || '')); }
+  function tdata() {
+    try { if (ECE.Theme && typeof ECE.Theme.data === 'function') return ECE.Theme.data('day1') || {}; } catch (e) { }
+    return (ECE.ThemeData && ECE.ThemeData.day1) || {};
+  }
+  function tword(key, dflt) {
+    try { if (ECE.Theme && typeof ECE.Theme.word === 'function') { var w = ECE.Theme.word(key, 'day1'); if (w) return w; } } catch (e) { }
+    var d = tdata();
+    return (d.words && d.words[key]) || dflt;
+  }
+
+  var P = {
+    ink: '#13212F', ink2: '#2A3B4D', inkSoft: '#4E6074',
+    steel: '#8E9CAD', steelLo: '#5B697A', steelHi: '#DCE3EA', steelPale: '#EEF2F6',
+    blue: '#2563B4', blueHi: '#4C8FDC', blueDeep: '#173F6F', bluePale: '#DCE8F6',
+    glass: '#CFE2F1', glassHi: '#EEF6FC', glassMid: '#9DC2E0', glassDeep: '#5686B6',
+    money: '#0E6B45', white: '#FFFFFF'
+  };
+  var COLORS = {
+    mist: '#EEF2F6', paper: '#F7F9FB', evergreen: '#1E4E7A', emerald: '#2F7FD0', sound: '#2E6FA8', slate: '#16212C',
+    cedar: '#5C6B7A', tower: '#5E8FC4', towerDark: '#2C4F78', towerWin: '#DCEBF8',
+    boardBase: '#DCE5EC', boardEdge: '#9AA8B8', tile: '#F4F7FA', asphalt: '#34414F', asphaltEdge: '#232E3A',
+    dash: '#F4F7FA', curb: '#EEF2F6', mortgage: '#CBD2DA', hatch: '#748293', text: '#0F1B26', textSoft: '#2A3A4B',
+    plus: '#0E6B45', minus: '#C2362F', popPlus: '#6EE0B0', popMinus: '#FF8F80',
+    rainTint: '#DDE9F4', buzzTint: '#DCEDE9', transitTint: '#E3EBF2', utilityTint: '#E5EDF1', taxTint: '#EDE9E6',
+    glass: '#F4F7FA',
+    gold: '#B5C2D1', goldDark: '#66768A', rain: '#2A64A0', buzz: '#24786A',
+    ink: '#0E1824', goldHi: '#F3F6FA', goldMid: '#A7B5C6', goldLo: '#6A7A8E', ivory: '#FFFFFF', ivoryDim: '#C9D3DE',
+    hair: '#93A3B6', rail: '#22303D',
+    boardKey: '#1C2733', seaTop: '#C9DCEB', seaLow: '#A9C7DF', glassEdge: '#FFFFFF', plateRim: '#D3DCE6',
+    mortBand: '#9AA6B2', mortLine: '#7D8995', mortText: '#334150', sealFill: '#B8C2CC', sealRim: '#7F8EA0',
+    sealInner: '#EEF2F6', sealInk: '#15202B', roadShade: '#0B1520', haloGlow: '#BFDDF8', haloRing: '#FFFFFF',
+    ringKey: '#0E1B28', youRing: '#FFFFFF', focusLine: '#2F7FD0', pulse: '#2F7FD0', popEdge: '#0B1824',
+    hlLine: '#2F7FD0', hlVeil: '#EEF3F8',
+    ownKey: '#0E1B28',
+    legendTile: '#EEF3F8', legendTileMort: '#CBD2DA'
+  };
+
+  function stops(g, list) {
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i];
+      el('stop', { offset: s[0], 'stop-color': s[1], 'stop-opacity': s[2] === undefined ? 1 : s[2] }, g);
+    }
+    return g;
+  }
+  function lin(defs, id, v, list) { return stops(el('linearGradient', { id: id, x1: v[0], y1: v[1], x2: v[2], y2: v[3] }, defs), list); }
+  function rad(defs, id, v, list) { return stops(el('radialGradient', { id: id, cx: v[0], cy: v[1], r: v[2], fx: v[3] === undefined ? v[0] : v[3], fy: v[4] === undefined ? v[1] : v[4] }, defs), list); }
+  var sharedDone = false;
+  function shared() {
+    if (sharedDone) return true;
+    try {
+      if (typeof document === 'undefined' || !document.body || typeof document.body.appendChild !== 'function') return false;
+      sharedDone = true;
+      var svg = el('svg', { width: 0, height: 0, 'aria-hidden': 'true', focusable: 'false', 'class': 'd1-defs' });
+      if (svg.style) { svg.style.position = 'absolute'; svg.style.width = '0'; svg.style.height = '0'; svg.style.overflow = 'hidden'; svg.style.pointerEvents = 'none'; }
+      var d = el('defs', {}, svg);
+      lin(d, 'd1-steel', [0, 0, 1, 1], [[0, '#FBFCFE'], [0.3, '#C9D2DD'], [0.55, '#8995A5'], [0.78, '#E2E8EF'], [1, '#7D8A9B']]);
+      lin(d, 'd1-steel-v', [0, 0, 0, 1], [[0, '#F4F7FA'], [0.5, '#B9C3CF'], [1, '#77869A']]);
+      lin(d, 'd1-alu', [0, 0, 0, 1], [[0, '#F9FBFC'], [0.45, '#E3E8EE'], [0.55, '#D6DDE5'], [1, '#C3CCD7']]);
+      lin(d, 'd1-sheen', [0, 0, 0, 1], [[0, '#FFFFFF', 0.24], [0.45, '#FFFFFF', 0.05], [0.55, '#000000', 0], [1, '#000000', 0.2]]);
+      lin(d, 'd1-die', [0, 0, 0.6, 1], [[0, '#FFFFFF'], [0.55, '#F2F5F8'], [1, '#D3DBE4']]);
+      lin(d, 'd1-glass', [0, 0, 0, 1], [[0, '#E4F0FA'], [0.5, '#BBD5EC'], [1, '#93B7D8']]);
+      lin(d, 'd1-glass-d', [0, 0, 0, 1], [[0, '#7FA5CA'], [1, '#4C77A3']]);
+      lin(d, 'd1-wood', [0, 0, 0, 1], [[0, '#C79466'], [1, '#93643E']]);
+      rad(d, 'd1-shadow', [0.5, 0.5, 0.5], [[0, '#0B1622', 0.42], [0.55, '#0B1622', 0.18], [1, '#0B1622', 0]]);
+      rad(d, 'd1-dome', [0.38, 0.3, 0.82], [[0, '#FFFFFF', 0.5], [0.42, '#FFFFFF', 0.08], [0.72, '#000000', 0.03], [1, '#000000', 0.28]]);
+      rad(d, 'd1-bolt', [0.4, 0.38, 0.6], [[0, '#FFFFFF'], [0.6, '#B9C2CD'], [1, '#69737F']]);
+      rad(d, 'd1-pip', [0.5, 0.5, 0.5, 0.62, 0.66], [[0, '#55657A'], [0.45, '#243244'], [0.8, '#121C28'], [1, '#0A111A']]);
+      rad(d, 'd1-silver', [0.38, 0.32, 0.8], [[0, '#FFFFFF'], [0.45, '#D9E0E8'], [1, '#8F9CAC']]);
+      document.body.appendChild(svg);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  var tagMemo = {};
+  function tagColors(color) {
+    var key = String(color || '');
+    if (tagMemo[key]) return tagMemo[key];
+    var c = hexOk(key) ? key : P.blue, t = 0.1, f = mix(c, '#0B1622', t);
+    while (contrast('#FFFFFF', f) < 4.6 && t < 0.95) { t += 0.04; f = mix(c, '#0B1622', t); }
+    tagMemo[key] = { fill: f, text: '#FFFFFF' };
+    return tagMemo[key];
+  }
+  function mapTone(color) { return mix(hexOk(color) ? color : P.blue, '#6F93B6', 0.28); }
+  function bandColors(color) {
+    var f = mix(hexOk(color) ? color : P.blue, '#1B2B3B', 0.12);
+    return { fill: f, text: contrast('#FFFFFF', f) >= contrast(P.ink, f) ? '#FFFFFF' : P.ink };
+  }
+  var enamelMemo = {};
+  var AS_STEEL = { '#2A3431': '#5A6D83' };
+  function enamel(color) {
+    var key = String(color || '');
+    if (enamelMemo[key]) return enamelMemo[key];
+    if (AS_STEEL[key.toUpperCase()]) { enamelMemo[key] = AS_STEEL[key.toUpperCase()]; return enamelMemo[key]; }
+    var v = parseInt(key.replace('#', ''), 16);
+    if (!(v >= 0)) v = 0x2E6FA8;
+    var r = ((v >> 16) & 255) / 255, g = ((v >> 8) & 255) / 255, b = (v & 255) / 255;
+    var mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, h = 0, sat = 0, dd = mx - mn;
+    if (dd > 1e-6) {
+      sat = l > 0.5 ? dd / (2 - mx - mn) : dd / (mx + mn);
+      h = mx === r ? (g - b) / dd + (g < b ? 6 : 0) : mx === g ? (b - r) / dd + 2 : (r - g) / dd + 4;
+      h /= 6;
+    }
+    sat *= 0.92; l *= 0.84;
+    var q = l < 0.5 ? l * (1 + sat) : l + sat - l * sat, p = 2 * l - q;
+    var hue = function (tt) { if (tt < 0) tt += 1; if (tt > 1) tt -= 1; return tt < 1 / 6 ? p + (q - p) * 6 * tt : tt < 0.5 ? q : tt < 2 / 3 ? p + (q - p) * (2 / 3 - tt) * 6 : p; };
+    var o = '#';
+    [hue(h + 1 / 3), hue(h), hue(h - 1 / 3)].forEach(function (c) { var n = Math.round((sat ? c : l) * 255); o += (n < 16 ? '0' : '') + n.toString(16); });
+    enamelMemo[key] = o.toUpperCase();
+    return enamelMemo[key];
+  }
+
+  function box(parent, cx, cy, s, cls) {
+    var k = s / 24;
+    return el('g', { transform: 'translate(' + r3(cx - 12 * k) + ' ' + r3(cy - 12 * k) + ') scale(' + r3(k) + ')', 'class': cls || null }, parent);
+  }
+
+  function glyphInto(parent, id, fg, cut, edge) {
+    var B = base();
+    if (B && typeof B.glyph === 'function') return B.glyph(parent, id, fg, cut, edge);
+    return el('circle', { cx: 0, cy: 0, r: 0.5, fill: fg }, parent);
+  }
+  function disc(parent, id, color, r, opts) {
+    opts = opts || {};
+    shared();
+    var g = el('g', { 'class': 'ece-disc' }, parent);
+    var col = enamel(color || COLORS.sound);
+    if (opts.shadow) g.luxShadow = el('ellipse', { cx: r3(r * 0.08), cy: r3(r * 0.34), rx: r3(r * 1.12), ry: r3(r * 0.96), fill: 'url(#d1-shadow)', 'class': 'ece-disc-shadow' }, g);
+    el('circle', { cx: 0, cy: 0, r: r3(r), fill: 'url(#d1-steel)', stroke: '#3C4958', 'stroke-width': r3(r * 0.035), 'class': 'ece-disc-rim' }, g);
+    var fr = r * (1 - Math.max(0.1, (opts.rim || 0.14)) * 1.15);
+    el('circle', { cx: 0, cy: 0, r: r3(fr), fill: col, stroke: '#FFFFFF', 'stroke-width': r3(r * 0.04), 'stroke-opacity': 0.9, 'class': 'ece-disc-face' }, g);
+    var gl = el('g', { transform: 'scale(' + r3(r * (opts.glyph || 0.64)) + ')' }, g);
+    glyphInto(gl, id, '#FFFFFF', col, mix(col, '#000000', 0.5));
+    el('circle', { cx: 0, cy: 0, r: r3(fr), fill: 'url(#d1-dome)' }, g);
+    el('path', { d: 'M' + r3(-r * 0.7) + ' ' + r3(-r * 0.62) + 'A' + r3(r * 0.94) + ' ' + r3(r * 0.94) + ' 0 0 1 ' + r3(r * 0.62) + ' ' + r3(-r * 0.7),
+      fill: 'none', stroke: '#FFFFFF', 'stroke-width': r3(r * 0.045), 'stroke-opacity': 0.85, 'stroke-linecap': 'round' }, g);
+    return g;
+  }
+  function pin(parent, id, color, opts) {
+    opts = opts || {};
+    shared();
+    var g = el('g', { 'class': 'ece-pin' }, parent);
+    el('ellipse', { cx: 0.05, cy: 1.4, rx: 0.6, ry: 0.17, fill: '#0B1622', opacity: 0.36, 'class': 'ece-disc-shadow' }, opts.ground || g);
+    el('ellipse', { cx: 0.1, cy: 0.3, rx: 1.04, ry: 0.96, fill: '#0B1622', opacity: 0.2 }, g);
+    el('path', { d: 'M-0.4 0.7L0 1.4L0.4 0.7Z', fill: 'url(#d1-steel-v)', stroke: '#1E2935', 'stroke-width': 0.05, 'stroke-opacity': 0.7, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M0 0.74V1.34L0.36 0.74Z', fill: '#4A5868', opacity: 0.5 }, g);
+    el('circle', { cx: 0, cy: 0, r: 1.05, fill: '#0D1620', opacity: 0.5 }, g);
+    disc(g, id, color, 1, { rim: 0.13, glyph: 0.66 });
+    return g;
+  }
+  function tokenIcon(id, opts) {
+    opts = opts || {};
+    var px = opts.size || 24;
+    var svg = el('svg', { viewBox: '-1.1 -1.1 2.2 2.2', width: px, height: px, focusable: 'false', 'aria-hidden': 'true', 'class': 'ece-token-icon' });
+    disc(svg, id, opts.color || COLORS.sound, 1, { rim: 0.11, glyph: 0.66 });
+    return svg;
+  }
+
+  function house(parent, cx, bottom, s, cls, opts) {
+    opts = opts || {};
+    var w = s, h = s * 0.92, x = cx - w / 2, y = bottom - h, eave = y + h * 0.44;
+    var g = el('g', { 'class': cls || 'ece-house' }, parent);
+    el('path', { d: 'M' + r3(x + w * 0.12) + ' ' + r3(bottom + s * 0.06) + 'H' + r3(x + w * 1.14) + 'L' + r3(x + w * 1.03) + ' ' + r3(bottom - s * 0.02) + 'H' + r3(x + w * 0.12) + 'Z', fill: '#0B1622', opacity: 0.22 }, g);
+    el('path', { d: 'M' + r3(x) + ' ' + r3(eave) + 'V' + r3(bottom) + 'H' + r3(x + w) + 'V' + r3(eave) + 'Z', fill: '#FCFDFE', stroke: '#2A3949', 'stroke-width': r3(s * 0.035), 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M' + r3(x + w * 0.62) + ' ' + r3(eave) + 'V' + r3(bottom) + 'H' + r3(x + w) + 'V' + r3(eave) + 'Z', fill: '#C7D2DE' }, g);
+    el('path', { d: 'M' + r3(x - w * 0.09) + ' ' + r3(eave + s * 0.02) + 'L' + r3(cx) + ' ' + r3(y) + 'L' + r3(x + w * 1.09) + ' ' + r3(eave + s * 0.02) + 'Z', fill: '#3B5672', stroke: '#1D2C3C', 'stroke-width': r3(s * 0.03), 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M' + r3(cx) + ' ' + r3(y) + 'L' + r3(x + w * 1.09) + ' ' + r3(eave + s * 0.02) + 'H' + r3(cx + w * 0.12) + 'Z', fill: '#263B52' }, g);
+    el('path', { d: 'M' + r3(x - w * 0.02) + ' ' + r3(eave - s * 0.01) + 'L' + r3(cx) + ' ' + r3(y + s * 0.01), fill: 'none', stroke: '#DCE8F4', 'stroke-width': r3(s * 0.045), 'stroke-linecap': 'round', opacity: 0.9 }, g);
+    el('rect', { x: r3(cx - w * 0.31), y: r3(bottom - h * 0.32), width: r3(w * 0.18), height: r3(h * 0.32), fill: '#3E5A78' }, g);
+    el('rect', { x: r3(cx + w * 0.1), y: r3(eave + h * 0.12), width: r3(w * 0.2), height: r3(h * 0.16), fill: '#9CC6EA' }, g);
+    if (opts.edge) el('path', { d: 'M' + r3(x) + ' ' + r3(eave) + 'V' + r3(bottom), stroke: '#FFFFFF', 'stroke-width': r3(s * 0.05), opacity: 0.85 }, g);
+    return g;
+  }
+  function tower(parent, cx, bottom, w, h, cls) {
+    shared();
+    var g = el('g', { 'class': cls || 'ece-tower' }, parent);
+    var x = cx - w / 2, top = bottom - h, mid = x + w * 0.56, sw = r3(Math.min(w, h) * 0.04);
+    el('path', { d: 'M' + r3(x + w * 0.3) + ' ' + r3(bottom + w * 0.08) + 'H' + r3(x + w * 1.35) + 'L' + r3(x + w * 1.05) + ' ' + r3(bottom - w * 0.05) + 'H' + r3(x + w * 0.3) + 'Z', fill: '#0B1622', opacity: 0.24 }, g);
+    el('path', { d: 'M' + r3(x) + ' ' + r3(bottom) + 'V' + r3(top + h * 0.1) + 'L' + r3(mid) + ' ' + r3(top + h * 0.06) + 'V' + r3(bottom) + 'Z', fill: 'url(#d1-glass)', stroke: '#1A2836', 'stroke-width': sw, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M' + r3(mid) + ' ' + r3(bottom) + 'V' + r3(top + h * 0.06) + 'L' + r3(x + w) + ' ' + r3(top + h * 0.1) + 'V' + r3(bottom) + 'Z', fill: 'url(#d1-glass-d)', stroke: '#1A2836', 'stroke-width': sw, 'stroke-linejoin': 'round' }, g);
+    var rows = Math.max(3, Math.round(h / (w * 0.22))), d = '';
+    for (var i = 1; i < rows; i++) {
+      var yy = top + h * 0.12 + i * (h * 0.86 / rows);
+      d += 'M' + r3(x) + ' ' + r3(yy) + 'H' + r3(x + w);
+    }
+    d += 'M' + r3(x + w * 0.28) + ' ' + r3(top + h * 0.12) + 'V' + r3(bottom) + 'M' + r3(x + w * 0.78) + ' ' + r3(top + h * 0.1) + 'V' + r3(bottom);
+    el('path', { d: d, stroke: '#FFFFFF', 'stroke-width': r3(Math.max(0.005, Math.min(w, h) * 0.03)), opacity: 0.6, fill: 'none' }, g);
+    el('path', { d: 'M' + r3(x - w * 0.04) + ' ' + r3(top + h * 0.1) + 'L' + r3(mid) + ' ' + r3(top) + 'L' + r3(x + w * 1.04) + ' ' + r3(top + h * 0.1) + 'Z', fill: '#2A3D51' }, g);
+    el('path', { d: 'M' + r3(x - w * 0.02) + ' ' + r3(top + h * 0.1) + 'H' + r3(x + w * 1.02), stroke: '#E3EEF8', 'stroke-width': r3(Math.max(0.006, Math.min(w, h) * 0.05)), opacity: 0.95 }, g);
+    el('path', { d: 'M' + r3(x + w * 0.1) + ' ' + r3(top + h * 0.16) + 'V' + r3(bottom - h * 0.04), stroke: '#FFFFFF', 'stroke-width': r3(w * 0.06), opacity: 0.55 }, g);
+    return g;
+  }
+
+  var ICON_ACC = { train: '#2563B4', ferry: '#2563B4', bus: '#2563B4', dam: '#2563B4', drop: '#7A5230', tax: '#2563B4',
+    toll: '#2563B4', rain: '#2A64A0', buzz: '#24786A' };
+  function inkIcon(g, name, mono) {
+    var ink = mono || '#1B2C3C', acc = mono || ICON_ACC[name] || ink;
+    var L = function (d, w, c, op) {
+      var a = { d: d, fill: 'none', stroke: c || ink, 'stroke-width': w || 1.35, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+      if (op) a.opacity = op;
+      return el('path', a, g);
+    };
+    var O = function (x, y, r, c, w) { return el('circle', { cx: x, cy: y, r: r, fill: 'none', stroke: c || ink, 'stroke-width': w || 1.1 }, g); };
+    var dot = function (x, y, r, c) { return el('circle', { cx: x, cy: y, r: r, fill: c || acc }, g); };
+    switch (name) {
+      case 'train':
+        L('M9 4.2L12 1.8L15 4.2M8.4 4.2H15.6', 1.05);
+        L('M7.2 5.6H16.8A2.2 2.2 0 0 1 19 7.8V16.4A1.8 1.8 0 0 1 17.2 18.2H6.8A1.8 1.8 0 0 1 5 16.4V7.8A2.2 2.2 0 0 1 7.2 5.6Z');
+        L('M6.9 8.2H17.1V12.2H6.9Z', 1.05);
+        L('M5.2 13.9H18.8', 1, acc);
+        dot(8.4, 15.9, 0.9); dot(15.6, 15.9, 0.9);
+        L('M8.4 18.2L6.8 20.8M15.6 18.2L17.2 20.8M3.8 21.1H20.2', 1.15);
+        break;
+      case 'ferry':
+        L('M3.4 6.6H18.6C19.9 6.6 21 7.6 21.2 8.9L21.6 15.6V16.6H2.4V8.6C2.4 7.5 2.9 6.6 3.4 6.6Z');
+        L('M4.4 9H14.6V12H4.4Z', 1.05);
+        L('M16.4 9H19.6L20 12H16.4Z', 1.05);
+        L('M2.6 13.8H21.4', 1, acc);
+        O(6.8, 17.4, 1.7, ink, 1.2); O(17.2, 17.4, 1.7, ink, 1.2);
+        L('M2.2 20.6H21.8', 1.05, ink, 0.6);
+        break;
+      case 'bus':
+        L('M7 3H17A2.4 2.4 0 0 1 19.4 5.4V17.4H4.6V5.4A2.4 2.4 0 0 1 7 3Z');
+        L('M7.2 4.8H16.8', 1.3, acc);
+        L('M6.7 6.8H17.3V11.6H6.7Z', 1.05);
+        dot(8.1, 14.6, 0.95); dot(15.9, 14.6, 0.95);
+        L('M10.4 14.6H13.6', 1.05, acc);
+        L('M7 17.4V20.2M17 17.4V20.2', 1.6);
+        L('M4.6 7.6H3.2V10M19.4 7.6H20.8V10', 1.05);
+        break;
+      case 'dam':
+        L('M8.2 3.4V7.2M12.2 3.4V7.2', 1.4);
+        L('M6 7.2H14.4V10.8C14.4 13.1 12.5 15 10.2 15C7.9 15 6 13.1 6 10.8Z');
+        L('M10.2 15V17.6C10.2 19.6 11.8 21 13.8 21H16', 1.2);
+        L('M18.6 4.2L15.8 9.4H19L16.2 14.6', 1.3, acc);
+        break;
+      case 'drop':
+        L('M5.4 6.2C5.4 4.6 7.6 3.4 10.4 3.4C13.2 3.4 15.4 4.6 15.4 6.2V17.2H5.4Z');
+        L('M5.4 8.6H15.4', 1, ink, 0.55);
+        L('M15.4 11.2H18V13', 1.25);
+        L('M17.5 10V11.2', 1.25);
+        L('M15.6 15.4H20.2L19.6 20.6H16.2Z', 1.1);
+        L('M16.1 17.6H19.7', 1.4, acc);
+        L('M6.6 17.2V20M14.2 17.2V20M4.4 20.6H15.8', 1.15);
+        break;
+      case 'tax':
+        L('M5.2 3.4H18.8A1.8 1.8 0 0 1 20.6 5.2V18.8A1.8 1.8 0 0 1 18.8 20.6H5.2A1.8 1.8 0 0 1 3.4 18.8V5.2A1.8 1.8 0 0 1 5.2 3.4Z');
+        L('M9.4 17.2V6.8H13.4C15.3 6.8 16.6 8.1 16.6 9.9C16.6 11.7 15.3 13 13.4 13H9.4', 2, acc);
+        break;
+      case 'toll':
+        L('M4.4 13.4V4.6M19.6 13.4V4.6', 1.25);
+        L('M3.4 4.4H20.6', 1.3);
+        L('M7.6 4.4V7.4H16.4V4.4', 1.05);
+        dot(12, 6, 0.8);
+        L('M2 14.6H22M2 20.8H22', 1.15);
+        L('M8.6 19V16.8C8.6 16.2 9.1 15.8 9.6 15.8H14.4C14.9 15.8 15.4 16.2 15.4 16.8V19Z', 1.05, acc);
+        break;
+      case 'rain':
+        L('M5 5.4H19A1.6 1.6 0 0 1 20.6 7V18.8A1.6 1.6 0 0 1 19 20.4H5A1.6 1.6 0 0 1 3.4 18.8V7A1.6 1.6 0 0 1 5 5.4Z');
+        L('M3.4 9.4H20.6', 1.1);
+        L('M8 3.2V7M16 3.2V7', 1.5);
+        L('M8.2 14.6L10.8 17L15.9 12', 1.6, acc);
+        break;
+      case 'buzz':
+        L('M7.4 2.8H16.6C17.4 2.8 18 3.4 18 4.2V8.2C18 9 17.4 9.6 16.6 9.6H7.4C6.6 9.6 6 9 6 8.2V4.2C6 3.4 6.6 2.8 7.4 2.8Z');
+        L('M7.6 6.4C9 5.6 10.4 7.2 12 6.4S15 5.6 16.4 6.4', 1, acc);
+        L('M10.6 9.6V11H13.4V9.6', 1.1);
+        L('M6.4 11H17.6V20.8H6.4Z');
+        L('M9.6 13.6H11.6V15.2', 1.15);
+        L('M13.6 15.8H16L15.6 18.8H14Z', 1.05, acc);
+        L('M6.4 20.8H17.6', 1.4);
+        break;
+      default:
+        O(12, 12, 8);
+    }
+  }
+  function icon(parent, name, cx, cy, s, opts) {
+    var g = box(parent, cx, cy, s, 'ece-icon ece-icon-' + name);
+    inkIcon(g, name, opts && opts.fg ? opts.fg : null);
+    return g;
+  }
+
+  function carTop(g, x, y, l, col, dir) {
+    var w = l * 0.48, cg = el('g', { transform: 'translate(' + r3(x) + ' ' + r3(y) + ')' + (dir < 0 ? ' scale(-1 1)' : '') }, g);
+    el('rect', { x: r3(-l / 2 + 0.01), y: r3(-w / 2 + 0.012), width: r3(l), height: r3(w), rx: r3(w * 0.4), fill: '#0B1622', opacity: 0.18 }, cg);
+    el('rect', { x: r3(-l / 2), y: r3(-w / 2), width: r3(l), height: r3(w), rx: r3(w * 0.4), fill: col, stroke: '#1E2A36', 'stroke-width': 0.008 }, cg);
+    el('rect', { x: r3(l * 0.06), y: r3(-w * 0.34), width: r3(l * 0.2), height: r3(w * 0.68), rx: r3(w * 0.12), fill: '#2A3C50' }, cg);
+    el('rect', { x: r3(-l * 0.36), y: r3(-w * 0.3), width: r3(l * 0.12), height: r3(w * 0.6), rx: r3(w * 0.1), fill: '#2A3C50', opacity: 0.85 }, cg);
+    el('rect', { x: r3(-l * 0.2), y: r3(-w * 0.32), width: r3(l * 0.24), height: r3(w * 0.64), rx: r3(w * 0.1), fill: '#FFFFFF', opacity: 0.25 }, cg);
+    el('circle', { cx: r3(l * 0.46), cy: r3(-w * 0.3), r: r3(w * 0.1), fill: '#FFF6D6' }, cg);
+    el('circle', { cx: r3(l * 0.46), cy: r3(w * 0.3), r: r3(w * 0.1), fill: '#FFF6D6' }, cg);
+    el('rect', { x: r3(-l * 0.5), y: r3(-w * 0.38), width: r3(l * 0.04), height: r3(w * 0.18), fill: '#E0453A' }, cg);
+    el('rect', { x: r3(-l * 0.5), y: r3(w * 0.2), width: r3(l * 0.04), height: r3(w * 0.18), fill: '#E0453A' }, cg);
+    return cg;
+  }
+  function shuttleTop(g, x, y, l, dir) {
+    var w = l * 0.3, cg = el('g', { transform: 'translate(' + r3(x) + ' ' + r3(y) + ')' + (dir < 0 ? ' scale(-1 1)' : '') }, g);
+    el('rect', { x: r3(-l / 2 + 0.012), y: r3(-w / 2 + 0.014), width: r3(l), height: r3(w), rx: r3(w * 0.22), fill: '#0B1622', opacity: 0.2 }, cg);
+    el('rect', { x: r3(-l / 2), y: r3(-w / 2), width: r3(l), height: r3(w), rx: r3(w * 0.22), fill: '#FBFCFD', stroke: '#2A3949', 'stroke-width': 0.009 }, cg);
+    el('rect', { x: r3(-l / 2 + 0.01), y: r3(-w * 0.08), width: r3(l - 0.02), height: r3(w * 0.16), fill: P.blue }, cg);
+    for (var i = 0; i < 4; i++) el('rect', { x: r3(-l * 0.38 + i * l * 0.2), y: r3(-w * 0.34), width: r3(l * 0.1), height: r3(w * 0.16), rx: 0.006, fill: '#B9CDE0' }, cg);
+    el('rect', { x: r3(l * 0.4), y: r3(-w * 0.38), width: r3(l * 0.07), height: r3(w * 0.76), rx: 0.008, fill: '#2A3C50' }, cg);
+    return cg;
+  }
+  function officeDog(g, x, y, h) {
+    var k = h / 1, dg = el('g', { transform: 'translate(' + r3(x) + ' ' + r3(y) + ') scale(' + r3(k) + ')', 'class': 'd1-dog' }, g);
+    var FUR = '#D9A25A', DEEP = '#B47C38', LINE = '#7A4E20';
+    el('ellipse', { cx: 0.08, cy: 0.0, rx: 0.36, ry: 0.05, fill: '#0B1622', opacity: 0.18 }, dg);
+    el('path', { d: 'M0.28 -0.04C0.42 -0.04 0.5 -0.12 0.52 -0.22', fill: 'none', stroke: DEEP, 'stroke-width': 0.075, 'stroke-linecap': 'round' }, dg);
+    el('path', { d: 'M0.3 -0.02C0.34 -0.22 0.3 -0.42 0.14 -0.52C0.02 -0.6 -0.12 -0.58 -0.18 -0.5L-0.24 -0.04Z', fill: FUR, stroke: LINE, 'stroke-width': 0.018, 'stroke-linejoin': 'round' }, dg);
+    el('path', { d: 'M0.22 -0.06C0.26 -0.2 0.22 -0.32 0.1 -0.36', fill: 'none', stroke: DEEP, 'stroke-width': 0.03, 'stroke-linecap': 'round', opacity: 0.8 }, dg);
+    el('path', { d: 'M-0.26 -0.02L-0.24 -0.5L-0.14 -0.5L-0.14 -0.02Z', fill: FUR, stroke: LINE, 'stroke-width': 0.016, 'stroke-linejoin': 'round' }, dg);
+    el('path', { d: 'M-0.12 -0.02L-0.1 -0.46L-0.02 -0.44L-0.02 -0.02Z', fill: DEEP, stroke: LINE, 'stroke-width': 0.014, 'stroke-linejoin': 'round' }, dg);
+    el('path', { d: 'M-0.3 -0.02H-0.12M-0.16 -0.02H0', stroke: LINE, 'stroke-width': 0.024, 'stroke-linecap': 'round' }, dg);
+    el('path', { d: 'M-0.18 -0.56C-0.24 -0.72 -0.2 -0.88 -0.06 -0.92C0.06 -0.95 0.14 -0.86 0.14 -0.74C0.14 -0.64 0.06 -0.56 -0.04 -0.52Z', fill: FUR, stroke: LINE, 'stroke-width': 0.018, 'stroke-linejoin': 'round' }, dg);
+    el('path', { d: 'M-0.2 -0.8C-0.3 -0.8 -0.4 -0.78 -0.43 -0.72C-0.45 -0.66 -0.4 -0.62 -0.32 -0.62C-0.26 -0.62 -0.2 -0.64 -0.16 -0.66Z', fill: FUR, stroke: LINE, 'stroke-width': 0.018, 'stroke-linejoin': 'round' }, dg);
+    el('circle', { cx: -0.43, cy: -0.72, r: 0.03, fill: '#1E1712' }, dg);
+    el('path', { d: 'M0.0 -0.86C0.1 -0.84 0.13 -0.72 0.1 -0.6C0.06 -0.56 0.0 -0.6 -0.02 -0.68C-0.04 -0.76 -0.04 -0.84 0.0 -0.86Z', fill: DEEP, stroke: LINE, 'stroke-width': 0.014 }, dg);
+    el('circle', { cx: -0.16, cy: -0.78, r: 0.022, fill: '#1E1712' }, dg);
+    el('path', { d: 'M-0.2 -0.56C-0.12 -0.5 -0.02 -0.5 0.06 -0.56', fill: 'none', stroke: P.blue, 'stroke-width': 0.045, 'stroke-linecap': 'round' }, dg);
+    el('circle', { cx: -0.08, cy: -0.49, r: 0.03, fill: 'url(#d1-silver)', stroke: '#5B697A', 'stroke-width': 0.008 }, dg);
+    return dg;
+  }
+  function bananaStand(g, cx, y, w, opts) {
+    shared();
+    var k = w / 1, sg = el('g', { transform: 'translate(' + r3(cx) + ' ' + r3(y) + ') scale(' + r3(k) + ')', 'class': 'd1-banana' }, g);
+    el('ellipse', { cx: 0.02, cy: 0.0, rx: 0.56, ry: 0.06, fill: '#0B1622', opacity: 0.16 }, sg);
+    el('path', { d: 'M-0.42 -0.26V-0.88M0.42 -0.26V-0.88', stroke: '#56657A', 'stroke-width': 0.035, 'stroke-linecap': 'round' }, sg);
+    var aw = 'M-0.52 -0.82L-0.42 -1.02H0.42L0.52 -0.82Z';
+    el('path', { d: aw, fill: '#FFFFFF', stroke: '#2A3949', 'stroke-width': 0.018, 'stroke-linejoin': 'round' }, sg);
+    var st = '';
+    for (var i = 0; i < 5; i++) {
+      var a0 = -0.52 + i * 0.208, b0 = -0.42 + i * 0.168;
+      st += 'M' + r3(a0 + 0.104) + ' -0.82L' + r3(b0 + 0.084) + ' -1.02H' + r3(b0 + 0.168) + 'L' + r3(a0 + 0.208) + ' -0.82Z';
+    }
+    el('path', { d: st, fill: P.blue }, sg);
+    var sc = 'M-0.52 -0.82';
+    for (var j = 0; j < 5; j++) sc += 'a0.104 0.07 0 0 0 0.208 0';
+    el('path', { d: sc + 'Z', fill: '#FFFFFF', stroke: '#2A3949', 'stroke-width': 0.016, 'stroke-linejoin': 'round' }, sg);
+    el('path', { d: 'M-0.52 -0.82H0.52', stroke: '#2A3949', 'stroke-width': 0.016 }, sg);
+    el('rect', { x: -0.48, y: -0.36, width: 0.96, height: 0.26, rx: 0.03, fill: 'url(#d1-wood)', stroke: '#5E3E22', 'stroke-width': 0.018 }, sg);
+    el('path', { d: 'M-0.48 -0.27H0.48M-0.48 -0.19H0.48M-0.16 -0.36V-0.1M0.16 -0.36V-0.1', stroke: '#6E4A2A', 'stroke-width': 0.01, opacity: 0.6 }, sg);
+    el('rect', { x: -0.52, y: -0.4, width: 1.04, height: 0.05, rx: 0.015, fill: '#EDE4D4', stroke: '#5E3E22', 'stroke-width': 0.014 }, sg);
+    [[-0.3, -0.06], [0.3, -0.06]].forEach(function (p) {
+      el('circle', { cx: p[0], cy: p[1], r: 0.075, fill: '#2C3A49', stroke: '#141C25', 'stroke-width': 0.012 }, sg);
+      el('circle', { cx: p[0], cy: p[1], r: 0.028, fill: '#C9D2DD' }, sg);
+    });
+    var bunch = function (bx, by, s) {
+      var d = '';
+      for (var q = 0; q < 4; q++) {
+        var ox = bx + (q - 1.5) * 0.045 * s, tip = by - 0.17 * s + Math.abs(q - 1.5) * 0.02 * s;
+        d += 'M' + r3(ox - 0.02 * s) + ' ' + r3(by) + 'C' + r3(ox - 0.07 * s) + ' ' + r3(by - 0.07 * s) + ' ' + r3(ox - 0.05 * s) + ' ' + r3(tip) + ' ' + r3(ox + 0.02 * s) + ' ' + r3(tip - 0.01 * s) +
+          'C' + r3(ox) + ' ' + r3(by - 0.08 * s) + ' ' + r3(ox + 0.01 * s) + ' ' + r3(by - 0.03 * s) + ' ' + r3(ox + 0.03 * s) + ' ' + r3(by) + 'Z';
+      }
+      el('path', { d: d, fill: '#F2C94C', stroke: '#9A7414', 'stroke-width': 0.012, 'stroke-linejoin': 'round' }, sg);
+      el('path', { d: 'M' + r3(bx - 0.08 * s) + ' ' + r3(by) + 'H' + r3(bx + 0.08 * s), stroke: '#6B5518', 'stroke-width': 0.022, 'stroke-linecap': 'round' }, sg);
+    };
+    bunch(-0.27, -0.4, 1.05); bunch(-0.02, -0.4, 1);
+    var kc = el('g', { transform: 'translate(0.3 -0.402) rotate(-3)', 'class': 'd1-banana-card' }, sg);
+    el('path', { d: 'M-0.158 0.004L-0.166 -0.292L0.006 -0.3L0.162 -0.288L0.158 0.002Z', fill: '#C8A06A', stroke: '#8D6A3E', 'stroke-width': 0.012, 'stroke-linejoin': 'round' }, kc);
+    el('rect', { x: -0.134, y: -0.27, width: 0.268, height: 0.244, fill: '#FBF8EF' }, kc);
+    el('path', { d: 'M-0.17 -0.262L-0.112 -0.296L-0.098 -0.272L-0.156 -0.238ZM0.17 -0.262L0.112 -0.296L0.098 -0.272L0.156 -0.238Z', fill: '#F4ECCE', opacity: 0.92 }, kc);
+    if (opts && opts.words) {
+      var hand = { 'font-family': HAND, 'font-weight': 700, fill: '#1F2633', 'lengthAdjust': 'spacingAndGlyphs' };
+      txt(kc, -0.018, -0.165, 'Take one', 0.088, Object.assign({ textLength: 0.2, transform: 'rotate(-2 -0.018 -0.18)' }, hand));
+      txt(kc, -0.03, -0.062, 'banana', 0.088, Object.assign({ textLength: 0.17, transform: 'rotate(1.5 -0.03 -0.08)' }, hand));
+    } else {
+      el('path', { d: 'M-0.112 -0.19q0.02 -0.03 0.04 0t0.04 0t0.04 0t0.04 -0.004M-0.108 -0.088q0.02 -0.028 0.04 0t0.04 0t0.036 0.002', fill: 'none', stroke: '#1F2633', 'stroke-width': 0.022, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, kc);
+    }
+    var sb = el('g', { 'class': 'd1-banana-small', transform: 'translate(0.1 -0.09) rotate(18)' }, kc);
+    el('path', { d: 'M0.004 -0.05Q0.056 -0.004 -0.004 0.05Q0.016 -0.002 0.004 -0.05Z', fill: '#FFD84A', stroke: '#1F2633', 'stroke-width': 0.007, 'stroke-linejoin': 'round' }, sb);
+    el('path', { d: 'M0.004 -0.05L-0.001 -0.066', stroke: '#6B5518', 'stroke-width': 0.01, 'stroke-linecap': 'round' }, sb);
+    el('circle', { cx: -0.004, cy: 0.05, r: 0.006, fill: '#3B2E12' }, sb);
+    return sg;
+  }
+  function lanyard(g, x0, y0, x, y, cw) {
+    var lg = el('g', { 'class': 'd1-lanyard' }, g);
+    var ch = cw * 1.32;
+    el('path', { d: 'M' + r3(x0) + ' ' + r3(y0) + 'C' + r3(x0 + 0.02) + ' ' + r3((y0 + y) / 2 + 0.04) + ' ' + r3(x - 0.05) + ' ' + r3(y - 0.08) + ' ' + r3(x) + ' ' + r3(y - 0.015) +
+      'M' + r3(x0 + 0.05) + ' ' + r3(y0) + 'C' + r3(x0 + 0.07) + ' ' + r3((y0 + y) / 2 + 0.02) + ' ' + r3(x + 0.04) + ' ' + r3(y - 0.08) + ' ' + r3(x) + ' ' + r3(y - 0.015),
+    fill: 'none', stroke: P.blue, 'stroke-width': 0.02, 'stroke-linecap': 'round' }, lg);
+    el('rect', { x: r3(x - 0.012), y: r3(y - 0.02), width: 0.024, height: 0.035, rx: 0.006, fill: '#9AA6B4' }, lg);
+    var gx = x - cw / 2, gy = y + 0.012;
+    el('rect', { x: r3(gx + 0.008), y: r3(gy + 0.012), width: r3(cw), height: r3(ch), rx: 0.016, fill: '#0B1622', opacity: 0.2 }, lg);
+    el('rect', { x: r3(gx), y: r3(gy), width: r3(cw), height: r3(ch), rx: 0.016, fill: '#FFFFFF', stroke: '#5B697A', 'stroke-width': 0.008 }, lg);
+    el('rect', { x: r3(gx), y: r3(gy), width: r3(cw), height: r3(ch * 0.24), rx: 0.016, fill: P.blue }, lg);
+    el('rect', { x: r3(gx + cw * 0.18), y: r3(gy + ch * 0.36), width: r3(cw * 0.3), height: r3(cw * 0.34), rx: 0.006, fill: '#C9D3DE' }, lg);
+    el('path', { d: 'M' + r3(gx + cw * 0.56) + ' ' + r3(gy + ch * 0.44) + 'H' + r3(gx + cw * 0.84) + 'M' + r3(gx + cw * 0.56) + ' ' + r3(gy + ch * 0.56) + 'H' + r3(gx + cw * 0.78) +
+      'M' + r3(gx + cw * 0.18) + ' ' + r3(gy + ch * 0.8) + 'H' + r3(gx + cw * 0.82), stroke: '#8E9CAD', 'stroke-width': 0.008, 'stroke-linecap': 'round' }, lg);
+    return lg;
+  }
+  function tapedBox(g, cx, y, w, h) {
+    var bg = el('g', { 'class': 'd1-box' }, g);
+    var x = cx - w / 2, top = y - h, lid = Math.min(h * 0.32, w * 0.26);
+    el('path', { d: 'M' + r3(x + w * 0.1) + ' ' + r3(y + 0.012) + 'H' + r3(x + w * 1.1) + 'L' + r3(x + w) + ' ' + r3(y - 0.01) + 'H' + r3(x + w * 0.1) + 'Z', fill: '#0B1622', opacity: 0.2 }, bg);
+    el('rect', { x: r3(x), y: r3(top + lid), width: r3(w), height: r3(h - lid), fill: '#C89E6C', stroke: '#6E4F2C', 'stroke-width': 0.012 }, bg);
+    el('path', { d: 'M' + r3(x) + ' ' + r3(top + lid) + 'L' + r3(x + w * 0.14) + ' ' + r3(top) + 'H' + r3(x + w * 1.08) + 'L' + r3(x + w) + ' ' + r3(top + lid) + 'Z', fill: '#DDB988', stroke: '#6E4F2C', 'stroke-width': 0.012, 'stroke-linejoin': 'round' }, bg);
+    el('path', { d: 'M' + r3(x + w) + ' ' + r3(top + lid) + 'L' + r3(x + w * 1.08) + ' ' + r3(top) + 'V' + r3(y - lid * 0.7) + 'L' + r3(x + w) + ' ' + r3(y) + 'Z', fill: '#A9804F', stroke: '#6E4F2C', 'stroke-width': 0.012, 'stroke-linejoin': 'round' }, bg);
+    el('path', { d: 'M' + r3(x + w * 0.5) + ' ' + r3(top + lid) + 'L' + r3(x + w * 0.61) + ' ' + r3(top) + 'M' + r3(x + w * 0.5) + ' ' + r3(top + lid) + 'V' + r3(top + lid + (h - lid) * 0.45),
+      stroke: '#EADFC4', 'stroke-width': r3(w * 0.12), opacity: 0.9 }, bg);
+    return bg;
+  }
+
+  var cornerSeq = 0;
+  function corner(parent, kind, x, y, s, lines, info) {
+    info = info || {};
+    shared();
+    lines = lines && lines.length ? lines : [''];
+    var g = el('g', { 'class': 'ece-corner ece-corner-' + kind }, parent);
+    var out = { g: g };
+    var cx = x + s / 2;
+    var em0 = typeof info.em === 'function' ? info.em : function (t) { return t.length * 0.58; };
+    var em = function (t) { return em0(t) * 1.05; };
+    var minF = info.minFont || 0.165;
+    var INK = '#1B2C3C', STEEL = '#7D8B9C';
+    var TITLE = { 'font-family': DISPLAY, 'font-weight': 650, fill: '#13212F', 'letter-spacing': -0.004 };
+    var title = function (yy, maxW, centreX) {
+      var one = lines.join(' ');
+      var f1 = Math.min(0.22, maxW / (em(one) || 1));
+      if (f1 >= 0.18 || lines.length < 2) {
+        txt(g, centreX, yy, one, Math.max(minF, f1), TITLE);
+        return 1;
+      }
+      var w2 = Math.max(em(lines[0]), em(lines[1])) || 1;
+      var f2 = Math.max(minF, Math.min(0.22, maxW / w2));
+      txt(g, centreX, yy, lines[0], f2, TITLE);
+      txt(g, centreX, yy + f2 * 1.12, lines[1], f2, TITLE);
+      return 2;
+    };
+    var bg = function (fill) {
+      el('rect', { x: x + 0.035, y: y + 0.035, width: s - 0.07, height: s - 0.07, rx: 0.12, fill: fill, 'class': 'ece-card-bg' }, g);
+      el('rect', { x: x + 0.035, y: y + 0.035, width: s - 0.07, height: s - 0.07, rx: 0.12, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 0.014, opacity: 0.7 }, g);
+      el('rect', { x: x + 0.085, y: y + 0.085, width: s - 0.17, height: s - 0.17, rx: 0.08, fill: 'none', stroke: '#8E9CAD', 'stroke-width': 0.008, opacity: 0.75 }, g);
+      el('path', { d: 'M' + r3(x + 0.16) + ' ' + r3(y + 0.047) + 'H' + r3(x + s - 0.16), fill: 'none', stroke: '#FFFFFF', 'stroke-width': 0.022, opacity: 0.9, 'stroke-linecap': 'round' }, g);
+    };
+    var line = function (d, w, c, op, dash) {
+      var a = { d: d, fill: 'none', stroke: c || INK, 'stroke-width': w || 0.02, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+      if (op !== undefined && op !== null) a.opacity = op;
+      if (dash) a['stroke-dasharray'] = dash;
+      return el('path', a, g);
+    };
+    if (kind === 'start') {
+      bg('#E6ECF2');
+      var px0 = x + 0.14, py0 = y + 0.11, pw = s - 0.28, ph = 0.5;
+      el('rect', { x: r3(px0 + 0.035), y: r3(py0 + 0.05), width: r3(pw), height: r3(ph), rx: 0.06, fill: '#0B1622', opacity: 0.2 }, g);
+      el('rect', { x: r3(px0), y: r3(py0), width: r3(pw), height: r3(ph), rx: 0.06, fill: 'url(#d1-alu)', stroke: '#6F7C8C', 'stroke-width': 0.012 }, g);
+      var brush = '';
+      for (var bi = 0.03; bi < ph - 0.02; bi += 0.034) brush += 'M' + r3(px0 + 0.03) + ' ' + r3(py0 + bi) + 'H' + r3(px0 + pw - 0.03);
+      el('path', { d: brush, stroke: '#FFFFFF', 'stroke-width': 0.006, opacity: 0.45, fill: 'none' }, g);
+      el('rect', { x: r3(px0 + 0.014), y: r3(py0 + 0.014), width: r3(pw - 0.028), height: r3(ph - 0.028), rx: 0.048, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 0.01, opacity: 0.85 }, g);
+      [[0.055, 0.055], [pw - 0.055, 0.055], [0.055, ph - 0.055], [pw - 0.055, ph - 0.055]].forEach(function (p) {
+        el('circle', { cx: r3(px0 + p[0]), cy: r3(py0 + p[1]), r: 0.024, fill: 'url(#d1-bolt)', stroke: '#4F5B69', 'stroke-width': 0.005 }, g);
+      });
+      var word = lines[0] || 'START';
+      var m1 = /^(.*?)(\s*)(\d+)$/.exec(word);
+      var sf = Math.min(0.34, (pw - 0.2) / ((em(word) || 3) + word.length * 0.02));
+      var wy = py0 + ph / 2 + sf * 0.36;
+      var raised = function (dx, dy, fillA, fillB, op, cls) {
+        var t = el('text', { x: r3(cx + dx), y: r3(wy + dy), 'font-size': r3(sf), 'text-anchor': 'middle', 'font-family': DISPLAY, 'font-weight': 800, 'letter-spacing': r3(sf * 0.01), opacity: op, 'class': cls || null }, g);
+        if (m1 && m1[1]) {
+          var a = el('tspan', { fill: fillA }, t); a.textContent = m1[1] + (m1[2] ? ' ' : '');
+          var b = el('tspan', { fill: fillB }, t); b.textContent = m1[3];
+        } else { t.setAttribute('fill', fillA); t.textContent = word; }
+        return t;
+      };
+      raised(0.014, 0.02, '#0B1622', '#0B1622', 0.3);
+      raised(0, 0, '#15263A', P.blue, 1, 'ece-start-word');
+      out.word = { x: cx, y: wy, size: sf, text: word };
+      out.salary = { x: cx - 0.12, y: y + 0.875, size: 0.27, text: '+' + (info.salary || '') };
+      txt(g, out.salary.x, out.salary.y, out.salary.text, out.salary.size, { 'font-weight': 700, fill: P.money, 'class': 'ece-start-salary' });
+      lanyard(g, px0 + pw - 0.09, py0 + ph - 0.06, x + s - 0.225, y + 0.655, 0.21);
+      if (info.dir === 'down') {
+        var ax = x + s - 0.2;
+        el('circle', { cx: r3(ax), cy: r3(y + 1.0), r: 0.04, fill: 'none', stroke: STEEL, 'stroke-width': 0.014, 'class': 'd1-start-way' }, g);
+        line('M' + r3(ax) + ' ' + r3(y + 1.06) + 'V' + r3(y + s - 0.1), 0.018, '#5B697A');
+        line('M' + r3(ax - 0.06) + ' ' + r3(y + s - 0.22) + 'L' + r3(ax) + ' ' + r3(y + s - 0.1) + 'L' + r3(ax + 0.06) + ' ' + r3(y + s - 0.22), 0.018, '#5B697A');
+      } else {
+        el('circle', { cx: r3(x + 0.29), cy: r3(y + 1.31), r: 0.04, fill: 'none', stroke: STEEL, 'stroke-width': 0.014 }, g);
+        line('M' + r3(x + 0.35) + ' ' + r3(y + 1.31) + 'H' + r3(x + s - 0.32), 0.018, '#5B697A');
+        line('M' + r3(x + s - 0.44) + ' ' + r3(y + 1.25) + 'L' + r3(x + s - 0.32) + ' ' + r3(y + 1.31) + 'L' + r3(x + s - 0.44) + ' ' + r3(y + 1.37), 0.018, '#5B697A');
+      }
+    } else if (kind === 'traffic') {
+      bg('#E4EAF0');
+      var road = String(info.road || 'I-5');
+      var rf = Math.max(minF, 0.17);
+      var sw = clamp(em(road) * rf * 0.95 + 0.14, 0.34, s - 0.72), sh = 0.24, sx = x + s - 0.1 - sw;
+      var n = title(y + 0.31, s - 0.2, cx);
+      var sy = n === 2 ? y + 0.6 : y + 0.4;
+      el('rect', { x: r3(sx + 0.012), y: r3(sy + 0.018), width: r3(sw), height: r3(sh), rx: 0.05, fill: '#0B1622', opacity: 0.16 }, g);
+      el('rect', { x: r3(sx), y: r3(sy), width: r3(sw), height: r3(sh), rx: 0.05, fill: '#FFFFFF', stroke: INK, 'stroke-width': 0.016 }, g);
+      el('rect', { x: r3(sx + 0.03), y: r3(sy + 0.03), width: r3(sw - 0.06), height: r3(sh - 0.06), rx: 0.03, fill: 'none', stroke: '#8E9CAD', 'stroke-width': 0.008, opacity: 0.9 }, g);
+      txt(g, sx + sw / 2, sy + sh / 2 + rf * 0.36, road, rf, { 'font-weight': 700, fill: INK });
+      var ly = sy + sh + 0.06, lh = y + s - 0.1 - ly, lx = x + 0.62, lw = x + s - 0.1 - lx;
+      el('rect', { x: r3(lx), y: r3(ly), width: r3(lw), height: r3(lh), rx: 0.06, fill: '#3E4A58', opacity: 0.92 }, g);
+      el('rect', { x: r3(lx), y: r3(ly), width: r3(lw), height: r3(lh), rx: 0.06, fill: 'url(#d1-sheen)', opacity: 0.6 }, g);
+      line('M' + r3(lx + 0.03) + ' ' + r3(ly + 0.035) + 'H' + r3(lx + lw - 0.03) + 'M' + r3(lx + 0.03) + ' ' + r3(ly + lh - 0.035) + 'H' + r3(lx + lw - 0.03), 0.012, '#FFFFFF', 0.85);
+      line('M' + r3(lx + 0.05) + ' ' + r3(ly + lh / 2) + 'H' + r3(lx + lw - 0.05), 0.014, '#FFFFFF', 0.95, '0.07 0.06');
+      var vl = Math.min(0.25, lw * 0.31);
+      carTop(g, lx + lw * 0.24, ly + lh * 0.27, vl, '#FFFFFF', 1);
+      shuttleTop(g, lx + lw * 0.68, ly + lh * 0.27, Math.min(0.4, lw * 0.5), 1);
+      carTop(g, lx + lw * 0.3, ly + lh * 0.73, vl, P.blueHi, -1);
+      carTop(g, lx + lw * 0.72, ly + lh * 0.73, vl, '#C3CCD6', -1);
+      out.stuck = { x: r3(lx + 0.03), y: r3(ly + 0.04), w: r3(lw - 0.06), h: r3(lh - 0.08) };
+    } else if (kind === 'rest') {
+      bg('#E9EEEA');
+      title(y + 0.33, s - 0.2, cx);
+      bananaStand(g, x + 0.62, y + 1.4, 0.62);
+      officeDog(g, x + 1.17, y + 1.4, 0.46);
+    } else if (kind === 'bridge') {
+      bg('#E2EAF1');
+      title(y + 0.33, s - 0.2, cx);
+      var wy2 = y + 1.18, py = wy2 - 0.16;
+      el('rect', { x: r3(x + 0.1), y: r3(wy2), width: r3(s - 0.2), height: r3(y + s - 0.12 - wy2), rx: 0.04, fill: '#A9CCE8', opacity: 0.55 }, g);
+      line('M' + r3(x + 0.1) + ' ' + r3(wy2 + 0.01) + 'H' + r3(x + s - 0.1), 0.014, '#3E7DB8', 0.9);
+      line('M' + r3(x + 0.16) + ' ' + r3(wy2 + 0.1) + 'h0.3M' + r3(x + s - 0.46) + ' ' + r3(wy2 + 0.1) + 'h0.3M' + r3(cx - 0.17) + ' ' + r3(wy2 + 0.16) + 'h0.34', 0.01, '#FFFFFF', 0.9);
+      out.boat = el('g', { 'class': 'ece-boat' }, g);
+      el('path', { d: 'M' + r3(cx - 0.13) + ' ' + r3(wy2 - 0.005) + 'H' + r3(cx + 0.13) + 'L' + r3(cx + 0.09) + ' ' + r3(wy2 + 0.045) + 'H' + r3(cx - 0.1) + 'Z', fill: '#FFFFFF', stroke: INK, 'stroke-width': 0.01, 'stroke-linejoin': 'round' }, out.boat);
+      el('path', { d: 'M' + r3(cx - 0.01) + ' ' + r3(wy2 - 0.01) + 'V' + r3(wy2 - 0.26) + 'L' + r3(cx + 0.11) + ' ' + r3(wy2 - 0.03) + 'Z', fill: '#FFFFFF', stroke: INK, 'stroke-width': 0.009, 'stroke-linejoin': 'round' }, out.boat);
+      el('path', { d: 'M' + r3(cx - 0.03) + ' ' + r3(wy2 - 0.22) + 'L' + r3(cx - 0.11) + ' ' + r3(wy2 - 0.04) + 'H' + r3(cx - 0.03) + 'Z', fill: P.bluePale, stroke: INK, 'stroke-width': 0.008, 'stroke-linejoin': 'round' }, out.boat);
+      line('M' + r3(x + 0.07) + ' ' + r3(py + 0.03) + 'H' + r3(x + 0.4) + 'M' + r3(x + s - 0.4) + ' ' + r3(py + 0.03) + 'H' + r3(x + s - 0.07), 0.024, INK);
+      var pier = function (pxx) {
+        el('rect', { x: r3(pxx), y: r3(py), width: 0.16, height: r3(wy2 - py + 0.02), fill: '#E9EEF3', stroke: INK, 'stroke-width': 0.016 }, g);
+        el('rect', { x: r3(pxx + 0.025), y: r3(py - 0.17), width: 0.11, height: 0.17, fill: '#FFFFFF', stroke: INK, 'stroke-width': 0.014 }, g);
+        el('path', { d: 'M' + r3(pxx + 0.01) + ' ' + r3(py - 0.17) + 'L' + r3(pxx + 0.08) + ' ' + r3(py - 0.26) + 'L' + r3(pxx + 0.15) + ' ' + r3(py - 0.17) + 'Z', fill: '#3B5672', stroke: INK, 'stroke-width': 0.012, 'stroke-linejoin': 'round' }, g);
+        el('rect', { x: r3(pxx + 0.05), y: r3(py - 0.13), width: 0.06, height: 0.05, fill: '#9CC6EA' }, g);
+      };
+      pier(x + 0.24); pier(x + s - 0.4);
+      var leaf = function (pxx, flip) {
+        var lg = el('g', { transform: 'translate(' + r3(pxx) + ' ' + r3(py) + ') rotate(' + (flip ? 58 : -58) + ')' + (flip ? ' scale(-1 1)' : '') }, g);
+        el('rect', { x: 0, y: -0.075, width: 0.44, height: 0.09, fill: '#F4F7FA', stroke: INK, 'stroke-width': 0.014 }, lg);
+        el('path', { d: 'M0.02 0.01L0.09 -0.07L0.16 0.01L0.23 -0.07L0.3 0.01L0.37 -0.07L0.43 0.01', fill: 'none', stroke: '#5B697A', 'stroke-width': 0.009, 'stroke-linejoin': 'round', opacity: 0.9 }, lg);
+        el('path', { d: 'M0 -0.082H0.44', fill: 'none', stroke: P.blue, 'stroke-width': 0.016, 'stroke-linecap': 'round' }, lg);
+        return lg;
+      };
+      out.leafL = leaf(x + 0.4, false);
+      out.leafR = leaf(x + s - 0.4, true);
+      out.pivotL = { x: x + 0.4, y: py };
+      out.pivotR = { x: x + s - 0.4, y: py };
+    }
+    cornerSeq++;
+    return out;
+  }
+
+  var PIPS = { 1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]],
+    5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]] };
+  function die(parent, cx, cy, s) {
+    shared();
+    var g = el('g', { transform: 'translate(' + r3(cx) + ' ' + r3(cy) + ')', 'class': 'ece-die' }, parent);
+    var shadow = el('g', { 'class': 'ece-die-shadow' }, g);
+    el('ellipse', { cx: r3(s * 0.1), cy: r3(s * 0.56), rx: r3(s * 0.64), ry: r3(s * 0.16), fill: 'url(#d1-shadow)' }, shadow);
+    el('rect', { x: r3(-s / 2 + s * 0.06), y: r3(-s / 2 + s * 0.12), width: r3(s), height: r3(s), rx: r3(s * 0.22), fill: '#0B1622', opacity: 0.2 }, shadow);
+    var inner = el('g', {}, g);
+    el('rect', { x: r3(-s / 2), y: r3(-s / 2 + s * 0.06), width: r3(s), height: r3(s), rx: r3(s * 0.22), fill: '#AEBBC9' }, inner);
+    el('rect', { x: r3(-s / 2), y: r3(-s / 2), width: r3(s), height: r3(s), rx: r3(s * 0.22), fill: 'url(#d1-die)', stroke: '#FFFFFF', 'stroke-width': r3(s * 0.025), 'stroke-opacity': 0.95 }, inner);
+    el('rect', { x: r3(-s / 2 + s * 0.05), y: r3(-s / 2 + s * 0.05), width: r3(s * 0.9), height: r3(s * 0.9), rx: r3(s * 0.18), fill: 'none', stroke: '#9FB0C3', 'stroke-width': r3(s * 0.012), opacity: 0.6 }, inner);
+    var pips = [];
+    for (var i = 0; i < 6; i++) pips.push(el('circle', { cx: 0, cy: 0, r: r3(s * 0.088), fill: 'url(#d1-pip)', visibility: 'hidden' }, inner));
+    var cur = -1, curFaded = null;
+    function set(n, faded) {
+      n = n | 0;
+      faded = !!faded;
+      if (faded !== curFaded) {
+        curFaded = faded;
+        g.setAttribute('data-idle', faded ? '1' : '0');
+        var k = faded ? 'scale(0.8)' : '';
+        inner.setAttribute('transform', k);
+        shadow.setAttribute('transform', k);
+      }
+      if (n === cur) return;
+      cur = n;
+      var p = PIPS[n] || [];
+      for (var j = 0; j < 6; j++) {
+        if (j < p.length) {
+          pips[j].setAttribute('cx', r3(p[j][0] * s * 0.26));
+          pips[j].setAttribute('cy', r3(p[j][1] * s * 0.26));
+          pips[j].setAttribute('visibility', 'visible');
+        } else pips[j].setAttribute('visibility', 'hidden');
+      }
+    }
+    return { g: g, inner: inner, shadow: shadow, set: set, x: cx, y: cy, s: s, idle: function () { return curFaded === true; } };
+  }
+  var DECK = { rain: { face: '#1D4E84', back: '#143A64' }, buzz: { face: '#1E5F57', back: '#154740' } };
+  function cardFace(parent, deck, w, h, name) {
+    shared();
+    var D = DECK[deck] || DECK.rain;
+    var g = el('g', { 'class': 'ece-card ece-card-' + deck }, parent);
+    el('rect', { x: r3(-w / 2), y: r3(-h / 2), width: r3(w), height: r3(h), rx: r3(w * 0.08), fill: D.face, stroke: 'url(#d1-steel)', 'stroke-width': r3(w * 0.035) }, g);
+    el('rect', { x: r3(-w / 2), y: r3(-h / 2), width: r3(w), height: r3(h), rx: r3(w * 0.08), fill: 'url(#d1-sheen)' }, g);
+    el('rect', { x: r3(-w / 2 + w * 0.085), y: r3(-h / 2 + w * 0.085), width: r3(w - w * 0.17), height: r3(h - w * 0.17), rx: r3(w * 0.045), fill: 'none',
+      stroke: '#FFFFFF', 'stroke-width': r3(w * 0.012), 'stroke-opacity': 0.6 }, g);
+    icon(g, deck, 0, -h * 0.13, w * 0.46, { fg: '#FFFFFF' });
+    var words = String(name || '').split(' ');
+    var rows = words.length > 1 ? [words[0], words.slice(1).join(' ')] : [String(name || '')];
+    var inner = w * 0.8, longest = Math.max.apply(null, rows.map(function (t) { return t.length; })) || 1;
+    var fs = Math.min(Math.max(0.2, w * 0.17), inner / (longest * 0.6));
+    var at = { 'font-weight': 650, fill: '#FFFFFF', 'font-family': DISPLAY };
+    for (var ri = 0; ri < rows.length; ri++) txt(g, 0, rows.length > 1 ? h * 0.2 + ri * fs * 1.08 : h * 0.26, rows[ri], fs, at);
+    return g;
+  }
+  function pile(parent, deck, cx, cy, w, h, name) {
+    shared();
+    var D = DECK[deck] || DECK.rain;
+    var g = el('g', { transform: 'translate(' + r3(cx) + ' ' + r3(cy) + ')', 'class': 'ece-pile ece-pile-' + deck }, parent);
+    el('ellipse', { cx: 0.08, cy: r3(h / 2 + 0.02), rx: r3(w * 0.7), ry: r3(w * 0.14), fill: 'url(#d1-shadow)' }, g);
+    for (var i = 2; i >= 1; i--) {
+      el('rect', { x: r3(-w / 2 + i * 0.03), y: r3(-h / 2 + i * 0.04), width: r3(w), height: r3(h), rx: r3(w * 0.08), fill: D.back, stroke: '#A9B6C6', 'stroke-width': r3(w * 0.02) }, g);
+    }
+    cardFace(g, deck, w, h, name);
+    return { g: g, x: cx, y: cy, w: w, h: h, card: function (p) { return cardFace(p, deck, w, h, name); } };
+  }
+  var jarSeq = 0;
+  function jar(parent, cx, cy, w, h, label) {
+    shared();
+    var g = el('g', { transform: 'translate(' + r3(cx) + ' ' + r3(cy) + ')', 'class': 'ece-jar' }, parent);
+    var x0 = -w / 2, y0 = -h / 2, top = y0 + h * 0.2, lid = h * 0.16, bx = x0 + w * 0.02, bw = w * 0.9, side = w * 0.08;
+    el('ellipse', { cx: 0.04, cy: r3(y0 + h + 0.04), rx: r3(w * 0.6), ry: 0.09, fill: 'url(#d1-shadow)' }, g);
+    el('rect', { x: r3(bx), y: r3(top + lid), width: r3(bw), height: r3(y0 + h - top - lid), fill: '#C89E6C', stroke: '#6E4F2C', 'stroke-width': 0.016 }, g);
+    el('path', { d: 'M' + r3(bx + bw) + ' ' + r3(top + lid) + 'L' + r3(bx + bw + side) + ' ' + r3(top) + 'V' + r3(y0 + h - lid * 0.8) + 'L' + r3(bx + bw) + ' ' + r3(y0 + h) + 'Z', fill: '#A9804F', stroke: '#6E4F2C', 'stroke-width': 0.016, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M' + r3(bx) + ' ' + r3(top + lid) + 'L' + r3(bx + side) + ' ' + r3(top) + 'H' + r3(bx + bw + side) + 'L' + r3(bx + bw) + ' ' + r3(top + lid) + 'Z', fill: '#DDB988', stroke: '#6E4F2C', 'stroke-width': 0.016, 'stroke-linejoin': 'round' }, g);
+    el('path', { d: 'M' + r3(bx + bw * 0.5 + side * 0.5) + ' ' + r3(top + 0.005) + 'L' + r3(bx + bw * 0.5) + ' ' + r3(top + lid), stroke: '#EADFC4', 'stroke-width': r3(w * 0.13), opacity: 0.85 }, g);
+    el('path', { d: 'M' + r3(bx + bw * 0.5) + ' ' + r3(top + lid) + 'V' + r3(top + lid + h * 0.12), stroke: '#EADFC4', 'stroke-width': r3(w * 0.13), opacity: 0.85 }, g);
+    el('rect', { x: r3(bx + bw * 0.22 + side * 0.5), y: r3(top + lid * 0.38), width: r3(bw * 0.18), height: r3(lid * 0.24), rx: 0.01, fill: '#3B2914' }, g);
+    var wx = bx + bw * 0.14, wy = top + lid + h * 0.17, ww = bw * 0.72, wh = y0 + h - wy - h * 0.06;
+    var clipId = 'd1-jarclip-' + (++jarSeq);
+    var cp = el('clipPath', { id: clipId }, g);
+    el('rect', { x: r3(wx), y: r3(wy), width: r3(ww), height: r3(wh), rx: 0.03 }, cp);
+    el('rect', { x: r3(wx), y: r3(wy), width: r3(ww), height: r3(wh), rx: 0.03, fill: '#EEF4F9', stroke: '#6E4F2C', 'stroke-width': 0.014 }, g);
+    var coins = el('g', { 'clip-path': 'url(#' + clipId + ')' }, g), coinList = [];
+    for (var i = 0; i < 8; i++) {
+      coinList.push(el('ellipse', { cx: r3(wx + ww * (0.2 + (i % 4) * 0.2 + (Math.floor(i / 4) % 2) * 0.08)), cy: r3(wy + wh * (0.86 - Math.floor(i / 4) * 0.2)), rx: r3(ww * 0.13), ry: r3(ww * 0.06),
+        fill: 'url(#d1-silver)', stroke: '#6E7C8C', 'stroke-width': 0.012, visibility: 'hidden' }, coins));
+    }
+    el('rect', { x: r3(wx), y: r3(wy), width: r3(ww), height: r3(wh), rx: 0.03, fill: 'url(#d1-sheen)' }, g);
+    el('path', { d: 'M' + r3(wx + ww * 0.12) + ' ' + r3(wy + wh * 0.15) + 'V' + r3(wy + wh * 0.7), stroke: '#FFFFFF', 'stroke-width': 0.025, 'stroke-linecap': 'round', opacity: 0.7 }, g);
+    var amount = txt(g, bx + bw / 2, r3(top + lid + h * 0.13), '', Math.max(0.18, w * 0.21), { 'font-weight': 700, fill: '#2B1D0E', stroke: '#E9CFA6', 'stroke-width': 0.04, 'paint-order': 'stroke' });
+    var lab = label || 'Snack Fund', lw = Math.max(w * 1.05, lab.length * 0.118 + 0.24);
+    el('rect', { x: r3(-lw / 2), y: r3(y0 + h + 0.08), width: r3(lw), height: 0.3, rx: 0.06, fill: '#FFFFFF', stroke: 'url(#d1-steel)', 'stroke-width': 0.02 }, g);
+    txt(g, 0, r3(y0 + h + 0.29), lab, 0.18, { 'font-weight': 650, fill: P.ink, 'font-family': DISPLAY });
+    var last = null;
+    return {
+      g: g,
+      set: function (text, frac) {
+        var key = text + '|' + frac;
+        if (key === last) return;
+        last = key;
+        amount.textContent = text;
+        var f = Math.max(0, Math.min(1, frac || 0)), n = Math.min(8, Math.ceil(f * 8));
+        for (var k = 0; k < coinList.length; k++) coinList[k].setAttribute('visibility', k < n ? 'visible' : 'hidden');
+      }
+    };
+  }
+  function gavel(parent) {
+    shared();
+    var g = el('g', { 'class': 'ece-gavel' }, parent);
+    el('rect', { x: -0.04, y: -0.045, width: 0.62, height: 0.09, rx: 0.04, fill: '#6B4A2E', stroke: '#3A2716', 'stroke-width': 0.016 }, g);
+    el('rect', { x: -0.17, y: -0.16, width: 0.3, height: 0.32, rx: 0.06, fill: '#5A3C24', stroke: '#2C1C10', 'stroke-width': 0.02 }, g);
+    el('rect', { x: -0.17, y: -0.04, width: 0.3, height: 0.08, fill: 'url(#d1-steel)' }, g);
+    return g;
+  }
+  function coin(parent, r) {
+    shared();
+    var g = el('g', { 'class': 'ece-coin' }, parent);
+    el('ellipse', { cx: r3(r * 0.15), cy: r3(r * 0.5), rx: r3(r * 1.1), ry: r3(r * 0.5), fill: 'url(#d1-shadow)' }, g);
+    el('circle', { cx: 0, cy: 0, r: r3(r), fill: 'url(#d1-silver)', stroke: '#5E6C7D', 'stroke-width': r3(r * 0.1) }, g);
+    el('circle', { cx: 0, cy: 0, r: r3(r * 0.62), fill: 'none', stroke: '#FFFFFF', 'stroke-width': r3(r * 0.09), 'stroke-opacity': 0.8 }, g);
+    return g;
+  }
+
+  function boardTitle(given) {
+    var d = tdata(), em = (ECE.Glossary && ECE.Glossary.game && ECE.Glossary.game.name) || 'Emerald City Estates';
+    if (given && given !== em) return given;
+    var t = (d.words && d.words.boardTitle) || d.title;
+    return typeof t === 'string' && t ? t : 'Day 1 Estates';
+  }
+  function title(parent, cx, ty0, name) {
+    shared();
+    var tg = el('g', { 'class': 'ece-title' }, parent);
+    var words = String(boardTitle(name)).split(' ');
+    var last = words.length > 1 ? words.pop() : '';
+    var first = words.join(' '), cap = last.toUpperCase(), ef = 0.28, ls = 0.1;
+    var m = /^(.*?)(\s*)(\d+)$/.exec(first);
+    var big = function (attrs, colA, colB) {
+      var t = el('text', { x: r3(cx), y: r3(ty0), 'font-size': 0.64, 'text-anchor': 'middle', 'font-family': DISPLAY, 'font-weight': 750, 'letter-spacing': -0.012 }, tg);
+      for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) t.setAttribute(k, attrs[k]);
+      if (m && m[1]) {
+        var a = el('tspan', { fill: colA }, t); a.textContent = m[1] + (m[2] ? ' ' : '');
+        var b = el('tspan', { fill: colB }, t); b.textContent = m[3];
+      } else { t.setAttribute('fill', colA); t.textContent = first; }
+      return t;
+    };
+    big({ stroke: '#FFFFFF', 'stroke-width': 0.1, 'stroke-linejoin': 'round', opacity: 0.85, 'class': 'ece-title-drop' }, '#FFFFFF', '#FFFFFF');
+    big({}, '#13263B', P.blue);
+    if (cap) {
+      txt(tg, cx + ls / 2, ty0 + 0.45, cap, ef, { 'font-weight': 700, fill: '#FFFFFF', stroke: '#FFFFFF', 'stroke-width': 0.07, 'stroke-linejoin': 'round', opacity: 0.85, 'letter-spacing': ls, 'class': 'ece-title-drop' });
+      txt(tg, cx + ls / 2, ty0 + 0.45, cap, ef, { 'font-weight': 700, fill: '#3A5676', 'letter-spacing': ls });
+      var ry = ty0 + 0.355, half = Math.max(1.05, (cap.length * (ef * 0.72 + ls)) / 2 + 0.16);
+      el('path', { d: 'M' + r3(cx - half - 0.6) + ' ' + r3(ry) + 'H' + r3(cx - half) + 'M' + r3(cx + half) + ' ' + r3(ry) + 'H' + r3(cx + half + 0.6), stroke: '#FFFFFF', 'stroke-width': 0.05, 'stroke-linecap': 'round', opacity: 0.8 }, tg);
+      el('path', { d: 'M' + r3(cx - half - 0.6) + ' ' + r3(ry) + 'H' + r3(cx - half) + 'M' + r3(cx + half) + ' ' + r3(ry) + 'H' + r3(cx + half + 0.6), stroke: '#7D8DA2', 'stroke-width': 0.016, 'stroke-linecap': 'round' }, tg);
+      el('path', { d: 'M' + r3(cx - half - 0.035) + ' ' + r3(ry - 0.035) + 'h0.07v0.07h-0.07zM' + r3(cx + half - 0.035) + ' ' + r3(ry - 0.035) + 'h0.07v0.07h-0.07z', fill: P.blue }, tg);
+    }
+    return tg;
+  }
+
+  function centre(parent, rc, opts) {
+    opts = opts || {};
+    shared();
+    if (opts.board) return boardCentre(parent, rc, opts);
+    return dayCover(parent, rc, opts);
+  }
+  function boardCentre(parent, rc, opts) {
+    var g = el('g', { 'class': 'ece-centre' }, parent);
+    var X = rc.x, Y = rc.y, W = rc.w, H = rc.h;
+    el('rect', { x: X + 0.06, y: Y + 0.06, width: W - 0.12, height: H - 0.12, rx: 0.12, fill: 'none', stroke: '#7F8FA3', 'stroke-width': 0.012, 'stroke-opacity': 0.7, 'class': 'ece-frame' }, g);
+    el('rect', { x: X + 0.11, y: Y + 0.11, width: W - 0.22, height: H - 0.22, rx: 0.09, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 0.01, 'stroke-opacity': 0.7, 'class': 'ece-frame' }, g);
+    var Bz = base(), an = Bz && typeof Bz.centreAnchors === 'function' ? Bz.centreAnchors(rc, opts) : null;
+    if (!an) {
+      an = {
+        shore: Y + H * 0.43,
+        dice: [{ x: X + W / 2 - 0.46, y: Y + H * 0.735 }, { x: X + W / 2 + 0.46, y: Y + H * 0.735 }],
+        diceSize: 0.74,
+        piles: { rain: { x: X + W * 0.2, y: Y + H * 0.885 }, buzz: { x: X + W * 0.8, y: Y + H * 0.885 } },
+        pileSize: { w: 1.06, h: 1.4 },
+        jar: { x: X + W / 2, y: Y + H * 0.848, w: 0.84, h: 0.98 },
+        cardSpot: { x: X + W / 2, y: Y + H * 0.47 }
+      };
+    }
+    var tg;
+    if (opts.heart && an.titleAt) {
+      var holder = el('g', { 'class': 'ece-title-at', transform: 'translate(' + r3(an.titleAt.x) + ' ' + r3(an.titleAt.y) + ') scale(' + r3(an.titleAt.s) + ')' }, g);
+      tg = title(holder, 0, 0, opts.title);
+      an.titleHolder = holder;
+    } else tg = title(g, X + W / 2, Y + H * 0.085, opts.title);
+    an.g = g;
+    an.title = tg;
+    return an;
+  }
+  function h01(i, s) { var h = Math.imul(i | 0, 374761393) ^ Math.imul(s | 0, 668265263); h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
+  var coverSeq = 0;
+  function dayCover(parent, rc, opts) {
+    opts = opts || {};
+    var id = 'd1c' + (++coverSeq);
+    var g = el('g', { 'class': 'ece-centre' }, parent);
+    var defs = el('defs', {}, g);
+    var X = rc.x, Y = rc.y, W = rc.w, H = rc.h, shore = Y + H * 0.43;
+    var clip = el('clipPath', { id: id + '-clip' }, defs);
+    el('rect', { x: X, y: Y, width: W, height: H, rx: opts.bare ? 0 : 0.16 }, clip);
+    var grad = function (gid, y0, y1, list) { return stops(el('linearGradient', { id: id + gid, gradientUnits: 'userSpaceOnUse', x1: 0, y1: r3(y0), x2: 0, y2: r3(y1) }, defs), list); };
+    grad('-sky', Y, shore, [[0, '#8DBAE4'], [0.42, '#B4D2EE'], [0.78, '#DCEAF7'], [1, '#F6FAFD']]);
+    grad('-sea', shore, Y + H, [[0, '#BDD8EE'], [0.08, '#A2C7E6'], [0.4, '#83B2DB'], [1, '#5A8EC1']]);
+    var TONES = [[['#EEF5FB', '#B9D3EA', '#8FB2D3'], ['#9BBAD8', '#6789B0']], [['#E3ECF4', '#B5C6D8', '#8EA3BA'], ['#8FA3B9', '#62778F']], [['#F4F8FB', '#CCDCEA', '#A9C1D8'], ['#A9BED3', '#7C94AE']]];
+    TONES.forEach(function (t, k) {
+      stops(el('linearGradient', { id: id + '-l' + k, x1: 0, y1: 0, x2: 0, y2: 1 }, defs), [[0, t[0][0]], [0.4, t[0][1]], [1, t[0][2]]]);
+      stops(el('linearGradient', { id: id + '-d' + k, x1: 0, y1: 0, x2: 0, y2: 1 }, defs), [[0, t[1][0]], [1, t[1][1]]]);
+    });
+    var sun = el('radialGradient', { id: id + '-sun', cx: 0.5, cy: 0.5, r: 0.5 }, defs);
+    stops(sun, [[0, '#FFFFFF', 0.95], [0.25, '#FFFFFF', 0.4], [1, '#FFFFFF', 0]]);
+    var glare = el('linearGradient', { id: id + '-glare', x1: 0, y1: 0, x2: 1, y2: 1 }, defs);
+    stops(glare, [[0, '#FFFFFF', 0], [0.45, '#FFFFFF', 0.55], [0.55, '#FFFFFF', 0.55], [1, '#FFFFFF', 0]]);
+    var fade = grad('-fade', shore, shore + 2.4, [[0, '#FFFFFF', 0.5], [0.5, '#FFFFFF', 0.18], [1, '#FFFFFF', 0]]);
+    var mask = el('mask', { id: id + '-mask', maskUnits: 'userSpaceOnUse', x: r3(X), y: r3(shore), width: r3(W), height: 2.4 }, defs);
+    el('rect', { x: r3(X), y: r3(shore), width: r3(W), height: 2.4, fill: 'url(#' + id + '-fade)' }, mask);
+    void fade;
+
+    var s = el('g', { 'clip-path': 'url(#' + id + '-clip)' }, g);
+    el('rect', { x: X, y: Y, width: W, height: shore - Y + 0.2, fill: 'url(#' + id + '-sky)' }, s);
+    el('ellipse', { cx: r3(X + W * 0.8), cy: r3(Y + H * 0.15), rx: 1.7, ry: 1.7, fill: 'url(#' + id + '-sun)' }, s);
+    var cloud = function (cx0, cy0, k, op, cls) {
+      var cg = el('g', { opacity: op }, s);
+      el('ellipse', { cx: r3(cx0), cy: r3(cy0), rx: r3(0.72 * k), ry: r3(0.12 * k), fill: '#FFFFFF', 'class': cls || null }, cg);
+      el('ellipse', { cx: r3(cx0 + 0.22 * k), cy: r3(cy0 - 0.1 * k), rx: r3(0.36 * k), ry: r3(0.14 * k), fill: '#FFFFFF' }, cg);
+      el('ellipse', { cx: r3(cx0 - 0.24 * k), cy: r3(cy0 - 0.06 * k), rx: r3(0.3 * k), ry: r3(0.11 * k), fill: '#FFFFFF' }, cg);
+      el('ellipse', { cx: r3(cx0 + 0.05 * k), cy: r3(cy0 + 0.04 * k), rx: r3(0.64 * k), ry: r3(0.05 * k), fill: '#DCE8F4', opacity: 0.8 }, cg);
+    };
+    cloud(X + W * 0.2, Y + H * 0.2, 1, 0.8, 'ece-cloud');
+    cloud(X + W * 0.64, Y + H * 0.275, 0.7, 0.6);
+    cloud(X + W * 0.9, Y + H * 0.1, 0.6, 0.55);
+    cloud(X + W * 0.42, Y + H * 0.06, 0.5, 0.45);
+    var gulls = '';
+    [[0.6, 0.18, 1], [0.645, 0.177, 0.8], [0.69, 0.185, 0.9], [0.86, 0.2, 0.7], [0.12, 0.33, 0.6]].forEach(function (q) {
+      var gx = X + W * q[0], gy = Y + H * q[1], k = 0.07 * q[2];
+      gulls += 'M' + r3(gx - k) + ' ' + r3(gy - k * 0.3) + 'q' + r3(k * 0.5) + ' ' + r3(-k * 0.5) + ' ' + r3(k) + ' ' + r3(k * 0.3) + 'q' + r3(k * 0.5) + ' ' + r3(-k * 0.8) + ' ' + r3(k) + ' ' + r3(-k * 0.3);
+    });
+    el('path', { d: gulls, fill: 'none', stroke: '#4A607A', 'stroke-width': 0.014, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.7 }, s);
+    var hills = 'M' + r3(X - 0.1) + ' ' + r3(shore - 0.4);
+    for (var hi = 0; hi <= 14; hi++) hills += 'L' + r3(X + W * hi / 14) + ' ' + r3(shore - 0.46 - 0.2 * Math.sin(hi * 0.9) - 0.1 * Math.sin(hi * 2.3 + 1));
+    hills += 'L' + r3(X + W + 0.1) + ' ' + r3(shore) + 'H' + r3(X - 0.1) + 'Z';
+    el('path', { d: hills, fill: '#A6BDD4', opacity: 0.7 }, s);
+    var far = '';
+    for (var fi = 0, fx = X - 0.05; fx < X + W && fi < 40; fi++) {
+      var fw = 0.16 + h01(fi, 51) * 0.26, fh = 0.45 + h01(fi, 53) * 0.8;
+      far += 'M' + r3(fx) + ' ' + r3(shore) + 'V' + r3(shore - fh) + 'H' + r3(fx + fw) + 'V' + r3(shore) + 'Z';
+      fx += fw + 0.02 + h01(fi, 57) * 0.06;
+    }
+    el('path', { d: far, fill: '#B7CADD', opacity: 0.85 }, s);
+    var towers = [], x = X - 0.08, i = 0;
+    while (x < X + W + 0.1 && i < 40) {
+      var wv = 0.22 + h01(i, 3) * 0.32, hv = 0.6 + h01(i, 7) * 1.2 + (Math.abs((x - X) / W - 0.55) < 0.22 ? 0.5 : 0);
+      towers.push({ x: x, w: wv, h: hv, k: i, top: h01(i, 11), tone: Math.floor(h01(i, 13) * 3), set: h01(i, 17) > 0.62 });
+      x += wv + 0.035 + h01(i, 5) * 0.09; i++;
+    }
+    var sk = el('g', {}, s);
+    var crane = function (cx0, top0, jib) {
+      var cg = el('g', { opacity: 0.85 }, sk), col = '#64768B';
+      el('path', { d: 'M' + r3(cx0) + ' ' + r3(shore) + 'V' + r3(top0) + 'M' + r3(cx0 + 0.05) + ' ' + r3(shore) + 'V' + r3(top0), stroke: col, 'stroke-width': 0.014 }, cg);
+      var zz = '';
+      for (var zy = shore; zy > top0 + 0.05; zy -= 0.08) zz += 'M' + r3(cx0) + ' ' + r3(zy) + 'L' + r3(cx0 + 0.05) + ' ' + r3(zy - 0.08);
+      el('path', { d: zz, stroke: col, 'stroke-width': 0.008 }, cg);
+      el('path', { d: 'M' + r3(cx0 - jib * 0.3) + ' ' + r3(top0) + 'H' + r3(cx0 + jib) + 'M' + r3(cx0 + 0.025) + ' ' + r3(top0) + 'V' + r3(top0 - 0.14) +
+        'L' + r3(cx0 + jib * 0.7) + ' ' + r3(top0) + 'M' + r3(cx0 + 0.025) + ' ' + r3(top0 - 0.14) + 'L' + r3(cx0 - jib * 0.3) + ' ' + r3(top0), stroke: col, 'stroke-width': 0.012, fill: 'none' }, cg);
+      el('rect', { x: r3(cx0 - jib * 0.3), y: r3(top0), width: 0.12, height: 0.07, fill: col }, cg);
+      el('path', { d: 'M' + r3(cx0 + jib * 0.6) + ' ' + r3(top0) + 'V' + r3(top0 + 0.42), stroke: col, 'stroke-width': 0.005 }, cg);
+      el('rect', { x: r3(cx0 + jib * 0.6 - 0.025), y: r3(top0 + 0.42), width: 0.05, height: 0.03, fill: col }, cg);
+    };
+    crane(X + W * 0.31, shore - 2.3, 0.9);
+    crane(X + W * 0.75, shore - 2.05, 0.72);
+    var floors = '', mull = '', glints = '', refl = '';
+    towers.forEach(function (t) {
+      var top = shore - t.h, mid = t.x + t.w * 0.62, cut = t.top < 0.28 ? t.w * 0.3 : 0, rcut = t.top > 0.78 ? t.w * 0.2 : 0;
+      var sbW = t.set ? t.w * 0.16 : 0, sbY = top + t.h * 0.3;
+      var lit = 'M' + r3(t.x) + ' ' + r3(shore) + 'V' + r3(sbY) + 'H' + r3(t.x + sbW) + 'V' + r3(top + cut) + 'L' + r3(mid) + ' ' + r3(top) + 'V' + r3(shore) + 'Z';
+      var shd = 'M' + r3(mid) + ' ' + r3(shore) + 'V' + r3(top) + 'L' + r3(t.x + t.w - sbW) + ' ' + r3(top + rcut) + 'V' + r3(sbY) + 'H' + r3(t.x + t.w) + 'V' + r3(shore) + 'Z';
+      el('path', { d: lit, fill: 'url(#' + id + '-l' + t.tone + ')' }, sk);
+      el('path', { d: shd, fill: 'url(#' + id + '-d' + t.tone + ')' }, sk);
+      for (var fy = top + 0.1; fy < shore - 0.03; fy += 0.072) floors += 'M' + r3(fy < sbY ? t.x + sbW : t.x) + ' ' + r3(fy) + 'H' + r3(fy < sbY ? t.x + t.w - sbW : t.x + t.w);
+      for (var mx = t.x + 0.055; mx < t.x + t.w - 0.02; mx += 0.062) if (mx > t.x + sbW || true) mull += 'M' + r3(mx) + ' ' + r3(mx < t.x + sbW || mx > t.x + t.w - sbW ? sbY : top + cut + 0.03) + 'V' + r3(shore);
+      glints += 'M' + r3(t.x + 0.012 + (t.set ? sbW : 0)) + ' ' + r3(top + cut + 0.03) + 'V' + r3(t.set ? sbY : shore - 0.02) + (t.set ? 'M' + r3(t.x + 0.012) + ' ' + r3(sbY) + 'V' + r3(shore - 0.02) : '');
+      el('path', { d: 'M' + r3(t.x + sbW) + ' ' + r3(top + cut) + 'L' + r3(mid) + ' ' + r3(top) + 'L' + r3(t.x + t.w - sbW) + ' ' + r3(top + rcut) + (t.set ? 'M' + r3(t.x) + ' ' + r3(sbY) + 'H' + r3(t.x + t.w) : ''),
+        stroke: '#4A5D72', 'stroke-width': 0.016, fill: 'none', 'stroke-linejoin': 'round' }, sk);
+      for (var ry2 = shore + 0.03, rk = 0; ry2 < shore + t.h * 0.75; rk++) {
+        var dep = (ry2 - shore) / Math.max(0.3, t.h), jx = (h01(t.k * 31 + rk, 61) - 0.5) * 0.07 * (1 + dep * 2);
+        var c0 = t.w * (0.05 + 0.3 * dep * h01(t.k * 7 + rk, 67)), c1 = t.w * (0.05 + 0.3 * dep * h01(t.k * 11 + rk, 71));
+        if (h01(t.k * 13 + rk, 73) > 0.18) refl += 'M' + r3(t.x + c0 + jx) + ' ' + r3(ry2) + 'H' + r3(t.x + t.w - c1 + jx);
+        ry2 += 0.034 + 0.03 * h01(t.k * 17 + rk, 79) + dep * 0.02;
+      }
+      if (t.k % 5 === 2) el('path', { d: 'M' + r3(t.x + t.w * 0.08) + ' ' + r3(top + t.h * 0.35) + 'L' + r3(t.x + t.w * 0.55) + ' ' + r3(top + t.h * 0.15) + 'V' + r3(top + t.h * 0.3) + 'L' + r3(t.x + t.w * 0.08) + ' ' + r3(top + t.h * 0.5) + 'Z', fill: 'url(#' + id + '-glare)', opacity: 0.7 }, sk);
+    });
+    el('path', { d: floors, stroke: '#FFFFFF', 'stroke-width': 0.006, opacity: 0.42, fill: 'none' }, sk);
+    el('path', { d: mull, stroke: '#3E546C', 'stroke-width': 0.005, opacity: 0.28, fill: 'none' }, sk);
+    el('path', { d: glints, stroke: '#FFFFFF', 'stroke-width': 0.02, opacity: 0.85, fill: 'none' }, sk);
+    var trees = '';
+    for (var ti = 0; ti < 30; ti++) {
+      var tx = X + W * (ti / 29) + (h01(ti, 21) - 0.5) * 0.1, tr = 0.07 + h01(ti, 23) * 0.07;
+      trees += 'M' + r3(tx - tr) + ' ' + r3(shore) + 'a' + r3(tr) + ' ' + r3(tr * 0.9) + ' 0 0 1 ' + r3(tr * 2) + ' 0Z';
+    }
+    el('path', { d: trees, fill: '#6A967B', opacity: 0.92 }, s);
+    el('rect', { x: X, y: r3(shore - 0.035), width: W, height: 0.05, fill: '#EEF3F6' }, s);
+    el('rect', { x: X, y: shore, width: W, height: Y + H - shore, fill: 'url(#' + id + '-sea)' }, s);
+    el('path', { d: refl, fill: 'none', stroke: '#EDF4FB', 'stroke-width': 0.018, 'stroke-linecap': 'round', opacity: 0.55, mask: 'url(#' + id + '-mask)' }, s);
+    var rip = '';
+    for (var ri = 0; ri < 46; ri++) {
+      var rxx = X + W * h01(ri, 31), ryy = shore + 0.12 + (Y + H - shore - 0.2) * Math.pow(h01(ri, 37), 1.5), rl = 0.1 + h01(ri, 41) * 0.32 * (1 + (ryy - shore) * 0.15);
+      rip += 'M' + r3(rxx) + ' ' + r3(ryy) + 'h' + r3(rl);
+    }
+    el('path', { d: rip, stroke: '#FFFFFF', 'stroke-width': 0.012, opacity: 0.42, fill: 'none', 'stroke-linecap': 'round' }, s);
+    el('path', { d: 'M' + r3(X) + ' ' + r3(shore + 0.01) + 'H' + r3(X + W), stroke: '#FFFFFF', 'stroke-width': 0.018, opacity: 0.85 }, s);
+    var plane = function (px, py, k) {
+      var sp = el('g', { transform: 'translate(' + r3(px) + ' ' + r3(py) + ') scale(' + r3(k) + ')' }, s);
+      el('ellipse', { cx: 0, cy: 0.06, rx: 0.42, ry: 0.035, fill: '#3E6E9C', opacity: 0.3 }, sp);
+      el('path', { d: 'M-0.36 0.02H0.32L0.36 -0.01H-0.32Z', fill: '#FFFFFF', stroke: '#2A3949', 'stroke-width': 0.01 }, sp);
+      el('path', { d: 'M-0.2 0V-0.1M0.12 0V-0.1', stroke: '#2A3949', 'stroke-width': 0.01 }, sp);
+      el('path', { d: 'M-0.3 -0.1C-0.3 -0.16 -0.24 -0.2 -0.16 -0.2H0.2L0.36 -0.26H0.4L0.36 -0.12C0.34 -0.1 0.3 -0.1 0.26 -0.1Z', fill: '#FFFFFF', stroke: '#2A3949', 'stroke-width': 0.012, 'stroke-linejoin': 'round' }, sp);
+      el('path', { d: 'M-0.28 -0.14H0.3', stroke: P.blue, 'stroke-width': 0.02 }, sp);
+      el('path', { d: 'M-0.12 -0.22H0.14', stroke: '#2A3949', 'stroke-width': 0.028, 'stroke-linecap': 'round' }, sp);
+      el('path', { d: 'M-0.2 -0.17H-0.1V-0.13H-0.2Z', fill: '#2A3C50' }, sp);
+      el('path', { d: 'M-0.36 0.08Q0 0.11 0.36 0.08', stroke: '#FFFFFF', 'stroke-width': 0.012, opacity: 0.6, fill: 'none' }, sp);
+    };
+    plane(X + W * 0.24, shore + (opts.bare ? 0.42 : 0.66), 1);
+    var sail = function (bx, by, k) {
+      var bg2 = el('g', { transform: 'translate(' + r3(bx) + ' ' + r3(by) + ') scale(' + r3(k) + ')' }, s);
+      el('path', { d: 'M-0.16 0H0.16L0.12 0.05H-0.12Z', fill: '#FFFFFF', stroke: '#2A3949', 'stroke-width': 0.012 }, bg2);
+      el('path', { d: 'M0 -0.01V-0.42L0.15 -0.04Z', fill: '#FFFFFF', stroke: '#2A3949', 'stroke-width': 0.01, 'stroke-linejoin': 'round' }, bg2);
+      el('path', { d: 'M-0.02 -0.36L-0.14 -0.05H-0.02Z', fill: '#DCE8F6', stroke: '#2A3949', 'stroke-width': 0.009, 'stroke-linejoin': 'round' }, bg2);
+      el('path', { d: 'M-0.12 0.07H0.14', stroke: '#FFFFFF', 'stroke-width': 0.012, opacity: 0.6 }, bg2);
+    };
+    sail(X + W * 0.53, shore + (opts.bare ? 0.4 : 0.5), 1);
+    sail(X + W * 0.08, shore + (opts.bare ? 0.56 : 1.05), 0.82);
+    sail(X + W * 0.55, shore + 2.45, 1.3);
+    var mb = el('g', { transform: 'translate(' + r3(X + W * 0.3) + ' ' + r3(shore + 1.22) + ')' }, s);
+    el('path', { d: 'M0.18 0.03L0.9 0.16M0.18 0.05L0.86 0.3', stroke: '#FFFFFF', 'stroke-width': 0.014, opacity: 0.55, fill: 'none', 'stroke-linecap': 'round' }, mb);
+    el('path', { d: 'M-0.22 0H0.2L0.14 0.06H-0.18Z', fill: '#FFFFFF', stroke: '#2A3949', 'stroke-width': 0.012 }, mb);
+    el('path', { d: 'M-0.08 0V-0.07H0.06L0.1 0Z', fill: '#DCE8F6', stroke: '#2A3949', 'stroke-width': 0.01 }, mb);
+    var pd = shore + 0.6, pl = X + W * 0.66, pr = X + W + 0.05;
+    el('rect', { x: r3(pl), y: r3(pd + 0.06), width: r3(pr - pl), height: 0.07, fill: '#2C4A66', opacity: 0.22 }, s);
+    var piles = '';
+    for (var pp = pl + 0.08; pp < pr; pp += 0.3) piles += 'M' + r3(pp) + ' ' + r3(pd + 0.05) + 'V' + r3(pd + 0.21);
+    el('path', { d: piles, stroke: '#55667A', 'stroke-width': 0.04 }, s);
+    el('path', { d: 'M' + r3(pl + 0.06) + ' ' + r3(pd - 0.3) + 'H' + r3(pr) + 'M' + r3(pl + 0.06) + ' ' + r3(pd - 0.17) + 'H' + r3(pr), stroke: '#7F8EA0', 'stroke-width': 0.016 }, s);
+    var rposts = '';
+    for (var rp = pl + 0.06; rp < pr; rp += 0.42) rposts += 'M' + r3(rp) + ' ' + r3(pd - 0.32) + 'V' + r3(pd - 0.05);
+    el('path', { d: rposts, stroke: '#66768A', 'stroke-width': 0.024, 'stroke-linecap': 'round' }, s);
+    el('rect', { x: r3(pl), y: r3(pd - 0.05), width: r3(pr - pl), height: 0.05, fill: '#E3E9EE', stroke: '#8E9CAD', 'stroke-width': 0.008 }, s);
+    el('rect', { x: r3(pl), y: r3(pd), width: r3(pr - pl), height: 0.06, fill: '#A3B0BE', stroke: '#66768A', 'stroke-width': 0.008 }, s);
+    lanyard(s, pl + 0.05, pd - 0.3, pl + 0.075, pd - 0.25, 0.12);
+    officeDog(s, pl + 0.44, pd - 0.014, 0.5);
+    tapedBox(s, pl + 0.98, pd - 0.014, 0.36, 0.27);
+    tapedBox(s, pl + 0.95, pd - 0.234, 0.26, 0.19);
+    bananaStand(s, pl + 1.56, pd - 0.014, 0.5, { words: true });
+    var bw = shore + 3.45;
+    el('rect', { x: X, y: r3(bw), width: W, height: r3(Y + H - bw), fill: '#CBD4DD' }, s);
+    var planks = '';
+    for (var pk = bw + 0.08; pk < Y + H; pk += 0.09) planks += 'M' + r3(X) + ' ' + r3(pk) + 'H' + r3(X + W);
+    el('path', { d: planks, stroke: '#B3BECA', 'stroke-width': 0.01, fill: 'none' }, s);
+    el('path', { d: 'M' + r3(X) + ' ' + r3(bw - 0.3) + 'H' + r3(X + W) + 'M' + r3(X) + ' ' + r3(bw - 0.15) + 'H' + r3(X + W), stroke: '#77869A', 'stroke-width': 0.02 }, s);
+    var posts = '';
+    for (var po = X + 0.2; po < X + W; po += 0.7) posts += 'M' + r3(po) + ' ' + r3(bw - 0.32) + 'V' + r3(bw);
+    el('path', { d: posts, stroke: '#66768A', 'stroke-width': 0.03 }, s);
+    el('rect', { x: X, y: r3(bw - 0.01), width: W, height: 0.03, fill: '#E9EEF2' }, s);
+    if (!opts.bare) {
+      el('rect', { x: X + 0.06, y: Y + 0.06, width: W - 0.12, height: H - 0.12, rx: 0.12, fill: 'none', stroke: '#8E9CAD', 'stroke-width': 0.012, 'stroke-opacity': 0.75, 'class': 'ece-frame' }, g);
+      el('rect', { x: X + 0.11, y: Y + 0.11, width: W - 0.22, height: H - 0.22, rx: 0.09, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 0.008, 'stroke-opacity': 0.6, 'class': 'ece-frame' }, g);
+    }
+    var tg = opts.bare ? null : title(g, X + W / 2, Y + H * 0.085, null);
+    var midY = shore + (Y + H - shore) * 0.27;
+    return {
+      g: g, title: tg, shore: shore,
+      dice: [{ x: X + W / 2 - 0.5, y: midY }, { x: X + W / 2 + 0.5, y: midY }], diceSize: 0.78,
+      piles: { rain: { x: X + W * 0.22, y: Y + H * 0.79 }, buzz: { x: X + W * 0.78, y: Y + H * 0.79 } },
+      pileSize: { w: 1.22, h: 1.62 },
+      jar: { x: X + W / 2, y: Y + H * 0.775, w: 0.92, h: 1.06 },
+      cardSpot: { x: X + W / 2, y: Y + H * 0.56 }
+    };
+  }
+
+  var CampusMap = (function () {
+    var SOUND = [[-122.50, 47.73], [-122.405, 47.73], [-122.404, 47.705], [-122.403, 47.69], [-122.407, 47.677], [-122.412, 47.67],
+      [-122.404, 47.666], [-122.402, 47.664], [-122.41, 47.661], [-122.425, 47.664], [-122.436, 47.662], [-122.43, 47.655],
+      [-122.42, 47.647], [-122.414, 47.64], [-122.406, 47.634], [-122.395, 47.631], [-122.385, 47.6295], [-122.378, 47.6305],
+      [-122.373, 47.6285], [-122.366, 47.6255], [-122.36, 47.6205], [-122.354, 47.616], [-122.349, 47.612], [-122.345, 47.6085],
+      [-122.3415, 47.605], [-122.3395, 47.602], [-122.3385, 47.599], [-122.3395, 47.595], [-122.342, 47.59], [-122.344, 47.585],
+      [-122.35, 47.583], [-122.358, 47.5845], [-122.366, 47.5875], [-122.375, 47.5925], [-122.383, 47.596], [-122.39, 47.592],
+      [-122.4, 47.586], [-122.41, 47.58], [-122.42, 47.577], [-122.415, 47.565], [-122.405, 47.55], [-122.398, 47.535],
+      [-122.396, 47.52], [-122.5, 47.52]];
+    var UNION = [[-122.4, 47.6672], [-122.393, 47.6668], [-122.385, 47.6625], [-122.376, 47.66], [-122.368, 47.6575], [-122.36, 47.6545],
+      [-122.354, 47.6522], [-122.349, 47.6508], [-122.343, 47.6492], [-122.3385, 47.6478], [-122.335, 47.6462], [-122.3335, 47.645],
+      [-122.3305, 47.6466], [-122.3265, 47.6485], [-122.3225, 47.65], [-122.3195, 47.6512], [-122.315, 47.6515], [-122.3105, 47.6505],
+      [-122.307, 47.6487], [-122.3055, 47.6478], [-122.3062, 47.6466], [-122.3095, 47.6456], [-122.3135, 47.6452], [-122.3175, 47.646],
+      [-122.3205, 47.6468], [-122.3228, 47.6455], [-122.324, 47.641], [-122.3252, 47.636], [-122.3262, 47.632], [-122.3278, 47.629],
+      [-122.3305, 47.6278], [-122.3335, 47.6273], [-122.336, 47.6267], [-122.3385, 47.6271], [-122.3407, 47.6268], [-122.3422, 47.6292],
+      [-122.3433, 47.6335], [-122.3442, 47.6385], [-122.3448, 47.643], [-122.3462, 47.6468], [-122.35, 47.649], [-122.355, 47.651],
+      [-122.362, 47.6538], [-122.37, 47.6565], [-122.378, 47.6588], [-122.386, 47.661], [-122.394, 47.664], [-122.4, 47.6655]];
+    var WASH = [[-122.306, 47.648], [-122.301, 47.6482], [-122.299, 47.6492], [-122.2975, 47.6515], [-122.295, 47.654], [-122.2915, 47.6558],
+      [-122.287, 47.6566], [-122.283, 47.656], [-122.28, 47.6545], [-122.2785, 47.6515], [-122.2775, 47.649], [-122.276, 47.6478],
+      [-122.2745, 47.6505], [-122.273, 47.656], [-122.27, 47.664], [-122.266, 47.671], [-122.259, 47.6765], [-122.256, 47.682],
+      [-122.261, 47.688], [-122.27, 47.696], [-122.276, 47.705], [-122.279, 47.73], [-122.212, 47.73], [-122.209, 47.705],
+      [-122.208, 47.688], [-122.2075, 47.68], [-122.209, 47.67], [-122.206, 47.662], [-122.201, 47.657], [-122.1995, 47.6525],
+      [-122.205, 47.6505], [-122.2115, 47.65], [-122.215, 47.652], [-122.2185, 47.65], [-122.218, 47.645], [-122.22, 47.642],
+      [-122.225, 47.644], [-122.228, 47.647], [-122.232, 47.6455], [-122.233, 47.641], [-122.236, 47.639], [-122.2385, 47.642],
+      [-122.242, 47.64], [-122.244, 47.6365], [-122.243, 47.632], [-122.24, 47.627], [-122.237, 47.622], [-122.2345, 47.6175],
+      [-122.23, 47.6145], [-122.225, 47.6135], [-122.219, 47.614], [-122.214, 47.6143], [-122.2095, 47.6138], [-122.2075, 47.6122],
+      [-122.209, 47.6108], [-122.214, 47.6102], [-122.2185, 47.6092], [-122.2195, 47.605], [-122.2175, 47.599], [-122.212, 47.594],
+      [-122.2075, 47.589], [-122.2055, 47.583], [-122.2045, 47.576], [-122.203, 47.569], [-122.206, 47.56], [-122.209, 47.545],
+      [-122.21, 47.52], [-122.265, 47.52], [-122.262, 47.535], [-122.258, 47.547], [-122.251, 47.552], [-122.249, 47.5565],
+      [-122.256, 47.56], [-122.266, 47.566], [-122.276, 47.573], [-122.283, 47.58], [-122.287, 47.588], [-122.288, 47.595],
+      [-122.2868, 47.601], [-122.285, 47.608], [-122.283, 47.616], [-122.281, 47.623], [-122.279, 47.63], [-122.278, 47.635],
+      [-122.2805, 47.6388], [-122.285, 47.6418], [-122.29, 47.6432], [-122.296, 47.644], [-122.3, 47.6452], [-122.303, 47.6466],
+      [-122.306, 47.6468]];
+    var MERCER = [[-122.235, 47.5968], [-122.229, 47.595], [-122.2215, 47.5905], [-122.216, 47.5845], [-122.2135, 47.576],
+      [-122.2125, 47.565], [-122.214, 47.552], [-122.218, 47.54], [-122.223, 47.526], [-122.23, 47.515], [-122.245, 47.515],
+      [-122.249, 47.53], [-122.2535, 47.545], [-122.2555, 47.558], [-122.2545, 47.57], [-122.2525, 47.58], [-122.2475, 47.588],
+      [-122.241, 47.594]];
+    var SAMMAMISH = [[-122.105, 47.66], [-122.095, 47.63], [-122.09, 47.6], [-122.075, 47.57], [-122.06, 47.56], [-122.05, 47.58],
+      [-122.065, 47.62], [-122.08, 47.65], [-122.095, 47.665]];
+    var R = function (a, b, c, d) { return [[a, b], [c, b], [c, d], [a, d]]; };
+    var PARKS = [
+      [[[-122.3005, 47.644], [-122.293, 47.643], [-122.2915, 47.635], [-122.293, 47.627], [-122.298, 47.6265], [-122.3, 47.635]], 'park'],
+      [R(-122.318, 47.6335, -122.3125, 47.628), 'park'], [R(-122.3205, 47.6185, -122.3185, 47.6155), 'park'],
+      [R(-122.3422, 47.6205, -122.34, 47.619), 'park'], [R(-122.34, 47.6279, -122.335, 47.6262), 'park'],
+      [[[-122.337, 47.648], [-122.331, 47.648], [-122.333, 47.6448], [-122.336, 47.6455]], 'park'],
+      [R(-122.355, 47.6235, -122.348, 47.619), 'plaza'],
+      [[[-122.43, 47.662], [-122.405, 47.662], [-122.402, 47.653], [-122.415, 47.648], [-122.43, 47.655]], 'park'],
+      [[[-122.315, 47.661], [-122.298, 47.661], [-122.296, 47.652], [-122.306, 47.649], [-122.315, 47.652]], 'plaza'],
+      [R(-122.29, 47.643, -122.2825, 47.6368), 'park'], [R(-122.229, 47.634, -122.221, 47.627), 'park'],
+      [R(-122.2065, 47.614, -122.2025, 47.6108), 'park'], [R(-122.236, 47.595, -122.2275, 47.588), 'park'],
+      [[[-122.201, 47.601], [-122.192, 47.601], [-122.19, 47.585], [-122.199, 47.581], [-122.203, 47.59]], 'park'],
+      [R(-122.182, 47.611, -122.174, 47.605), 'park'], [R(-122.256, 47.5565, -122.2495, 47.548), 'park'],
+      [R(-122.311, 47.573, -122.302, 47.563), 'park'], [R(-122.215, 47.676, -122.205, 47.668), 'park']
+    ];
+    var GRIDS = [
+      { poly: R(-122.38, 47.6187, -122.3445, 47.647), ang: 0, su: 0.1, sv: 0.088, kind: 'res' },
+      { poly: R(-122.3268, 47.5995, -122.3, 47.6455), ang: 0, su: 0.12, sv: 0.085, kind: 'res' },
+      { poly: R(-122.329, 47.6266, -122.3215, 47.647), ang: 0, su: 0.09, sv: 0.1, kind: 'res' },
+      { poly: R(-122.3, 47.59, -122.275, 47.646), ang: 0, su: 0.11, sv: 0.09, kind: 'res' },
+      { poly: R(-122.34, 47.54, -122.285, 47.5995), ang: 0, su: 0.12, sv: 0.09, kind: 'res' },
+      { poly: R(-122.345, 47.54, -122.324, 47.5995), ang: 0, su: 0.16, sv: 0.13, kind: 'ind' },
+      { poly: R(-122.38, 47.6475, -122.28, 47.71), ang: 0, su: 0.11, sv: 0.09, kind: 'res' },
+      { poly: R(-122.43, 47.626, -122.38, 47.67), ang: 0, su: 0.11, sv: 0.09, kind: 'res' },
+      { poly: R(-122.43, 47.52, -122.35, 47.59), ang: 0, su: 0.11, sv: 0.09, kind: 'res' },
+      { poly: MERCER, ang: 0, su: 0.16, sv: 0.14, kind: 'res' },
+      { poly: R(-122.245, 47.61, -122.2, 47.66), ang: 0, su: 0.16, sv: 0.14, kind: 'res' },
+      { poly: R(-122.23, 47.56, -122.1, 47.67), ang: 0, su: 0.19, sv: 0.17, kind: 'res' },
+      { poly: R(-122.215, 47.67, -122.15, 47.72), ang: 0, su: 0.15, sv: 0.13, kind: 'res' },
+      { poly: R(-122.3445, 47.6187, -122.329, 47.6266), ang: 0, su: 0.118, sv: 0.122, kind: 'dense', o: [-122.3445, 47.6187] },
+      { poly: [[-122.356, 47.6187], [-122.3285, 47.6187], [-122.3265, 47.611], [-122.3255, 47.6045], [-122.329, 47.6], [-122.338, 47.5995],
+        [-122.341, 47.604], [-122.347, 47.61], [-122.354, 47.615], [-122.36, 47.6185]], ang: -32, su: 0.105, sv: 0.092, kind: 'dense', o: [-122.3375, 47.6115] },
+      { poly: R(-122.2055, 47.6085, -122.187, 47.6225), ang: 0, su: 0.225, sv: 0.222, kind: 'super', o: [-122.2055, 47.6085] }
+    ];
+    var MAINS = [
+      [[-122.36, 47.6185], [-122.3445, 47.6187], [-122.329, 47.6187], [-122.32, 47.6183], [-122.305, 47.6182]],
+      [[-122.356, 47.6245], [-122.3445, 47.6245], [-122.329, 47.6245]],
+      [[-122.3375, 47.6118], [-122.3386, 47.6187], [-122.339, 47.6266]],
+      [[-122.3424, 47.6187], [-122.3424, 47.6266], [-122.3445, 47.647]],
+      [[-122.3337, 47.6187], [-122.3337, 47.627], [-122.33, 47.629]],
+      [[-122.329, 47.625], [-122.3255, 47.635], [-122.3225, 47.645], [-122.32, 47.6512]],
+      [[-122.321, 47.605], [-122.321, 47.6187], [-122.321, 47.63]],
+      [[-122.3125, 47.61], [-122.3125, 47.635]],
+      [[-122.333, 47.6045], [-122.31, 47.615], [-122.295, 47.625], [-122.28, 47.633]],
+      [[-122.302, 47.595], [-122.302, 47.64], [-122.304, 47.645], [-122.304, 47.65]],
+      [[-122.2015, 47.585], [-122.2015, 47.61], [-122.2015, 47.63], [-122.2015, 47.65]],
+      [[-122.215, 47.6175], [-122.2015, 47.6175], [-122.188, 47.6175], [-122.16, 47.6175]],
+      [[-122.1955, 47.605], [-122.1955, 47.635]], [[-122.215, 47.61], [-122.188, 47.61]], [[-122.2015, 47.6135], [-122.188, 47.6135]],
+      [[-122.1895, 47.6], [-122.1895, 47.63]], [[-122.219, 47.605], [-122.219, 47.655]], [[-122.23, 47.59], [-122.229, 47.55]],
+      [[-122.37, 47.628], [-122.356, 47.6187], [-122.345, 47.608]], [[-122.32, 47.599], [-122.29, 47.57], [-122.27, 47.545]]
+    ];
+    var HWY = [
+      [[-122.326, 47.52], [-122.322, 47.55], [-122.321, 47.575], [-122.322, 47.592], [-122.326, 47.602], [-122.329, 47.609], [-122.3285, 47.615],
+        [-122.327, 47.623], [-122.3245, 47.632], [-122.3225, 47.641], [-122.3205, 47.65], [-122.3195, 47.662], [-122.3195, 47.68], [-122.32, 47.73]],
+      [[-122.3445, 47.6187], [-122.3445, 47.64], [-122.347, 47.65], [-122.348, 47.66], [-122.346, 47.68], [-122.345, 47.73]],
+      [[-122.324, 47.596], [-122.31, 47.5915], [-122.296, 47.59], [-122.288, 47.5897], [-122.27, 47.5893], [-122.255, 47.589], [-122.24, 47.5885],
+        [-122.225, 47.588], [-122.214, 47.5872], [-122.206, 47.5858], [-122.195, 47.5815], [-122.18, 47.579], [-122.16, 47.5775], [-122.13, 47.577], [-122.08, 47.575]],
+      [[-122.322, 47.643], [-122.312, 47.6428], [-122.304, 47.644], [-122.297, 47.645], [-122.29, 47.6448], [-122.28, 47.644], [-122.265, 47.642],
+        [-122.252, 47.64], [-122.244, 47.6388], [-122.235, 47.6382], [-122.22, 47.6378], [-122.205, 47.6375], [-122.195, 47.637], [-122.187, 47.6362],
+        [-122.17, 47.64], [-122.14, 47.65]],
+      [[-122.186, 47.73], [-122.185, 47.7], [-122.186, 47.67], [-122.187, 47.645], [-122.1878, 47.63], [-122.188, 47.615], [-122.187, 47.6],
+        [-122.184, 47.585], [-122.182, 47.57], [-122.18, 47.54], [-122.185, 47.52]]
+    ];
+    var BRIDGES = [
+      [[-122.2985, 47.6449], [-122.29, 47.6448], [-122.28, 47.644], [-122.265, 47.642], [-122.252, 47.64], [-122.2442, 47.6388]],
+      [[-122.288, 47.5897], [-122.27, 47.5893], [-122.255, 47.589]],
+      [[-122.214, 47.5872], [-122.206, 47.5858]],
+      [[-122.3035, 47.6458], [-122.3035, 47.6492]], [[-122.3205, 47.6462], [-122.32, 47.6518]], [[-122.3495, 47.6492], [-122.3492, 47.6518]],
+      [[-122.347, 47.648], [-122.3475, 47.6518]], [[-122.376, 47.6578], [-122.3765, 47.6612]]
+    ];
+    var RAIL = [
+      { pts: [[-122.333, 47.603], [-122.3355, 47.6075], [-122.3372, 47.6115], [-122.33, 47.617], [-122.3205, 47.6195], [-122.31, 47.635], [-122.3035, 47.6495], [-122.314, 47.66], [-122.315, 47.676]], dash: true },
+      { pts: [[-122.328, 47.598], [-122.317, 47.5925], [-122.296, 47.59], [-122.27, 47.5893], [-122.255, 47.589], [-122.233, 47.5884], [-122.214, 47.5872], [-122.206, 47.5858],
+        [-122.192, 47.585], [-122.1905, 47.595], [-122.1905, 47.608], [-122.1918, 47.615], [-122.184, 47.618], [-122.178, 47.6235], [-122.165, 47.63], [-122.14, 47.635]], dash: false },
+      { pts: [[-122.3375, 47.6118], [-122.3386, 47.6187], [-122.339, 47.6262], [-122.3365, 47.6264], [-122.3337, 47.6262], [-122.3337, 47.622]], dash: false, thin: true }
+    ];
+    var STATIONS = [[-122.3372, 47.6115], [-122.3205, 47.6195], [-122.3035, 47.6495], [-122.328, 47.598], [-122.233, 47.5884], [-122.192, 47.585],
+      [-122.1905, 47.608], [-122.1918, 47.615], [-122.184, 47.618], [-122.178, 47.6235]];
+    var HILLS = [[-122.357, 47.637, 1.0, 1.0, 1.0], [-122.317, 47.627, 1.2, 1.3, 0.85], [-122.323, 47.607, 0.6, 0.5, 0.5],
+      [-122.311, 47.567, 0.9, 2.3, 0.8], [-122.401, 47.645, 1.0, 0.8, 0.9], [-122.233, 47.56, 1.0, 2.6, 0.75], [-122.218, 47.632, 0.8, 0.7, 0.55],
+      [-122.293, 47.585, 0.6, 0.5, 0.45], [-122.294, 47.612, 0.5, 1.4, 0.45], [-122.345, 47.665, 1.4, 0.9, 0.55], [-122.39, 47.565, 1.8, 2.0, 0.9],
+      [-122.19, 47.68, 1.5, 1.5, 0.55], [-122.15, 47.56, 3.0, 2.0, 1.1], [-122.175, 47.605, 1.2, 1.2, 0.35], [-122.3, 47.68, 1.5, 1.2, 0.45]];
+    var PLACES = {
+      'Lake Union': [-122.3345, 47.638, 'water'], 'Lake Washington': [-122.262, 47.614, 'water'], 'Union Bay': [-122.288, 47.6515, 'water'],
+      'Portage Bay': [-122.312, 47.6485, 'water'], 'Elliott Bay': [-122.362, 47.606, 'water'], 'Meydenbauer Bay': [-122.2112, 47.6118, 'water'],
+      'South Lake Union': [-122.3365, 47.6225, 'place'], 'Denny Triangle': [-122.3355, 47.6155, 'place'], 'Belltown': [-122.348, 47.6145, 'place'],
+      'The Regrade': [-122.3445, 47.6155, 'place'], 'Westlake': [-122.338, 47.6125, 'place'], 'Downtown': [-122.335, 47.607, 'place'],
+      'Uptown': [-122.356, 47.6235, 'place'], 'Queen Anne': [-122.357, 47.637, 'place'], 'Capitol Hill': [-122.3185, 47.6245, 'place'],
+      'Eastlake': [-122.326, 47.6395, 'place'], 'Montlake': [-122.304, 47.6395, 'place'], 'Madison Park': [-122.2835, 47.6345, 'place'],
+      'Medina': [-122.2335, 47.6215, 'place'], 'Clyde Hill': [-122.2175, 47.6315, 'place'], 'Hunts Point': [-122.2305, 47.6425, 'place'],
+      'Mercer Island': [-122.2385, 47.5835, 'place'], 'Bellevue': [-122.1965, 47.6155, 'place'], 'Downtown Bellevue': [-122.1965, 47.6155, 'place'],
+      'City Center': [-122.1962, 47.6148, 'place'], 'Old Bellevue': [-122.2032, 47.6103, 'place'], 'Northwest Village': [-122.2032, 47.6195, 'place'],
+      'Ashwood': [-122.1915, 47.6192, 'place'], 'East Main': [-122.1905, 47.6085, 'place'], 'Wilburton': [-122.183, 47.616, 'place'],
+      'Kirkland': [-122.206, 47.676, 'place'], 'Seattle': [-122.33, 47.6062, 'place'],
+      'Lake Union Park': [-122.3375, 47.627, 'park'], 'Denny Park': [-122.3411, 47.6197, 'park'], 'Downtown Park': [-122.2045, 47.6124, 'park'],
+      'Cal Anderson Park': [-122.3195, 47.617, 'park'], 'Washington Park Arboretum': [-122.296, 47.636, 'park']
+    };
+    var DEFAULT_PLACES = ['Lake Union', 'Lake Washington', 'South Lake Union', 'Denny Triangle', 'Capitol Hill', 'Downtown Bellevue',
+      'Medina', 'Mercer Island', 'Union Bay', 'Elliott Bay', 'Meydenbauer Bay', 'Montlake'];
+    var STREETS = {
+      'Westlake Ave N': [-122.3389, 47.6232, 'ns'], 'Terry Ave N': [-122.337, 47.6232, 'ns'], 'Boren Ave N': [-122.3355, 47.6232, 'ns'],
+      'Fairview Ave N': [-122.3337, 47.6232, 'ns'], 'Dexter Ave N': [-122.3424, 47.6232, 'ns'], '9th Ave N': [-122.3398, 47.6232, 'ns'],
+      'Harrison St': [-122.3365, 47.6222, 'ew'], 'Thomas St': [-122.3365, 47.6209, 'ew'], 'Republican St': [-122.3365, 47.6234, 'ew'],
+      'Mercer St': [-122.3365, 47.6245, 'ew'], 'John St': [-122.3365, 47.6198, 'ew'], 'Denny Way': [-122.3365, 47.6187, 'ew'],
+      'Valley St': [-122.3365, 47.6262, 'ew'], '7th Ave': [-122.338, 47.6155, 'dt'], '8th Ave': [-122.3365, 47.6155, 'dt'],
+      '9th Ave': [-122.335, 47.6155, 'dt'], 'Lenora St': [-122.3395, 47.6158, 'dt'], 'Blanchard St': [-122.3405, 47.6166, 'dt'],
+      'Bell St': [-122.3415, 47.6174, 'dt'], 'Virginia St': [-122.3385, 47.6143, 'dt'],
+      'Bellevue Way NE': [-122.2015, 47.6155, 'ns'], '106th Ave NE': [-122.1985, 47.6155, 'ns'], '108th Ave NE': [-122.1955, 47.6155, 'ns'],
+      '110th Ave NE': [-122.1925, 47.6155, 'ns'], '112th Ave NE': [-122.1895, 47.6155, 'ns'], 'NE 4th St': [-122.1965, 47.6135, 'ew'],
+      'NE 6th St': [-122.1965, 47.615, 'ew'], 'NE 8th St': [-122.1965, 47.6175, 'ew'], 'NE 10th St': [-122.1965, 47.6195, 'ew'],
+      'NE 12th St': [-122.1965, 47.6215, 'ew'], 'Main St': [-122.1965, 47.61, 'ew'],
+      'Howell St': [-122.333, 47.6148, 'dt'], 'Stewart St': [-122.3362, 47.6138, 'dt'], 'Boren Ave': [-122.3318, 47.6158, 'dt'],
+      '5th Ave': [-122.3452, 47.6168, 'dt']
+    };
+    var WIDE_FIRST = ['South Lake Union', 'Bellevue', 'Lake Washington', 'Lake Union', 'Mercer Island', 'Capitol Hill', 'Medina',
+      'Denny Triangle', 'Belltown', 'Union Bay'];
+    var WIDE_MAX = 12;
+    var WIDE_NAMES = [
+      { name: 'South Lake Union', lines: ['SOUTH LAKE', 'UNION'], sides: ['e', 'n'] },
+      { name: 'Bellevue', sides: ['w', 's', 'n'] },
+      { name: 'Lake Washington', at: [-122.2585, 47.6175], rot: -90, sides: ['c'] },
+      { name: 'Lake Washington', at: [-122.2585, 47.6395], rot: -90, small: true, sides: ['c'] },
+      { name: 'Lake Union', sides: ['e', 'w', 'n'] },
+      { name: 'Mercer Island', at: [-122.2335, 47.5845], lines: ['MERCER', 'ISLAND'], sides: ['c'] },
+      { name: 'Union Bay', sides: ['c', 'n'] },
+      { name: 'Capitol Hill', sides: ['s', 'c'], minK: 0.4 },
+      { name: 'Medina', sides: ['e', 'n'], minK: 0.4 },
+      { name: 'Belltown', sides: ['w', 's'], minK: 0.4 },
+      { name: 'Denny Triangle', sides: ['s', 'e'], minK: 0.4 },
+      { name: 'Portage Bay', sides: ['c', 'n'], minK: 0.4 },
+      { name: 'Montlake', sides: ['e', 'n', 's'], minK: 0.4 },
+      { name: 'Eastlake', sides: ['n', 'e'], minK: 0.4 }
+    ];
+    function wideOrder(list) {
+      var out = [], k;
+      for (k = 0; k < WIDE_FIRST.length; k++) if (list.indexOf(WIDE_FIRST[k]) >= 0) out.push(WIDE_FIRST[k]);
+      for (k = 0; k < list.length; k++) if (out.indexOf(list[k]) < 0) out.push(list[k]);
+      return out;
+    }
+    var PLACE_DISTRICT = { 'Bellevue': 'Downtown Bellevue', 'Belltown': 'Denny Regrade' };
+
+    var LON0 = -122.36, LAT0 = 47.66, KX = 75.1, KY = 111.2;
+    var TALL = { key: 'tall', rot: true, k: 0.62, xc: 1.7, yc: 4.5, X: 5.0, Y: 3.8 };
+    var cur = TALL;
+    var heartOfWin = {};
+    function xfFor(full, heartW) {
+      if (!full || !(full.w > 0) || full.h >= full.w) return TALL;
+      var wk = [full.x, full.y, full.w, full.h].map(r3).join(',');
+      if (heartW > 0) heartOfWin[wk] = heartW;
+      else heartW = heartOfWin[wk] || 0;
+      return wideXf(full, heartW);
+    }
+    var WIDE_KM = { xc: 7.02, yc: 4.55, k: 0.33, kMax: 0.45, grow: 0.08, from: 16.6, y: 4.85, span: 10.5, edge: 0.43 };
+    function wideXf(full, heartW) {
+      var Lo = (ECE.BoardData && ECE.BoardData.LAYOUT) || { widthUnits: 10 };
+      var Hb = Lo.widthUnits || 10, z = Hb / full.h, Wb = full.w * z;
+      var kb = clamp(WIDE_KM.k + Math.max(0, Wb - WIDE_KM.from) * WIDE_KM.grow, WIDE_KM.k, WIDE_KM.kMax);
+      if (heartW > 0) kb = Math.max(WIDE_KM.k, Math.min(kb, (heartW - WIDE_KM.edge) / WIDE_KM.span));
+      kb = Math.round(kb * 10000) / 10000;
+      return { key: 'wide' + [full.x, full.y, full.w, full.h].map(r3).join(',') + ':' + kb, rot: false, k: kb / z, kb: kb, z: z, xc: WIDE_KM.xc, yc: WIDE_KM.yc,
+        X: full.x + full.w / 2, Y: full.y + WIDE_KM.y / z, full: { x: full.x, y: full.y, w: full.w, h: full.h } };
+    }
+    function km(p) { return [(p[0] - LON0) * KX, (LAT0 - p[1]) * KY]; }
+    function proj(p) {
+      var q = km(p), f = cur;
+      return f.rot ? [f.X + (f.yc - q[1]) * f.k, f.Y + (q[0] - f.xc) * f.k] : [f.X + (q[0] - f.xc) * f.k, f.Y + (q[1] - f.yc) * f.k];
+    }
+    function unproj(X, Y) {
+      var f = cur;
+      return f.rot ? [f.xc + (Y - f.Y) / f.k, f.yc - (X - f.X) / f.k] : [f.xc + (X - f.X) / f.k, f.yc + (Y - f.Y) / f.k];
+    }
+    function projAll(list) { return list.map(proj); }
+
+    function hash2(x, y, s) {
+      var h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(s | 0, 1274126177);
+      h = Math.imul(h ^ (h >>> 13), 1274126177);
+      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+    }
+    function vnoise(x, y, s) {
+      var ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy;
+      var u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+      var a = hash2(ix, iy, s), b = hash2(ix + 1, iy, s), c = hash2(ix, iy + 1, s), d = hash2(ix + 1, iy + 1, s);
+      return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+    }
+    function fbm(x, y, s, oct) {
+      var f = 0, amp = 0.5, fr = 1;
+      for (var o = 0; o < oct; o++) { f += amp * vnoise(x * fr, y * fr, s + o * 31); fr *= 2.07; amp *= 0.5; }
+      return f;
+    }
+    function rough(pts, seed, amp, box) {
+      var out = [], n = pts.length;
+      var away = function (a, b) {
+        return !!box && ((a[0] < box[0] && b[0] < box[0]) || (a[0] > box[2] && b[0] > box[2]) || (a[1] < box[1] && b[1] < box[1]) || (a[1] > box[3] && b[1] > box[3]));
+      };
+      for (var i = 0; i < n; i++) {
+        var a = pts[i], b = pts[(i + 1) % n];
+        var dx = b[0] - a[0], dy = b[1] - a[1], len = Math.sqrt(dx * dx + dy * dy) || 1;
+        var k = away(a, b) ? 1 : Math.max(1, Math.round(len / 0.06)), nx = -dy / len, ny = dx / len;
+        for (var j = 0; j < k; j++) {
+          var t = j / k, u = i * 1.7 + j * 0.45;
+          var off = j === 0 ? 0 : ((vnoise(u, seed * 3.1, seed) - 0.5) * 2) * amp * Math.min(1, len / 0.25);
+          out.push([a[0] + dx * t + nx * off, a[1] + dy * t + ny * off]);
+        }
+      }
+      return out;
+    }
+    function trace(pts, closed, m, c) {
+      var n = pts.length;
+      if (n < 2) return;
+      var at = function (i) { return closed ? pts[(i + n) % n] : pts[Math.max(0, Math.min(n - 1, i))]; };
+      m(pts[0][0], pts[0][1]);
+      var last = closed ? n : n - 1;
+      for (var i = 0; i < last; i++) {
+        var p0 = at(i - 1), p1 = at(i), p2 = at(i + 1), p3 = at(i + 2);
+        c(p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6, p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6, p2[0], p2[1]);
+      }
+    }
+    function svgPath(pts, closed) {
+      var d = '';
+      trace(pts, closed, function (x, y) { d += 'M' + r3(x) + ' ' + r3(y); },
+        function (a, b, c2, d2, x, y) { d += 'C' + r3(a) + ' ' + r3(b) + ' ' + r3(c2) + ' ' + r3(d2) + ' ' + r3(x) + ' ' + r3(y); });
+      return d + (closed ? 'Z' : '');
+    }
+    function linePath(pts) {
+      var d = '';
+      for (var i = 0; i < pts.length; i++) d += (i ? 'L' : 'M') + r3(pts[i][0]) + ' ' + r3(pts[i][1]);
+      return d;
+    }
+    function gridLines(G) {
+      var a = (G.ang || 0) * Math.PI / 180, ca = Math.cos(a), sa = Math.sin(a);
+      var poly = G.poly.map(km), o = km(G.o || G.poly[0]);
+      var toUV = function (p) { var dx = p[0] - o[0], dy = p[1] - o[1]; return [dx * ca + dy * sa, -dx * sa + dy * ca]; };
+      var toXY = function (u, v) { return [o[0] + u * ca - v * sa, o[1] + u * sa + v * ca]; };
+      var uv = poly.map(toUV), u0 = Infinity, u1 = -Infinity, v0 = Infinity, v1 = -Infinity;
+      uv.forEach(function (q) { u0 = Math.min(u0, q[0]); u1 = Math.max(u1, q[0]); v0 = Math.min(v0, q[1]); v1 = Math.max(v1, q[1]); });
+      var lines = [], arts = [], blocks = [];
+      var ua = Math.floor(u0 / G.su) * G.su, va = Math.floor(v0 / G.sv) * G.sv;
+      for (var u = ua, iu = 0; u <= u1 + 1e-9; u += G.su, iu++) (G.kind === 'res' && Math.round(u / G.su) % 4 === 0 ? arts : lines).push([toXY(u, v0 - 0.05), toXY(u, v1 + 0.05)]);
+      for (var v = va, iv = 0; v <= v1 + 1e-9; v += G.sv, iv++) (G.kind === 'res' && Math.round(v / G.sv) % 4 === 0 ? arts : lines).push([toXY(u0 - 0.05, v), toXY(u1 + 0.05, v)]);
+      if (G.kind === 'dense' || G.kind === 'super') {
+        var bi = 0;
+        for (var uu = ua; uu < u1; uu += G.su) {
+          for (var vv = va; vv < v1; vv += G.sv) {
+            bi++;
+            var n = 1 + Math.floor(hash2(bi, 7, 3) * (G.kind === 'super' ? 3 : 2.4));
+            for (var q = 0; q < n; q++) {
+              var r1 = hash2(bi, q, 11), r2 = hash2(bi, q, 13), r4 = hash2(bi, q, 17), r5 = hash2(bi, q, 19);
+              var mu = G.su * 0.16, mv = G.sv * 0.16;
+              var bw = (G.su - 2 * mu) * (n === 1 ? 0.7 + r1 * 0.3 : 0.42 + r1 * 0.2), bh = (G.sv - 2 * mv) * (n === 1 ? 0.6 + r2 * 0.4 : 0.4 + r2 * 0.3);
+              var bu = uu + mu + (G.su - 2 * mu - bw) * (n === 1 ? 0.5 : (q % 2 ? 0.95 : 0.05) * 0.9 + r4 * 0.05);
+              var bv = vv + mv + (G.sv - 2 * mv - bh) * (n === 1 ? 0.5 : (q < 2 ? 0.05 : 0.95) * 0.9 + r5 * 0.05);
+              blocks.push([toXY(bu, bv), toXY(bu + bw, bv), toXY(bu + bw, bv + bh), toXY(bu, bv + bh)]);
+            }
+          }
+        }
+      }
+      var inside = function (q) {
+        var c = false;
+        for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+          var a = poly[i], b = poly[j];
+          if (((a[1] > q[1]) !== (b[1] > q[1])) && (q[0] < (b[0] - a[0]) * (q[1] - a[1]) / (b[1] - a[1] + 1e-12) + a[0])) c = !c;
+        }
+        return c;
+      };
+      blocks = blocks.filter(function (b) { return inside([(b[0][0] + b[2][0]) / 2, (b[0][1] + b[2][1]) / 2]); });
+      return { lines: lines, arts: arts, blocks: blocks, poly: poly };
+    }
+    var shapeMemo = {};
+    function shapes() {
+      if (shapeMemo[cur.key]) return shapeMemo[cur.key];
+      var toC = function (p) { var f = cur; return f.rot ? [f.X + (f.yc - p[1]) * f.k, f.Y + (p[0] - f.xc) * f.k] : [f.X + (p[0] - f.xc) * f.k, f.Y + (p[1] - f.yc) * f.k]; };
+      var F0 = cur.full || { x: 0, y: 0, w: 10, h: 14 }, box = [F0.x - 1.5, F0.y - 1.5, F0.x + F0.w + 1.5, F0.y + F0.h + 1.5];
+      var inBox = function (pts) {
+        for (var i = 0; i < pts.length; i++) if (pts[i][0] >= box[0] && pts[i][0] <= box[2] && pts[i][1] >= box[1] && pts[i][1] <= box[3]) return true;
+        return false;
+      };
+      var water = [[SOUND, 1, 0.02], [UNION, 2, 0.008], [WASH, 3, 0.016], [SAMMAMISH, 4, 0.01]].map(function (w) { var q = projAll(w[0]); return inBox(q) || w[0] === SOUND || w[0] === WASH ? rough(q, w[1], w[2], box) : null; }).filter(Boolean);
+      var S = {
+        water: water,
+        islands: [rough(projAll(MERCER), 5, 0.012, box)],
+        parks: PARKS.map(function (p) { return { pts: projAll(p[0]), kind: p[1] }; }),
+        mains: MAINS.map(projAll), hwy: HWY.map(projAll), bridges: BRIDGES.map(projAll),
+        rail: RAIL.map(function (r) { return { pts: projAll(r.pts), dash: r.dash, thin: r.thin }; }),
+        stations: projAll(STATIONS),
+        grids: GRIDS.map(function (G) {
+          var gl = gridLines(G);
+          var blocks = gl.blocks.map(function (b) {
+            var c = b.map(toC), x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+            c.forEach(function (q) { x0 = Math.min(x0, q[0]); y0 = Math.min(y0, q[1]); x1 = Math.max(x1, q[0]); y1 = Math.max(y1, q[1]); });
+            return { c: c, y0: y0, y1: y1, x0: x0, x1: x1 };
+          });
+          return { kind: G.kind, poly: gl.poly.map(toC), lines: gl.lines.map(function (l) { return l.map(toC); }), arts: gl.arts.map(function (l) { return l.map(toC); }), blocks: blocks };
+        })
+      };
+      shapeMemo[cur.key] = S;
+      return S;
+    }
+
+    function canvas(w, h) {
+      var B = base();
+      if (B && typeof B.cpuCanvas === 'function') return B.cpuCanvas(w, h);
+      var c = null;
+      try { c = document.createElement('canvas'); } catch (e) { return null; }
+      if (!c || typeof c.getContext !== 'function') return null;
+      c.width = Math.max(1, Math.round(w)); c.height = Math.max(1, Math.round(h));
+      return c.getContext('2d') ? c : null;
+    }
+    function rrect(ctx, x, y, w, h, r) {
+      r = Math.min(r, w / 2, h / 2);
+      ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+    }
+    var HAS_P2D = typeof Path2D === 'function';
+    function painter(cv, win) {
+      var ctx = cv.getContext('2d'), s = cv.width / win.w, lw = win.lw || 1;
+      var X = function (x) { return (x - win.x) * s; }, Y = function (y) { return (y - win.y) * s; };
+      var p2d = function () {
+        if (!HAS_P2D) return null;
+        var key = cur.key + '|' + [win.x, win.y, win.w, win.h, cv.width].join(',');
+        if (cv.__d1p && cv.__d1p.key === key) return cv.__d1p;
+        var S = shapes(), make = function (list, withRect) {
+          var p = new Path2D();
+          if (withRect) p.rect(0, 0, cv.width, cv.height);
+          for (var i = 0; i < list.length; i++) {
+            trace(list[i], true, function (x, y) { p.moveTo(X(x), Y(y)); }, function (a, b, c2, d2, x, y) { p.bezierCurveTo(X(a), Y(b), X(c2), Y(d2), X(x), Y(y)); });
+            p.closePath();
+          }
+          return p;
+        };
+        cv.__d1p = { key: key, water: make(S.water), land: make(S.water, true), holes: make(S.islands, true), coast: make(S.water.concat(S.islands)), islands: make(S.islands) };
+        return cv.__d1p;
+      };
+      return { ctx: ctx, s: s, lw: lw, X: X, Y: Y, W: cv.width, H: cv.height, p2d: p2d,
+        poly: function (pts, closed) {
+          trace(pts, closed !== false, function (x, y) { ctx.moveTo(X(x), Y(y)); },
+            function (a, b, c2, d2, x, y) { ctx.bezierCurveTo(X(a), Y(b), X(c2), Y(d2), X(x), Y(y)); });
+          if (closed !== false) ctx.closePath();
+        },
+        line: function (pts) { for (var i = 0; i < pts.length; i++) { if (i) ctx.lineTo(X(pts[i][0]), Y(pts[i][1])); else ctx.moveTo(X(pts[i][0]), Y(pts[i][1])); } },
+        rect: function (pts) { ctx.moveTo(X(pts[0][0]), Y(pts[0][1])); for (var i = 1; i < pts.length; i++) ctx.lineTo(X(pts[i][0]), Y(pts[i][1])); ctx.closePath(); } };
+    }
+    function waterPath(P, S) {
+      P.ctx.beginPath();
+      for (var i = 0; i < S.water.length; i++) P.poly(S.water[i]);
+    }
+    function landClip(P, S) {
+      var ctx = P.ctx, q = P.p2d();
+      if (q) { ctx.clip(q.land, 'evenodd'); return; }
+      ctx.beginPath();
+      ctx.rect(0, 0, P.W, P.H);
+      for (var i = 0; i < S.water.length; i++) P.poly(S.water[i]);
+      ctx.clip('evenodd');
+    }
+    function waterClip(P, S) {
+      var ctx = P.ctx, q = P.p2d();
+      if (q) { ctx.clip(q.water); if (S.islands.length) ctx.clip(q.holes, 'evenodd'); return; }
+      waterPath(P, S);
+      ctx.clip();
+      if (S.islands.length) {
+        ctx.beginPath(); ctx.rect(0, 0, P.W, P.H);
+        for (var m = 0; m < S.islands.length; m++) P.poly(S.islands[m]);
+        ctx.clip('evenodd');
+      }
+    }
+    function strokeCoast(P, S) {
+      var ctx = P.ctx, q = P.p2d();
+      if (q) { ctx.stroke(q.coast); return; }
+      ctx.beginPath();
+      for (var i = 0; i < S.water.length; i++) P.poly(S.water[i]);
+      for (var m = 0; m < S.islands.length; m++) P.poly(S.islands[m]);
+      ctx.stroke();
+    }
+    var LAND = '#E5EAEF', LAND2 = '#DAE1E8', WATER = '#86B7DF', WATER_DEEP = '#6FA6D5', SHOAL = [188, 218, 240], DEEP = [112, 164, 211];
+    function baseParts(cv, win, hsIn) {
+      var P = painter(cv, win), ctx = P.ctx, s = P.s, W = P.W, H = P.H, S = shapes();
+      var lg = function () { var g = ctx.createLinearGradient(0, 0, W * 0.5, H); g.addColorStop(0, '#EDF1F4'); g.addColorStop(0.55, LAND); g.addColorStop(1, LAND2); return g; };
+      var N = 12;
+      var depth = function (b0, b1) {
+        return function () {
+          ctx.save();
+          waterClip(P, S);
+          ctx.lineJoin = 'round';
+          for (var b = b0; b < b1; b++) {
+            var t = b / (N - 1), wd = 1.3 * Math.pow(1 - t, 1.5) + 0.05, e = Math.pow(t, 1.3);
+            ctx.lineWidth = wd * s;
+            ctx.strokeStyle = 'rgb(' + Math.round(DEEP[0] + (SHOAL[0] - DEEP[0]) * e) + ', ' + Math.round(DEEP[1] + (SHOAL[1] - DEEP[1]) * e) + ', ' + Math.round(DEEP[2] + (SHOAL[2] - DEEP[2]) * e) + ')';
+            ctx.globalAlpha = 0.45 + 0.55 * t; strokeCoast(P, S); ctx.globalAlpha = 1;
+          }
+          ctx.restore();
+        };
+      };
+      return [
+        function () {
+          ctx.fillStyle = lg(); ctx.fillRect(0, 0, W, H);
+          var wg = ctx.createLinearGradient(0, 0, W * 0.4, H);
+          wg.addColorStop(0, WATER); wg.addColorStop(1, WATER_DEEP);
+          ctx.fillStyle = wg;
+          var q = P.p2d();
+          if (q) ctx.fill(q.water); else { waterPath(P, S); ctx.fill(); }
+          ctx.fillStyle = lg();
+          if (q) ctx.fill(q.islands); else for (var m = 0; m < S.islands.length; m++) { ctx.beginPath(); P.poly(S.islands[m]); ctx.fill(); }
+        },
+        depth(0, 3), depth(3, 6), depth(6, 9), depth(9, 12),
+        function () {
+          ctx.save();
+          landClip(P, S);
+          for (var i = 0; i < S.parks.length; i++) {
+            var pk = S.parks[i];
+            ctx.beginPath(); P.rect(pk.pts);
+            ctx.fillStyle = pk.kind === 'plaza' ? '#E4E8E3' : '#D3E6CB'; ctx.fill();
+          }
+          for (var gi = 0; gi < S.grids.length; gi++) {
+            var G = S.grids[gi];
+            if (G.kind !== 'dense' && G.kind !== 'super') continue;
+            ctx.beginPath(); P.rect(G.poly); ctx.fillStyle = '#F3F5F7'; ctx.fill();
+          }
+          ctx.restore();
+        },
+        function () {
+          ctx.save();
+          landClip(P, S);
+          var gw = hillGrid(W), hs = hsIn || hillshade(win, gw, Math.round(gw * H / W));
+          if (hs) {
+            ctx.imageSmoothingEnabled = true;
+            try { ctx.imageSmoothingQuality = 'high'; } catch (e) { }
+            ctx.drawImage(hs, 0, 0, W, H);
+          }
+          ctx.restore();
+        }
+      ];
+    }
+    function hillGrid(W) { return Math.max(60, Math.min(420, Math.round(W / 2.6))); }
+    function heightAt(x, y) {
+      var h = 0;
+      for (var i = 0; i < HILLS.length; i++) {
+        var c = HILLS_KM[i], dx = (x - c[0]) / c[2], dy = (y - c[1]) / c[3];
+        var q = dx * dx + dy * dy;
+        if (q < 9) h += c[4] * Math.exp(-q);
+      }
+      return h + (fbm(x * 0.8, y * 0.8, 7, 3) - 0.5) * 0.3;
+    }
+    var HILLS_KM = HILLS.map(function (h) { var q = km([h[0], h[1]]); return [q[0], q[1], h[2], h[3], h[4]]; });
+    function hillJob(win, gw, gh) {
+      var cv = canvas(gw, gh), c = cv && cv.getContext('2d');
+      if (!c) return null;
+      var img = c.createImageData(gw, gh), d = img.data;
+      var hw = gw + 2, h = new Float32Array(hw * (gh + 2)), stepU = win.w / gw;
+      var k = 1 / (stepU / cur.k) * 0.09;
+      var heights = function (j) {
+        for (var i = 0; i < hw; i++) {
+          var gx = win.x + (i - 1) / gw * win.w, gy = win.y + (j - 1) / gh * win.h, q = unproj(gx, gy);
+          h[j * hw + i] = heightAt(q[0], q[1]);
+        }
+      };
+      var shade = function (y) {
+        for (var x = 0; x < gw; x++) {
+          var at = (y + 1) * hw + (x + 1);
+          var v = ((h[at - 1] - h[at + 1]) + (h[at - hw] - h[at + hw])) * k;
+          var p = (y * gw + x) * 4;
+          if (v > 0) { d[p] = 255; d[p + 1] = 255; d[p + 2] = 255; d[p + 3] = Math.min(150, v * 260); }
+          else { d[p] = 48; d[p + 1] = 74; d[p + 2] = 108; d[p + 3] = Math.min(96, -v * 190); }
+        }
+      };
+      return { rows: (gh + 2) + gh,
+        run: function (r0, r1) { for (var r = r0; r < r1; r++) { if (r < gh + 2) heights(r); else shade(r - gh - 2); } },
+        done: function () { c.putImageData(img, 0, 0); return cv; } };
+    }
+    function hillshade(win, gw, gh) { var j = hillJob(win, gw, gh); if (!j) return null; j.run(0, j.rows); return j.done(); }
+
+    function frostLayer(half, levels) {
+      var cur2 = half, w = half.width, h = half.height;
+      for (var k = 0; k < (levels || 4); k++) {
+        var nw = Math.max(1, Math.round(w / 2)), nh = Math.max(1, Math.round(h / 2));
+        var t = canvas(nw, nh), tc = t && t.getContext('2d');
+        if (!tc) return null;
+        tc.imageSmoothingEnabled = true;
+        tc.drawImage(cur2, 0, 0, nw, nh);
+        cur2 = t; w = nw; h = nh;
+      }
+      var fl = canvas(half.width, half.height), fc = fl && fl.getContext('2d');
+      if (!fc) return null;
+      fc.imageSmoothingEnabled = true;
+      fc.drawImage(cur2, 0, 0, fl.width, fl.height);
+      fc.fillStyle = 'rgba(248, 251, 253, 0.82)'; fc.fillRect(0, 0, fl.width, fl.height);
+      return fl;
+    }
+    function cardsPath(ctx, X, Y, s, cards) {
+      ctx.beginPath();
+      for (var i = 0; i < cards.length; i++) { var c = cards[i]; rrect(ctx, X(c.x), Y(c.y), c.w * s, c.h * s, (c.rx || 0.09) * s); }
+    }
+    function shadows(P, cards) {
+      var ctx = P.ctx;
+      ctx.save();
+      ctx.shadowColor = 'rgba(16, 34, 56, 0.34)'; ctx.shadowBlur = 0.12 * P.s; ctx.shadowOffsetY = 0.035 * P.s;
+      cardsPath(ctx, P.X, P.Y, P.s, cards); ctx.fillStyle = '#C9D4DF'; ctx.fill();
+      ctx.restore();
+    }
+    function frost(ctx, fl, W, H, s, X, Y, cards) {
+      ctx.save();
+      cardsPath(ctx, X, Y, s, cards); ctx.clip();
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(fl, 0, 0, W, H);
+      for (var j = 0; j < cards.length; j++) {
+        var c2 = cards[j], x = X(c2.x), y = Y(c2.y), cw = c2.w * s, ch = c2.h * s;
+        if (c2.tint) { ctx.globalAlpha = 0.07; ctx.fillStyle = c2.tint; ctx.fillRect(x, y, cw, ch); ctx.globalAlpha = 1; }
+        ctx.fillStyle = 'rgba(40, 62, 88, 0.12)'; ctx.fillRect(x, y + ch - 0.02 * s, cw, 0.02 * s);
+        var sh = ctx.createLinearGradient(x, y, x + cw * 0.35, y + ch);
+        sh.addColorStop(0, 'rgba(255, 255, 255, 0.5)'); sh.addColorStop(0.45, 'rgba(255, 255, 255, 0.08)'); sh.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = sh; ctx.fillRect(x, y, cw, ch);
+      }
+      ctx.restore();
+    }
+    function fine(st, win, y0, y1) {
+      var ctx = st.ctx, P = painter(st.cv, win), s = P.s, X = P.X, Y = P.Y, W = P.W, S = shapes(), lw = P.lw;
+      ctx.imageSmoothingEnabled = true;
+      try { ctx.imageSmoothingQuality = 'high'; } catch (e) { }
+      ctx.drawImage(st.half, 0, 0, W, P.H);
+      var px = function (u) { return Math.max(0.6, u * s * lw); };
+      var by0 = win.y + y0 / s - 0.3, by1 = win.y + y1 / s + 0.3;
+      ctx.save();
+      landClip(P, S);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.save();
+      ctx.beginPath();
+      for (var i = 0; i < S.parks.length; i++) if (S.parks[i].kind === 'park') P.rect(S.parks[i].pts);
+      ctx.clip();
+      ctx.beginPath();
+      var step = Math.max(3, 0.035 * s);
+      for (var hx = -P.H; hx < W; hx += step) { ctx.moveTo(hx, y1 + 2); ctx.lineTo(hx + (y1 - y0 + 4), y0 - 2); }
+      ctx.lineWidth = Math.max(0.6, 0.004 * s); ctx.strokeStyle = 'rgba(120, 168, 110, 0.45)'; ctx.stroke();
+      ctx.restore();
+      for (var gi = 0; gi < S.grids.length; gi++) {
+        var G = S.grids[gi];
+        ctx.save();
+        ctx.beginPath(); P.rect(G.poly); ctx.clip();
+        ctx.beginPath();
+        for (var li = 0; li < G.lines.length; li++) { var L = G.lines[li]; ctx.moveTo(X(L[0][0]), Y(L[0][1])); ctx.lineTo(X(L[1][0]), Y(L[1][1])); }
+        var dense = G.kind === 'dense' || G.kind === 'super';
+        if (dense) { ctx.lineWidth = px(0.026); ctx.strokeStyle = 'rgba(160, 176, 196, 0.9)'; ctx.stroke(); }
+        ctx.lineWidth = px(dense ? 0.016 : G.kind === 'ind' ? 0.011 : 0.009); ctx.strokeStyle = dense ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)'; ctx.stroke();
+        if (G.arts && G.arts.length) {
+          ctx.beginPath();
+          for (var ai = 0; ai < G.arts.length; ai++) { var A2 = G.arts[ai]; ctx.moveTo(X(A2[0][0]), Y(A2[0][1])); ctx.lineTo(X(A2[1][0]), Y(A2[1][1])); }
+          ctx.lineWidth = px(0.022); ctx.strokeStyle = 'rgba(176, 190, 206, 0.75)'; ctx.stroke();
+          ctx.lineWidth = px(0.014); ctx.strokeStyle = '#FFFFFF'; ctx.stroke();
+        }
+        if (G.blocks.length) {
+          ctx.beginPath();
+          for (var bi = 0; bi < G.blocks.length; bi++) { var b = G.blocks[bi]; if (b.y1 < by0 || b.y0 > by1) continue; P.rect(b.c); }
+          ctx.save();
+          ctx.translate(Math.max(0.6, 0.009 * s), Math.max(0.8, 0.013 * s));
+          ctx.fillStyle = 'rgba(30, 52, 84, 0.2)'; ctx.fill();
+          ctx.restore();
+          ctx.fillStyle = G.kind === 'super' ? '#C5D9EE' : '#CCDEF0'; ctx.fill();
+          ctx.lineWidth = Math.max(0.5, 0.005 * s); ctx.strokeStyle = '#8EA6C0'; ctx.stroke();
+          ctx.save();
+          ctx.translate(-Math.max(0.4, 0.004 * s), -Math.max(0.4, 0.004 * s));
+          ctx.lineWidth = Math.max(0.4, 0.003 * s); ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)'; ctx.stroke();
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+      ctx.beginPath(); for (var mi = 0; mi < S.mains.length; mi++) P.line(S.mains[mi]);
+      ctx.lineWidth = px(0.036); ctx.strokeStyle = 'rgba(160, 174, 192, 0.85)'; ctx.stroke();
+      ctx.lineWidth = px(0.022); ctx.strokeStyle = '#FFFFFF'; ctx.stroke();
+      ctx.restore();
+      ctx.beginPath(); for (var hi2 = 0; hi2 < S.hwy.length; hi2++) P.line(S.hwy[hi2]);
+      ctx.lineWidth = px(0.058); ctx.strokeStyle = 'rgba(120, 136, 156, 0.9)'; ctx.stroke();
+      ctx.lineWidth = px(0.038); ctx.strokeStyle = '#FDFEFE'; ctx.stroke();
+      ctx.save();
+      ctx.lineCap = 'butt';
+      ctx.beginPath(); for (var bj = 0; bj < S.bridges.length; bj++) P.line(S.bridges[bj]);
+      ctx.save(); ctx.translate(0.016 * s, 0.026 * s); ctx.lineWidth = px(0.09); ctx.strokeStyle = 'rgba(24, 60, 100, 0.26)'; ctx.stroke(); ctx.restore();
+      ctx.lineWidth = px(0.088); ctx.strokeStyle = '#4C5D72'; ctx.stroke();
+      ctx.lineWidth = px(0.064); ctx.strokeStyle = '#FFFFFF'; ctx.stroke();
+      ctx.lineWidth = px(0.008); ctx.strokeStyle = 'rgba(76, 93, 114, 0.7)'; ctx.stroke();
+      ctx.restore();
+      for (var ri = 0; ri < S.rail.length; ri++) {
+        var rl = S.rail[ri];
+        ctx.save();
+        ctx.beginPath(); P.line(rl.pts);
+        ctx.lineWidth = px(rl.thin ? 0.026 : 0.036); ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; ctx.stroke();
+        if (rl.dash && typeof ctx.setLineDash === 'function') ctx.setLineDash([0.05 * s, 0.035 * s]);
+        ctx.lineWidth = px(rl.thin ? 0.012 : 0.018); ctx.strokeStyle = rl.thin ? '#4C8FDC' : '#2563B4'; ctx.stroke();
+        ctx.restore();
+      }
+      for (var si = 0; si < S.stations.length; si++) {
+        var q = S.stations[si];
+        ctx.beginPath(); ctx.arc(X(q[0]), Y(q[1]), Math.max(1.2, 0.028 * s), 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF'; ctx.fill(); ctx.lineWidth = Math.max(0.8, 0.012 * s); ctx.strokeStyle = '#2563B4'; ctx.stroke();
+      }
+    }
+    function contourBand(st, win, hair, y0, y1) {
+      var ctx = st.ctx, W = st.cv.width, hb = Math.max(1, y1 - y0);
+      var t = st.tmp;
+      if (!t || t.height < hb || t.width !== W) t = st.tmp = canvas(W, hb);
+      var tc = t && t.getContext('2d');
+      if (!tc) return;
+      var P = painter(st.cv, win), S = shapes(), s = P.s, q = P.p2d();
+      var coast = function () {
+        if (q) { tc.setTransform(1, 0, 0, 1, 0, -y0); return q.coast; }
+        tc.setTransform(1, 0, 0, 1, 0, 0);
+        tc.beginPath();
+        var Xo = function (x) { return P.X(x); }, Yo = function (y) { return P.Y(y) - y0; };
+        var add = function (pts) {
+          trace(pts, true, function (x, y) { tc.moveTo(Xo(x), Yo(y)); }, function (a, b, c2, d2, x, y) { tc.bezierCurveTo(Xo(a), Yo(b), Xo(c2), Yo(d2), Xo(x), Yo(y)); });
+          tc.closePath();
+        };
+        for (var i = 0; i < S.water.length; i++) add(S.water[i]);
+        for (var m = 0; m < S.islands.length; m++) add(S.islands[m]);
+        return null;
+      };
+      var pen = function (path) { if (path) tc.stroke(path); else tc.stroke(); };
+      var dist = [0.05, 0.12, 0.24], alpha = [0.55, 0.4, 0.28];
+      for (var k = 0; k < dist.length; k++) {
+        tc.setTransform(1, 0, 0, 1, 0, 0);
+        tc.globalCompositeOperation = 'source-over';
+        tc.clearRect(0, 0, W, hb);
+        tc.lineJoin = 'round';
+        tc.lineWidth = 2 * dist[k] * s + hair; tc.strokeStyle = '#FFFFFF'; pen(coast());
+        tc.globalCompositeOperation = 'destination-out';
+        tc.lineWidth = Math.max(0, 2 * dist[k] * s - hair); pen(coast());
+        tc.globalCompositeOperation = 'source-over';
+        tc.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.save();
+        ctx.beginPath(); ctx.rect(0, y0, W, hb); ctx.clip();
+        waterClip(P, S);
+        ctx.globalAlpha = alpha[k];
+        ctx.drawImage(t, 0, 0, W, hb, 0, y0, W, hb);
+        ctx.restore();
+      }
+    }
+    function finish(st, win, dpr) {
+      var P = painter(st.cv, win), S = shapes(), ctx = st.ctx;
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = Math.max(1.4, 1.1 * dpr); ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)'; strokeCoast(P, S);
+      ctx.lineWidth = Math.max(0.8, 0.45 * dpr); ctx.strokeStyle = 'rgba(70, 120, 170, 0.55)'; strokeCoast(P, S);
+      if (st.cards && st.fl) frost(ctx, st.fl, P.W, P.H, P.s, P.X, P.Y, st.cards);
+    }
+    function vignette(cv, win, full) {
+      var ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+      var k = win && full && win.w > 0 ? W / win.w : 0;
+      var ox = k ? (full.x - win.x) * k : 0, oy = k ? (full.y - win.y) * k : 0, FW = k ? full.w * k : W, FH = k ? full.h * k : H;
+      var vg = ctx.createRadialGradient(ox + FW / 2, oy + FH * 0.48, Math.min(FW, FH) * 0.32, ox + FW / 2, oy + FH * 0.5, Math.max(FW, FH) * 0.78);
+      vg.addColorStop(0, 'rgba(30, 52, 78, 0)'); vg.addColorStop(1, 'rgba(30, 52, 78, 0.12)');
+      ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+    }
+
+    var BAND_MS = 10;
+    function banded(rows, band, flush, maxBands) { return { banded: true, rows: rows, band: band, flush: flush, maxBands: maxBands || 12 }; }
+    function inBand(ctx, W, y0, y1, fn) {
+      ctx.save();
+      ctx.beginPath(); ctx.rect(0, y0, W, y1 - y0); ctx.clip();
+      try { fn(); } finally { ctx.restore(); }
+    }
+    function flushCv(cv, y) { try { cv.getContext('2d').getImageData(0, Math.max(0, Math.min(cv.height - 1, y | 0)), 1, 1); } catch (e) { } }
+    function steps(win, pxW, pxH, opts) {
+      opts = opts || {};
+      var st = { cv: null }, dpr = opts.dpr || 2;
+      cur = xfFor(opts.full || win, opts.heartW);
+      var halfRows = function () { return st.half.height; }, fullRows = function () { return st.cv.height; };
+      var flushHalf = function (y) { flushCv(st.half, y); }, flushMain = function (y) { flushCv(st.cv, y); };
+      var use = function (fn) { return function () { cur = st.xf; return fn.apply(null, arguments); }; };
+      st.xf = cur;
+      return { st: st, list: [
+        use(function () {
+          st.cv = canvas(pxW, pxH); st.ctx = st.cv && st.cv.getContext('2d');
+          if (!st.ctx) return false;
+          st.half = canvas(Math.max(1, Math.round(st.cv.width / 2)), Math.max(1, Math.round(st.cv.height / 2)));
+          if (!st.half || !st.half.getContext('2d')) return false;
+          shapes();
+          var gw = hillGrid(st.half.width);
+          st.hj = hillJob(win, gw, Math.round(gw * st.half.height / st.half.width));
+        }),
+        banded(function () { return st.hj ? st.hj.rows : 0; }, use(function (y0, y1) { st.hj.run(y0, y1); if (y1 >= st.hj.rows) st.hs = st.hj.done(); }), null, 24),
+        use(function () { st.bp = baseParts(st.half, win, st.hs || null); st.bp[0](); flushHalf(0); }),
+        use(function () { st.bp[1](); flushHalf(0); }),
+        use(function () { st.bp[2](); flushHalf(0); }),
+        use(function () { st.bp[3](); flushHalf(0); }),
+        use(function () { st.bp[4](); flushHalf(0); }),
+        use(function () { st.bp[5](); flushHalf(0); }),
+        banded(halfRows, use(function (y0, y1) { inBand(st.half.getContext('2d'), st.half.width, y0, y1, function () { st.bp[6](); }); }), flushHalf),
+        use(function () {
+          st.hj = null; st.hs = null; st.bp = null;
+          st.cards = opts.cards && opts.cards.length ? opts.cards : null;
+          st.fl = st.cards ? frostLayer(st.half, opts.blurK || (dpr >= 1.5 ? 4 : 3)) : null;
+          if (st.fl) flushCv(st.fl, 0);
+        }),
+        banded(halfRows, use(function (y0, y1) {
+          inBand(st.half.getContext('2d'), st.half.width, y0, y1, function () {
+            vignette(st.half, win, opts.full);
+            if (st.cards) shadows(painter(st.half, win), st.cards);
+          });
+        }), flushHalf),
+        banded(fullRows, use(function (y0, y1) { inBand(st.ctx, st.cv.width, y0, y1, function () { fine(st, win, y0, y1); }); }), flushMain, 16),
+        banded(fullRows, use(function (y0, y1) { contourBand(st, win, Math.max(1, 0.5 * dpr), y0, y1); }), flushMain, 10),
+        banded(fullRows, use(function (y0, y1) { inBand(st.ctx, st.cv.width, y0, y1, function () { finish(st, win, dpr); }); }), flushMain)
+      ] };
+    }
+    function draw(win, pxW, pxH, opts) {
+      var job = steps(win, pxW, pxH, opts);
+      for (var i = 0; i < job.list.length; i++) {
+        var it = job.list[i];
+        if (typeof it === 'function') { if (it() === false) return null; continue; }
+        var n = typeof it.rows === 'function' ? it.rows() : it.rows;
+        if (n > 0 && it.band(0, n) === false) return null;
+      }
+      return job.st.cv;
+    }
+    function now() { try { return performance.now(); } catch (e) { return Date.now(); } }
+    function paint1(win, pxW, pxH, opts, done) {
+      var t0 = now(), job = null, i = 0, work = 0, longest = 0;
+      try { job = steps(win, pxW, pxH, opts); } catch (e) { job = null; }
+      if (!job) { done(null, {}); return; }
+      var chan = null, queue = [], deferred = typeof requestAnimationFrame === 'function' && !(opts && opts.sync);
+      try {
+        if (deferred && typeof MessageChannel === 'function') {
+          chan = new MessageChannel();
+          chan.port1.onmessage = function () { var f = queue.shift(); if (f) f(); };
+          if (typeof chan.port1.unref === 'function') chan.port1.unref();
+        }
+      } catch (ec) { chan = null; }
+      var later = function (fn) {
+        if (!deferred) { fn(); return; }
+        if (chan) { queue.push(fn); chan.port2.postMessage(0); } else setTimeout(fn, 0);
+      };
+      var bands = 0, given = done;
+      done = function (a, b) {
+        if (chan) { try { chan.port1.onmessage = null; chan.port1.close(); chan.port2.close(); } catch (ex) { } chan = null; }
+        given(a, b);
+      };
+      var waited = 0, busy = opts && typeof opts.busy === 'function' ? opts.busy : null, maxWait = (opts && opts.maxWait) || 2000;
+      var cancel = opts && typeof opts.cancel === 'function' ? opts.cancel : null, stepMs = [];
+      var next = function () {
+        var c = false;
+        if (cancel) { try { c = !!cancel(); } catch (ec) { c = false; } }
+        if (c) {
+          if (job.st.cv) { try { job.st.cv.width = 1; job.st.cv.height = 1; } catch (ew) { } }
+          job.st.half = null; job.st.fl = null; job.st.ctx = null; job.st.tmp = null;
+          done(null, { cancelled: true, drawMs: work });
+          return;
+        }
+        if (busy && waited < maxWait) {
+          var b = false;
+          try { b = !!busy(); } catch (e0) { b = false; }
+          if (b) { waited += 80; setTimeout(next, 80); return; }
+        } else if (busy && opts.dropOnWait) {
+          var b2 = false;
+          try { b2 = !!busy(); } catch (e1) { b2 = false; }
+          if (b2) { done(null, { dropped: true }); return; }
+        }
+        var a = now(), r, it = job.list[i], stepDone = true;
+        try {
+          if (typeof it === 'function') {
+            r = it();
+            if (r !== false && job.st.ctx) job.st.ctx.getImageData(0, 0, 1, 1);
+          } else {
+            if (it.y === undefined) { it.y = 0; it.n = typeof it.rows === 'function' ? it.rows() : it.rows; it.h = Math.min(it.n, 24); it.ms = 0; }
+            var y1 = Math.min(it.n, it.y + it.h);
+            if (y1 > it.y) {
+              r = it.band(it.y, y1);
+              if (r !== false && it.flush) it.flush(y1 - 1);
+            }
+            var spent = now() - a, per = spent / Math.max(1, y1 - it.y);
+            it.ms += spent;
+            it.h = Math.max(4, Math.ceil(it.n / it.maxBands), Math.min(it.n, Math.round(BAND_MS / Math.max(per, 0.001))));
+            it.y = y1;
+            bands++;
+            stepDone = it.y >= it.n;
+          }
+        } catch (e) { r = false; }
+        var ms = now() - a; work += ms; longest = Math.max(longest, ms);
+        if (r === false) { done(null, { drawMs: work }); return; }
+        if (stepDone) { stepMs.push(Math.round((typeof it === 'function' ? ms : it.ms) * 10) / 10); i++; }
+        if (i < job.list.length) { later(next); return; }
+        var info = { drawMs: work, longestMs: longest, w: job.st.cv.width, h: job.st.cv.height, steps: job.list.length, stepMs: stepMs, tasks: bands + job.list.filter(function (x) { return typeof x === 'function'; }).length, theme: 'day1' };
+        job.st.half = null; job.st.fl = null; job.st.ctx = null; job.st.tmp = null;
+        if (opts && opts.canvas) { info.totalMs = now() - t0; done(job.st.cv, info); return; }
+        encode(job.st.cv, function (u) { info.totalMs = now() - t0; done(u, info); });
+      };
+      later(next);
+    }
+    function encode(cv, give) {
+      try {
+        if (typeof cv.toBlob === 'function' && typeof URL !== 'undefined' && URL.createObjectURL) {
+          cv.toBlob(function (blob) {
+            try { give(blob ? URL.createObjectURL(blob) : cv.toDataURL('image/jpeg', 0.9)); } catch (e) { give(null); }
+          }, 'image/jpeg', 0.92);
+          return;
+        }
+        give(cv.toDataURL('image/jpeg', 0.92));
+      } catch (e) { give(null); }
+    }
+    var paintCache = {};
+    function paint(win, pxW, pxH, opts, done) {
+      var key = [win.x, win.y, win.w, win.h, Math.round(pxW), Math.round(pxH), opts && opts.cards ? opts.cards.length : 0, opts && opts.dpr || 0].join(',');
+      var hit = paintCache[key];
+      if (hit) { setTimeout(function () { done(hit.url, hit.info); }, 0); return; }
+      paint1(win, pxW, pxH, opts, function (u, info) { if (u) paintCache[key] = { url: u, info: info }; done(u, info); });
+    }
+    function paintCanvas(win, pxW, pxH, opts, done) {
+      var o = {};
+      for (var k in (opts || {})) if (Object.prototype.hasOwnProperty.call(opts, k)) o[k] = opts[k];
+      o.canvas = true;
+      paint1(win, pxW, pxH, o, done);
+    }
+
+    var sizeOfMap = {};
+    function mapKey(m) { return [m.z, m.x, m.y].map(r3).join(','); }
+    function fullOf(opts) {
+      var Lo = (ECE.BoardData && ECE.BoardData.LAYOUT) || { widthUnits: 10, heightUnits: 14 };
+      var m = opts && opts.map && opts.map.z > 0 ? opts.map : { z: 1, x: 0, y: 0 };
+      var moved = m.z !== 1 || !!m.x || !!m.y;
+      var W = opts && opts.W > 0 ? opts.W : 0, H = opts && opts.H > 0 ? opts.H : 0;
+      if (W && H && moved) sizeOfMap[mapKey(m)] = { W: W, H: H };
+      else if (moved && sizeOfMap[mapKey(m)]) { W = sizeOfMap[mapKey(m)].W; H = sizeOfMap[mapKey(m)].H; }
+      if (!(W && H)) { W = Lo.widthUnits; H = Lo.heightUnits; }
+      return { x: (0 - m.x) / m.z, y: (0 - m.y) / m.z, w: W / m.z, h: H / m.z, m: m, heartW: opts && opts.heartW > 0 ? opts.heartW : 0 };
+    }
+    function scene() {
+      var Lo = (ECE.BoardData && ECE.BoardData.LAYOUT) || { widthUnits: 10, heightUnits: 14, top: [1, 2, 3, 4, 5, 6, 7] };
+      var c = (Lo.widthUnits - (Lo.top ? Lo.top.length : 7)) / 2 + 0.56;
+      return { x: c, y: c, w: Lo.widthUnits - 2 * c, h: Lo.heightUnits - 2 * c };
+    }
+    function flat(parent, elf, opts) {
+      var mk = elf || el, F = fullOf(opts);
+      cur = xfFor(F.h >= F.w ? null : F, F.heartW);
+      var S = shapes();
+      var g0 = mk('g', { 'class': 'ece-map-flat' }, parent);
+      mk('rect', { x: 0, y: 0, width: r3(F.w * F.m.z), height: r3(F.h * F.m.z), rx: 0.24, fill: LAND }, g0);
+      var g = F.m.z !== 1 || F.m.x || F.m.y ? mk('g', { transform: 'translate(' + r3(F.m.x) + ' ' + r3(F.m.y) + ') scale(' + r3(F.m.z) + ')' }, g0) : g0;
+      var water = '';
+      for (var i = 0; i < S.water.length; i++) water += svgPath(S.water[i], true);
+      mk('path', { d: water, fill: WATER }, g);
+      var isl = '';
+      for (var m = 0; m < S.islands.length; m++) isl += svgPath(S.islands[m], true);
+      if (isl) mk('path', { d: isl, fill: LAND }, g);
+      var hw = '';
+      for (var h = 0; h < S.hwy.length; h++) hw += linePath(S.hwy[h]);
+      mk('path', { d: hw, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 0.04, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: 0.9 }, g);
+      return g0;
+    }
+    var SANS = DISPLAY;
+    function overlay(parent, opts) {
+      opts = opts || {};
+      var mk = opts.el || el, tx = opts.text || txt, F = fullOf(opts);
+      cur = xfFor(F.h >= F.w ? null : F, F.heartW);
+      var S = shapes();
+      var g = mk('g', { 'class': 'ece-map-vector' }, parent);
+      var m = F.m, tf = m.z !== 1 || m.x || m.y ? 'translate(' + r3(m.x) + ' ' + r3(m.y) + ') scale(' + r3(m.z) + ')' : null;
+      if (opts.lines !== false) {
+        var geo = mk('g', { transform: tf, 'class': 'ece-map-lines' }, g);
+        var coast = '';
+        for (var i = 0; i < S.water.length; i++) coast += svgPath(S.water[i], true);
+        for (var mm = 0; mm < S.islands.length; mm++) coast += svgPath(S.islands[mm], true);
+        mk('path', { d: coast, fill: 'none', stroke: '#5E8FBF', 'stroke-width': r3(0.012 / m.z), opacity: 0.7, 'stroke-linejoin': 'round' }, geo);
+        var br = '';
+        for (var b = 0; b < S.bridges.length; b++) br += linePath(S.bridges[b]);
+        mk('path', { d: br, fill: 'none', stroke: '#FFFFFF', 'stroke-width': r3(0.05 / m.z), 'stroke-linecap': 'butt' }, geo);
+        var rl = '';
+        for (var r = 0; r < S.rail.length; r++) rl += linePath(S.rail[r].pts);
+        mk('path', { d: rl, fill: 'none', stroke: '#2563B4', 'stroke-width': r3(0.016 / m.z), opacity: 0.8 }, geo);
+      }
+      if (opts.names === false) return g;
+      var minF = opts.minFont || 0.165, emf = typeof opts.em === 'function' ? opts.em : function (s) { return s.length * 0.62; };
+      var d = tdata(), sc = scene();
+      var keep = F.h >= F.w ? [
+        { x: sc.x + sc.w / 2 - 2.0, y: sc.y + sc.h * 0.085 - 0.6, w: 4.0, h: 1.12 },
+        { x: sc.x + sc.w - 0.75, y: sc.y + 0.3, w: 0.7, h: 0.8 },
+        { x: sc.x + sc.w / 2 - 0.9, y: sc.y + sc.h * 0.735 - 0.42, w: 1.8, h: 0.84 },
+        { x: sc.x + sc.w * 0.2 - 0.6, y: sc.y + sc.h * 0.885 - 0.74, w: 1.2, h: 1.5 },
+        { x: sc.x + sc.w * 0.8 - 0.6, y: sc.y + sc.h * 0.885 - 0.74, w: 1.2, h: 1.5 }
+      ] : [];
+      var placed = keep.slice();
+      var jx = sc.x + sc.w / 2, jy = sc.y + sc.h * 0.848;
+      var jarBoxes = F.h >= F.w ? [{ x: jx - 0.46, y: jy - 0.31, w: 0.92, h: 0.86 }, { x: jx - 0.74, y: jy + 0.55, w: 1.48, h: 0.36 }] : [];
+      jarBoxes.forEach(function (jb) { placed.push(jb); });
+      var inScene = function (bx) {
+        if (F.h < F.w) return true;
+        return bx.x >= sc.x + 0.08 && bx.y >= sc.y + 0.08 && bx.x + bx.w <= sc.x + sc.w - 0.08 && bx.y + bx.h <= sc.y + sc.h - 0.08;
+      };
+      var apart = function (bx, pad) {
+        for (var k = 0; k < placed.length; k++) {
+          var p = placed[k];
+          if (bx.x - pad.x < p.x + p.w && bx.x + bx.w + pad.x > p.x && bx.y - pad.y < p.y + p.h && bx.y + bx.h + pad.y > p.y) return false;
+        }
+        return true;
+      };
+      var clear = function (bx) {
+        if (!inScene(bx)) return false;
+        if (!apart(bx, { x: 0, y: 0 })) return false;
+        if (typeof opts.fit === 'function') { try { if (!opts.fit(bx)) return false; } catch (e) { } }
+        return true;
+      };
+      var toBoard = function (q) { return [q[0] * m.z + m.x, q[1] * m.z + m.y]; };
+      var dColors = {};
+      try {
+        var B = ECE.Theme && typeof ECE.Theme.board === 'function' ? ECE.Theme.board('day1') : null;
+        ((B && B.DISTRICTS) || []).forEach(function (dd) { if (dd && dd.name) dColors[String(dd.name).toLowerCase()] = dd.color; });
+      } catch (e) { }
+      var list = Array.isArray(d.places) && d.places.length ? d.places : DEFAULT_PLACES;
+      if (F.h < F.w) list = wideOrder(list);
+      var distOf = function (nm) { var k = String(nm).toLowerCase(); return dColors[k] || (PLACE_DISTRICT[nm] && dColors[PLACE_DISTRICT[nm].toLowerCase()]) || null; };
+      var drawn = 0;
+      if (F.h < F.w) {
+        var wlist = WIDE_NAMES.filter(function (w) { return list.indexOf(w.name) >= 0 && PLACES[w.name] && !(w.minK && (cur.kb || 0) < w.minK); });
+        var wdone = {};
+        for (var wn = 0; wn < wlist.length && drawn < WIDE_MAX; wn++) {
+          var wdef = wlist[wn], wname = wdef.name, wp = PLACES[wname], wsrc = wdef.at || wp;
+          if (wdone[wname]) continue;
+          if (wdef.minK && !(wdone['South Lake Union'] && wdone['Bellevue'])) continue;
+          var wat = toBoard(proj([wsrc[0], wsrc[1]])), wwater = wp[2] === 'water';
+          var wsize = wdef.small ? minF : wwater ? Math.max(minF, 0.19) : Math.max(minF, 0.165), wlh = wsize * 1.18;
+          var wlines = wdef.lines || [wwater ? wname : wname.toUpperCase()], wls = wwater ? 0.01 : 0.045;
+          var ww = Math.max.apply(null, wlines.map(function (t) { return emf(t) * wsize * (wwater ? 0.92 : 1.02) + t.length * wls; }));
+          var wdot = !wwater && distOf(wname), dx0 = wdot ? 0.07 : 0, gap = wdot ? 0.11 : 0.05;
+          var up = wsize * 0.78, dn = wsize * (wwater ? 0.3 : 0.12), nl = wlines.length;
+          var b0 = wsize * 0.36 - (nl - 1) * wlh / 2, rot = wdef.rot || 0;
+          for (var wsI = 0; wsI < wdef.sides.length; wsI++) {
+            var sd = wdef.sides[wsI], ax = 0, ay = b0, anchor = 'middle', u0, u1, v0, v1;
+            if (sd === 'n') ay = -0.11 - (nl - 1) * wlh;
+            else if (sd === 's') ay = 0.11 + wsize * 0.72;
+            if (sd === 'e') { ax = gap; anchor = 'start'; u0 = -dx0; u1 = gap + ww + 0.03; }
+            else if (sd === 'w') { ax = -gap; anchor = 'end'; u0 = -gap - ww - 0.03; u1 = dx0; }
+            else { u0 = -ww / 2 - 0.03; u1 = ww / 2 + 0.03; }
+            v0 = ay - up; v1 = ay + (nl - 1) * wlh + dn;
+            if (sd === 'n') v1 = Math.max(v1, dx0); else if (sd === 's') v0 = Math.min(v0, -dx0);
+            var bxw = rot === -90 ? { x: wat[0] + v0, y: wat[1] - u1, w: v1 - v0, h: u1 - u0 } : { x: wat[0] + u0, y: wat[1] + v0, w: u1 - u0, h: v1 - v0 };
+            if (wdef.minK) {
+              var t0 = sd === 'e' ? gap : sd === 'w' ? -gap - ww - 0.03 : -ww / 2 - 0.03, t1 = sd === 'e' ? gap + ww + 0.03 : sd === 'w' ? -gap : ww / 2 + 0.03;
+              var tv0 = ay - up, tv1 = ay + (nl - 1) * wlh + dn;
+              var tbx = rot === -90 ? { x: wat[0] + tv0, y: wat[1] - t1, w: tv1 - tv0, h: t1 - t0 } : { x: wat[0] + t0, y: wat[1] + tv0, w: t1 - t0, h: tv1 - tv0 };
+              if (!apart(tbx, { x: wsize * 0.35, y: wsize })) continue;
+            }
+            if (!clear(bxw)) continue;
+            placed.push(bxw);
+            var wg = mk('g', { transform: 'translate(' + r3(wat[0]) + ' ' + r3(wat[1]) + ')' + (rot ? ' rotate(' + rot + ')' : ''), 'class': 'ece-map-name', 'data-name': wname, 'data-side': sd }, g);
+            var wattrs = wwater ? { 'font-family': SANS, 'font-style': 'italic', 'font-weight': 500, fill: '#245B8F', 'letter-spacing': wls }
+              : { 'font-family': SANS, 'font-weight': 700, fill: '#2C3E52', 'letter-spacing': wls };
+            wattrs.stroke = '#FFFFFF'; wattrs['stroke-width'] = 0.045; wattrs['paint-order'] = 'stroke'; wattrs['stroke-linejoin'] = 'round'; wattrs['stroke-opacity'] = 0.9;
+            wattrs['text-anchor'] = anchor;
+            for (var wl = 0; wl < nl; wl++) tx(wg, ax, ay + wl * wlh, wlines[wl], wsize, wattrs);
+            if (wdot) mk('circle', { cx: 0, cy: 0, r: 0.045, fill: wdot, stroke: '#FFFFFF', 'stroke-width': 0.018 }, wg);
+            drawn++;
+            wdone[wname] = true;
+            break;
+          }
+        }
+        return g;
+      }
+      for (var n = 0; n < list.length && drawn < 14; n++) {
+        var name = String(list[n] || ''), pl = PLACES[name];
+        if (!pl) continue;
+        var at = toBoard(proj([pl[0], pl[1]])), water = pl[2] === 'water', park = pl[2] === 'park';
+        var size = water ? Math.max(minF, 0.19) : Math.max(minF, 0.165);
+        var label = water || park ? name : name.toUpperCase(), ls = water || park ? 0.01 : 0.045;
+        var widthOf = function (t) { return emf(t) * size * (water ? 0.92 : 1.02) + t.length * ls; };
+        var dot = !water && !park && distOf(name);
+        var forms = [[label]], sp2 = label.indexOf(' ');
+        if (sp2 > 0) {
+          var mid = label.length / 2, best = sp2;
+          for (var ci = sp2; ci >= 0 && ci < label.length; ci = label.indexOf(' ', ci + 1)) if (Math.abs(ci - mid) < Math.abs(best - mid)) best = ci;
+          forms.push([label.slice(0, best), label.slice(best + 1)]);
+        }
+        var done2 = false;
+        for (var fI = 0; fI < forms.length && !done2; fI++) {
+          var lines2 = forms[fI], wd = Math.max.apply(null, lines2.map(widthOf)), hh = size * (lines2.length * 1.18);
+          var tries = [[0, 0], [0, -0.26], [0, 0.26], [wd / 2 + 0.1, 0], [-wd / 2 - 0.1, 0], [0, -0.48], [0, 0.48]];
+          for (var tI = 0; tI < tries.length; tI++) {
+            var cxp = at[0] + tries[tI][0], cyp = at[1] + tries[tI][1];
+            var bx = { x: cxp - wd / 2 - (dot ? 0.14 : 0.04), y: cyp - size * 0.72 - (lines2.length - 1) * size * 0.59, w: wd + (dot ? 0.18 : 0.08), h: hh + size * 0.02 };
+            if (!clear(bx)) continue;
+            placed.push(bx);
+            var lg = mk('g', { transform: 'translate(' + r3(cxp) + ' ' + r3(cyp) + ')', 'class': 'ece-map-name' }, g);
+            var attrs = water ? { 'font-family': SANS, 'font-style': 'italic', 'font-weight': 500, fill: '#245B8F', 'letter-spacing': ls }
+              : park ? { 'font-family': SANS, 'font-weight': 600, fill: '#3F6B3A', 'letter-spacing': ls }
+                : { 'font-family': SANS, 'font-weight': 700, fill: '#2C3E52', 'letter-spacing': ls };
+            attrs.stroke = '#FFFFFF'; attrs['stroke-width'] = 0.045; attrs['paint-order'] = 'stroke'; attrs['stroke-linejoin'] = 'round'; attrs['stroke-opacity'] = 0.9;
+            var y0l = size * 0.36 - (lines2.length - 1) * size * 0.59;
+            for (var li2 = 0; li2 < lines2.length; li2++) tx(lg, dot ? 0.06 : 0, y0l + li2 * size * 1.18, lines2[li2], size, attrs);
+            if (dot) mk('circle', { cx: r3(-wd / 2 - 0.04), cy: r3(-(lines2.length - 1) * size * 0.59), r: 0.045, fill: dot, stroke: '#FFFFFF', 'stroke-width': 0.018 }, lg);
+            drawn++;
+            done2 = true;
+            break;
+          }
+        }
+      }
+      var seen = {}, streets = 0;
+      var sp = (d && d.spaces) || {};
+      for (var si = 0; si < 40 && streets < 6 && F.h >= F.w; si++) {
+        var st = sp[String(si)] && sp[String(si)].street, it = st && STREETS[st];
+        if (!it || seen[st]) continue;
+        seen[st] = true;
+        var p0 = toBoard(proj([it[0], it[1]])), fz = minF, sw2 = emf(st) * fz * 0.95;
+        var down = it[2] === (cur.rot ? 'ew' : 'ns');
+        var sdot = null;
+        try {
+          var dd2 = ECE.Theme && typeof ECE.Theme.districtOf === 'function' ? ECE.Theme.districtOf(si, 'day1') : null;
+          if (dd2 && dd2.name && st.toLowerCase().indexOf(String(dd2.name).toLowerCase()) === 0) sdot = dd2.color;
+        } catch (e2) { sdot = null; }
+        var extra = sdot ? 0.16 : 0;
+        var sb = down ? { x: p0[0] - fz * 0.6, y: p0[1] - sw2 / 2 - 0.03 - extra, w: fz * 1.1, h: sw2 + 0.06 + extra }
+          : { x: p0[0] - sw2 / 2 - 0.03 - extra, y: p0[1] - fz * 0.7, w: sw2 + 0.06 + extra, h: fz * 1.1 };
+        if (!clear(sb)) continue;
+        placed.push(sb);
+        var sg = mk('g', { transform: 'translate(' + r3(p0[0]) + ' ' + r3(p0[1]) + ')' + (down ? ' rotate(-90)' : ''), 'class': 'ece-map-street' }, g);
+        tx(sg, sdot ? 0.08 : 0, fz * 0.34, st, fz, { 'font-family': SANS, 'font-weight': 600, fill: '#3E536B', 'letter-spacing': 0.005,
+          stroke: '#FFFFFF', 'stroke-width': 0.045, 'paint-order': 'stroke', 'stroke-linejoin': 'round' });
+        if (sdot) mk('circle', { cx: r3(-sw2 / 2 - 0.02), cy: 0, r: 0.04, fill: sdot, stroke: '#FFFFFF', 'stroke-width': 0.016 }, sg);
+        streets++;
+      }
+      return g;
+    }
+    function northArrow(parent, x, y, s, opts) {
+      opts = opts || {};
+      var mk = opts.el || el, tx = opts.text || txt;
+      var told = Object.prototype.hasOwnProperty.call(opts, 'W') || Object.prototype.hasOwnProperty.call(opts, 'map');
+      var F = told ? fullOf(opts) : null;
+      var rot = (F ? F.h >= F.w : cur.rot) ? 90 : 0;
+      var g = mk('g', { 'class': 'ece-north', transform: 'translate(' + r3(x) + ' ' + r3(y) + ')' }, parent);
+      mk('circle', { cx: 0, cy: 0, r: r3(s * 0.62), fill: '#FFFFFF', 'fill-opacity': 0.55, stroke: '#7F8FA3', 'stroke-width': 0.01 }, g);
+      mk('circle', { cx: 0, cy: 0, r: r3(s * 0.54), fill: 'none', stroke: '#9AAABB', 'stroke-width': 0.006, opacity: 0.7 }, g);
+      var a = mk('g', { transform: 'rotate(' + rot + ')' }, g);
+      mk('path', { d: 'M0 ' + r3(-s * 0.55) + 'L' + r3(s * 0.15) + ' 0L0 ' + r3(-s * 0.08) + 'Z', fill: P.blue }, a);
+      mk('path', { d: 'M0 ' + r3(-s * 0.55) + 'L' + r3(-s * 0.15) + ' 0L0 ' + r3(-s * 0.08) + 'Z', fill: P.blueDeep }, a);
+      mk('path', { d: 'M0 ' + r3(s * 0.55) + 'L' + r3(s * 0.15) + ' 0L0 ' + r3(s * 0.08) + 'Z', fill: '#B8C4D2' }, a);
+      mk('path', { d: 'M0 ' + r3(s * 0.55) + 'L' + r3(-s * 0.15) + ' 0L0 ' + r3(s * 0.08) + 'Z', fill: '#8E9CAD' }, a);
+      var nx = rot ? s * 0.78 : 0, ny = rot ? s * 0.07 : -s * 0.7;
+      tx(g, nx, ny, 'N', Math.max(opts.minFont || 0.165, 0.17), { 'font-family': SANS, 'font-weight': 700, fill: P.blueDeep, stroke: '#FFFFFF', 'stroke-width': 0.04, 'paint-order': 'stroke' });
+      return g;
+    }
+    return {
+      draw: draw, paint: paint, paintOnce: paint1, paintCanvas: paintCanvas, overlay: overlay, flat: flat, northArrow: northArrow,
+      SERIF: DISPLAY, theme: 'day1',
+      _shapes: function (full, heartW) { cur = xfFor(full || null, heartW); return shapes(); },
+      _project: function (lon, lat, full, heartW) { cur = xfFor(full || null, heartW); return proj([lon, lat]); },
+      _kb: function (full, heartW) { return xfFor(full || null, heartW).kb || 0; },
+      _places: PLACES, _streets: STREETS, _svgPath: svgPath
+    };
+  })();
+
+  function tileDecor(g, t) {
+    try {
+      if (t && t.bandEl && t.bandEl.setAttribute) { t.bandEl.setAttribute('stroke', COLORS.plateRim); t.bandEl.setAttribute('stroke-opacity', 0.95); }
+    } catch (e) { }
+  }
+  function preview(svg, w, h) {
+    shared();
+    w = +w || 218; h = +h || 100;
+    var g = el('g', { 'class': 'd1-preview' }, svg);
+    var k = h / 3.05, y0 = 4.25 - 2.4;
+    var cg = el('g', { transform: 'scale(' + r3(k) + ') translate(0 ' + r3(-y0) + ')' }, g);
+    dayCover(cg, { x: 0, y: 0, w: r3(w / k + 0.02), h: 9.88 }, { bare: true });
+    return g;
+  }
+
+  ECE.ThemeArt = ECE.ThemeArt || {};
+  ECE.ThemeArt.day1 = {
+    id: 'day1',
+    FONT: FONT, SERIF: DISPLAY, COLORS: COLORS, PALETTE: P,
+    tagColors: tagColors, bandColors: bandColors, mapTone: mapTone, enamel: enamel, contrast: contrast, mix: mix,
+    shared: shared,
+    disc: disc, pin: pin, tokenIcon: tokenIcon, house: house, tower: tower, icon: icon,
+    corner: corner, centre: centre, title: title, die: die, pile: pile, cardFace: cardFace, jar: jar, gavel: gavel, coin: coin,
+    map: CampusMap,
+    tileDecor: tileDecor,
+    preview: preview,
+    metaColor: '#10304F',
+    props: { officeDog: officeDog, bananaStand: bananaStand, lanyard: lanyard, tapedBox: tapedBox, carTop: carTop, shuttleTop: shuttleTop }
+  };
+})(window.ECE = window.ECE || {});
+;
+(function (ECE) {
+  'use strict';
+
   var ROAD_W = 0.56;
   var ROAD_R = 0.3;
   var NEAR = [0.22, 1.22];
@@ -7295,10 +10200,32 @@
   var MORT_LINE = '#7E898D';
   var TAG_UP = 0.32;
   var MORT_TEXT = '#3A464C';
+  var OWN_W = 0.058, OWN_KEY = 0.008, OWN_DASH = '0.15 0.085';
+  var OWN_IN = OWN_W + OWN_KEY + 0.006;
 
-  var cache = null;
+  function themeOf(id) {
+    var T = ECE.Theme, G = ECE.Glossary || {};
+    var th = { id: 'emerald', board: ECE.BoardData, cards: ECE.CardData, gloss: G, art: ECE.Art, map: ECE.SoundMap || null,
+      title: (G.game && G.game.name) || 'Emerald City Estates', decor: null, kinds: null, word: function () { return ''; } };
+    if (!T || typeof T.board !== 'function') return th;
+    try {
+      var id1 = typeof T.has === 'function' && T.has(id) ? id : T.current();
+      var board = T.board(id1), cards = T.cards(id1), gloss = T.glossary(id1), art = T.art(id1), d = T.data(id1);
+      th.id = id1; th.board = board || th.board; th.cards = cards || th.cards; th.gloss = gloss || G; th.art = art || th.art;
+      th.map = T.map(id1);
+      if (d && typeof d.title === 'string' && d.title) th.title = d.title;
+      th.decor = typeof T.hook === 'function' ? T.hook('tileDecor', id1) : null;
+      th.kinds = d && d.kinds && typeof d.kinds === 'object' ? d.kinds : null;
+      if (typeof T.word === 'function') th.word = function (key) { return T.word(key, id1); };
+    } catch (e) { report(e, 'theme'); }
+    return th;
+  }
 
-  function layout() {
+  var WIDE = { minAspect: 1.4, maxAspect: 2, step: 0.05, z: 1.3, at: [5.3, 7.0], heartMin: 3.9, platePx: [250, 400], plateShare: 0.3, plateIn: 8 };
+  var cache = null, wideMemo = {};
+
+  function layout(spec) {
+    if (spec && spec.orient === 'wide') return wideLayout(spec.W);
     if (cache) return cache;
     var B = ECE.BoardData, L = B.LAYOUT;
     var W = L.widthUnits, H = L.heightUnits, n = L.count;
@@ -7313,9 +10240,57 @@
     L.left.forEach(function (i, k) { cells[i] = { x: 0, y: H - c - 1 - k, w: c, h: 1, side: 'left' }; });
     var inner = { x: c, y: c, w: W - 2 * c, h: H - 2 * c };
     var scene = { x: c + ROAD_W, y: c + ROAD_W, w: W - 2 * (c + ROAD_W), h: H - 2 * (c + ROAD_W) };
-    cache = { W: W, H: H, c: c, n: n, cells: cells, inner: inner, scene: scene, corners: L.corners.slice() };
+    cache = { orient: 'tall', key: 'tall', W: W, H: H, c: c, n: n, sw: 1, cells: cells, inner: inner, scene: scene, corners: L.corners.slice(),
+      map: { z: 1, x: 0, y: 0 } };
     cache.road = road(cache);
     return cache;
+  }
+
+  function wideH() { var L = ECE.BoardData.LAYOUT; return L.widthUnits; }
+  function wideUnits(w, h) {
+    var H = wideH(), a = w > 0 && h > 0 ? w / h : WIDE.minAspect;
+    a = clamp(a, WIDE.minAspect, WIDE.maxAspect);
+    return r3(clamp(Math.round(a * H / WIDE.step) * WIDE.step, WIDE.minAspect * H, WIDE.maxAspect * H));
+  }
+  function wideLayout(Wu) {
+    var B = ECE.BoardData, L = B.LAYOUT;
+    var c = (L.widthUnits - L.top.length) / 2, H = wideH(), n = L.count;
+    var W = r3(clamp(Math.round((+Wu || WIDE.minAspect * H) / WIDE.step) * WIDE.step, WIDE.minAspect * H, WIDE.maxAspect * H));
+    var key = 'wide' + W.toFixed(2);
+    if (wideMemo[key]) return wideMemo[key];
+    var sw = (W - 2 * c) / L.right.length;
+    var cells = new Array(n);
+    var corners = [L.corners[3], L.corners[0], L.corners[1], L.corners[2]];
+    var cs = ['tl', 'tr', 'br', 'bl'];
+    var cxy = [[0, 0], [W - c, 0], [W - c, H - c], [0, H - c]];
+    for (var q = 0; q < 4; q++) cells[corners[q]] = { x: cxy[q][0], y: cxy[q][1], w: c, h: c, side: 'corner', corner: cs[q] };
+    L.left.forEach(function (i, k) { cells[i] = { x: c + k * sw, y: 0, w: sw, h: c, side: 'top' }; });
+    L.top.forEach(function (i, k) { cells[i] = { x: W - c, y: c + k, w: c, h: 1, side: 'right' }; });
+    L.right.forEach(function (i, k) { cells[i] = { x: W - c - (k + 1) * sw, y: H - c, w: sw, h: c, side: 'bottom' }; });
+    L.bottom.forEach(function (i, k) { cells[i] = { x: 0, y: H - c - 1 - k, w: c, h: 1, side: 'left' }; });
+    var inner = { x: c, y: c, w: W - 2 * c, h: H - 2 * c };
+    var scene = { x: c + ROAD_W, y: c + ROAD_W, w: W - 2 * (c + ROAD_W), h: H - 2 * (c + ROAD_W) };
+    var out = { orient: 'wide', key: key, W: W, H: H, c: c, n: n, sw: sw, cells: cells, inner: inner, scene: scene, corners: corners,
+      map: { z: WIDE.z, x: W / 2 - WIDE.z * WIDE.at[0], y: H / 2 - WIDE.z * WIDE.at[1] } };
+    out.road = road(out);
+    wideMemo[key] = out;
+    return out;
+  }
+  function pickOrient(w, h, want) {
+    if (want === 'wide') return 'wide';
+    if (want === 'auto') return w > 0 && h > 0 && w > h ? 'wide' : 'tall';
+    return 'tall';
+  }
+  function layoutFor(w, h, orient) { return orient === 'wide' ? wideLayout(wideUnits(w, h)) : layout(); }
+  function toMap(Lo, r) { var m = Lo.map; return { x: (r.x - m.x) / m.z, y: (r.y - m.y) / m.z, w: r.w / m.z, h: r.h / m.z }; }
+
+  function wideSplit(Lo, unit) {
+    var S = Lo.scene, u = unit > 0 ? unit : 80, ins = WIDE.plateIn / u;
+    var P = clamp(WIDE.plateShare * S.w * u, WIDE.platePx[0], WIDE.platePx[1]) / u;
+    P = Math.max(0, Math.min(P, (S.w - 2 * ins - WIDE.heartMin) / 2));
+    var left = { x: S.x + ins, y: S.y + ins, w: P, h: S.h - 2 * ins };
+    var right = { x: S.x + S.w - ins - P, y: S.y + ins, w: P, h: S.h - 2 * ins };
+    return { left: left, right: right, heart: { x: left.x + P, y: S.y, w: right.x - (left.x + P), h: S.h } };
   }
 
   function road(Lo) {
@@ -7350,8 +10325,8 @@
     var stops = new Array(Lo.n), rest = new Array(Lo.n);
     for (var i = 0; i < Lo.n; i++) {
       var cl = Lo.cells[i];
-      if (cl.side === 'top' || cl.side === 'bottom') stops[i] = sideAt(cl.side, cl.x + 0.5);
-      else if (cl.side === 'right' || cl.side === 'left') stops[i] = sideAt(cl.side, cl.y + 0.5);
+      if (cl.side === 'top' || cl.side === 'bottom') stops[i] = sideAt(cl.side, cl.x + cl.w / 2);
+      else if (cl.side === 'right' || cl.side === 'left') stops[i] = sideAt(cl.side, cl.y + cl.h / 2);
     }
     var TURN = [
       { s: P - A / 2, c: [X0, Y0], before: 'left', after: 'top' },
@@ -7370,13 +10345,13 @@
       if (sp && sp.kind === 'traffic') {
         var bay = trafficBay(cl0);
         rest[ci] = { x: bay.x + bay.w / 2, y: bay.y + bay.h / 2, sx: sx, sy: sy, bay: bay, card: cl0 };
-      } else if (sy > 0) {
+      } else if (sy > 0 || (sp && (sp.kind === 'bridge' || sp.kind === 'rest'))) {
         rest[ci] = { x: ix + sx * CORNER_IN, y: cl0.y + BOTTOM_IN, sx: sx, sy: sy, card: cl0, row: true };
       } else {
         rest[ci] = { x: ix + sx * CORNER_IN, y: iy + sy * CORNER_IN, sx: sx, sy: sy, card: cl0 };
         if (sp && sp.kind === 'start') rest[ci].foot = { cx: cl0.x + cl0.w / 2, y: cl0.y + START_FOOT[0], rows: [cl0.y + START_FOOT[1], cl0.y + START_FOOT[2]] };
       }
-      for (var k = 1; k <= 2; k++) {
+      for (var k = 1; k <= 2 && Lo.orient !== 'wide'; k++) {
         stops[(ci - k + Lo.n) % Lo.n] = mod(sideAt(T.before, along(T.before, T.c) - NEAR[k - 1] * DIR[T.before]));
         stops[(ci + k) % Lo.n] = mod(sideAt(T.after, along(T.after, T.c) + NEAR[k - 1] * DIR[T.after]));
       }
@@ -7408,8 +10383,8 @@
     return { x: cell.x + 0.08, y: y0, w: BAY, h: cell.y + cell.h - 0.06 - y0 };
   }
 
-  function cornerAt(i, n, k) {
-    var R = layout().road, c = R.rest[i];
+  function cornerAt(i, n, k, Lo) {
+    var R = (Lo || layout()).road, c = R.rest[i];
     if (!c) return clusterAt(R.point(R.stops[i]), n, k);
     n = Math.max(1, Math.min(6, n));
     if (c.bay) {
@@ -7450,14 +10425,22 @@
     return { x: rect.x + gapX * (col + 0.5), y: rect.y + gapY * (row + 0.5), r: r };
   }
 
-  function geometry(w, h) {
-    var Lo = layout();
+  function geometry(w, h, opts) {
     w = Math.max(0, +w || 0); h = Math.max(0, +h || 0);
+    var orient = pickOrient(w, h, opts && typeof opts === 'object' ? opts.orientation : null);
+    return geoOf(layoutFor(w, h, orient), w, h);
+  }
+  function geoOf(Lo, w, h, split) {
     var unit = Math.min(w / Lo.W, h / Lo.H);
+    if (!(unit > 0)) unit = 0;
     var ox = (w - unit * Lo.W) / 2, oy = (h - unit * Lo.H) / 2;
     function px(r) { return { x: ox + r.x * unit, y: oy + r.y * unit, w: r.w * unit, h: r.h * unit }; }
-    return {
+    var g = {
+      orientation: Lo.orient,
       unit: unit,
+      unitX: unit,
+      W: Lo.W,
+      H: Lo.H,
       board: { x: ox, y: oy, w: unit * Lo.W, h: unit * Lo.H },
       spaces: Lo.cells.map(function (c) {
         var o = px(c); o.side = c.side; if (c.corner) o.corner = c.corner; return o;
@@ -7465,6 +10448,12 @@
       center: px(Lo.scene),
       inner: px(Lo.inner)
     };
+    if (Lo.orient === 'wide') {
+      var sp = split || wideSplit(Lo, unit);
+      g.heart = px(sp.heart);
+      g.hud = { left: px(sp.left), right: px(sp.right) };
+    }
+    return g;
   }
 
   function r3(n) { return Math.round(n * 1000) / 1000; }
@@ -7549,17 +10538,26 @@
     this.usedAt = -1e9;
     this.destroyed = false;
     this.highlighted = null;
-    this.cam = { on: false, z: ZOOM, cx: 5, cy: 7, follow: null, panned: false, vb: null, coverPx: 0, hostH: 0 };
+    this.cam = { on: false, z: ZOOM, cx: 5, cy: 7, follow: null, panned: false, vb: null, coverPx: 0, hostH: 0, sidePx: 0, hostW: 0 };
     this.popSlots = {};
     this.drawnCards = [];
     this.noteOn = false;
     this.centreTop = null;
     this.kbd = { at: -1, moved: false };
+    this.th = themeOf(this.opts.theme);
+    this.pref = normOrient(this.opts.orientation);
+    this.hudPx = null;
+    this.Lo = this.pref === 'tall' ? layout() : this.guessLayout();
     this.build();
   }
+  function normOrient(o) { return o === 'wide' || o === 'auto' ? o : 'tall'; }
+  View.prototype.guessLayout = function () {
+    var b = this.boxSize();
+    return layoutFor(b.w, b.h, pickOrient(b.w, b.h, this.pref));
+  };
 
   View.prototype.build = function () {
-    var A = ECE.Art, B = ECE.BoardData, Lo = layout();
+    var th = this.th, A = th.art, B = th.board, M = th.map, C0 = A.COLORS || {}, Lo = this.Lo;
     var el = A.el;
     var root = document.createElement('div');
     root.className = 'ece-board';
@@ -7574,7 +10572,7 @@
     var defs = el('defs', {}, svg);
     this.uid = 'eceb' + (++View.seq);
 
-    var emB = measurer(700), emP = measurer(600), emT = measurer(800), emS = measurer(600, A.SERIF);
+    var emB = measurer(700, A.FONT), emP = measurer(600, A.FONT), emT = measurer(800, A.FONT), emS = measurer(600, A.SERIF);
     this.em = { b: emB, p: emP, t: emT, s: emS };
 
     var iclip = el('clipPath', { id: this.uid + '-iclip' }, defs);
@@ -7584,20 +10582,26 @@
     el('stop', { offset: 0.5, 'stop-color': '#FFFFFF', 'stop-opacity': 0.04 }, sheen);
     el('stop', { offset: 1, 'stop-color': '#000000', 'stop-opacity': 0.16 }, sheen);
     var bg = el('linearGradient', { id: this.uid + '-base', x1: 0, y1: 0, x2: 0.4, y2: 1 }, defs);
-    el('stop', { offset: 0, 'stop-color': '#16455A' }, bg);
-    el('stop', { offset: 1, 'stop-color': '#0A2A3A' }, bg);
+    el('stop', { offset: 0, 'stop-color': C0.seaTop || '#16455A' }, bg);
+    el('stop', { offset: 1, 'stop-color': C0.seaLow || '#0A2A3A' }, bg);
     this.gMap = el('g', { 'class': 'ece-map', 'aria-hidden': 'true' }, svg);
     this.mapBase = el('rect', { x: 0, y: 0, width: Lo.W, height: Lo.H, rx: 0.24, fill: 'url(#' + this.uid + '-base)', 'class': 'ece-map-base' }, this.gMap);
-    this.mapFlat = ECE.SoundMap && typeof ECE.SoundMap.flat === 'function' ? ECE.SoundMap.flat(this.gMap, el) : null;
-    if (ECE.SoundMap) {
+    var wide = Lo.orient === 'wide';
+    var bb0 = wide ? this.boxSize() : null, uu0 = bb0 ? Math.min(bb0.w / Lo.W, bb0.h / Lo.H) : 0;
+    this.heartW0 = wide && uu0 > 0 ? wideSplit(Lo, uu0).heart.w : 0;
+    this.mapFlat = M && typeof M.flat === 'function' ? M.flat(this.gMap, el, wide ? this.mapHeart({ W: Lo.W, H: Lo.H, map: Lo.map }) : null) : null;
+    this.mapNames = null; this.northG = null;
+    if (M) {
       var vec = el('g', {}, this.gMap);
       var cols = {};
       (B.DISTRICTS || []).forEach(function (d) { cols[d.id] = d.color; });
       this.mapCols = cols;
-      ECE.SoundMap.overlay(vec, { el: el, text: A.text, em: emP, colors: cols, minFont: MIN_FONT, lines: false });
-      ECE.SoundMap.northArrow(vec, Lo.scene.x + Lo.scene.w - 0.42, Lo.scene.y + 0.72, 0.44, { el: el, text: A.text, minFont: MIN_FONT });
+      if (wide) this.mapNames = el('g', { 'class': 'ece-map-names' }, vec);
+      else if (typeof M.overlay === 'function') M.overlay(vec, { el: el, text: A.text, em: emP, colors: cols, minFont: MIN_FONT, lines: false });
+      this.northG = typeof M.northArrow === 'function' ? M.northArrow(vec, Lo.scene.x + Lo.scene.w - 0.42, Lo.scene.y + 0.72, 0.44, this.mapHeart({ el: el, text: A.text, minFont: MIN_FONT,
+        W: wide ? Lo.W : 0, H: wide ? Lo.H : 0, map: wide ? Lo.map : null })) || null : null;
     }
-    el('rect', { x: 0.008, y: 0.008, width: Lo.W - 0.016, height: Lo.H - 0.016, rx: 0.236, fill: 'none', stroke: '#050A0C', 'stroke-opacity': 0.55, 'stroke-width': 0.016, 'aria-hidden': 'true' }, svg);
+    el('rect', { x: 0.008, y: 0.008, width: Lo.W - 0.016, height: Lo.H - 0.016, rx: 0.236, fill: 'none', stroke: C0.boardKey || '#050A0C', 'stroke-opacity': 0.55, 'stroke-width': 0.016, 'aria-hidden': 'true' }, svg);
     el('rect', { x: 0.018, y: 0.018, width: Lo.W - 0.036, height: Lo.H - 0.036, rx: 0.226, fill: 'none', stroke: A.COLORS.hair, 'stroke-opacity': 0.8, 'stroke-width': 0.012, 'aria-hidden': 'true' }, svg);
 
     this.gRoad = el('g', { 'class': 'ece-road', 'aria-hidden': 'true' }, svg);
@@ -7610,22 +10614,23 @@
     this.gFx = el('g', { 'class': 'ece-fx', 'aria-hidden': 'true' }, live);
     var fr = el('g', { 'class': 'ece-kfocus', 'aria-hidden': 'true', visibility: 'hidden' }, live);
     this.focusRing = { g: fr, on: false, at: '', rects: [
-      el('rect', { rx: 0.13, fill: 'none', stroke: '#06100F', 'stroke-opacity': 0.85, 'stroke-width': 0.14 }, fr),
-      el('rect', { rx: 0.13, fill: 'none', stroke: '#F4E4BA', 'stroke-opacity': 0.85, 'stroke-width': 0.07 }, fr)
+      el('rect', { rx: 0.13, fill: 'none', stroke: C0.ringKey || '#06100F', 'stroke-opacity': 0.85, 'stroke-width': 0.14 }, fr),
+      el('rect', { rx: 0.13, fill: 'none', stroke: C0.focusLine || '#F4E4BA', 'stroke-opacity': 0.85, 'stroke-width': 0.07 }, fr)
     ] };
 
     this.drawRoad();
-    this.anchors = A.centre(this.gCentre, Lo.scene, { board: true, title: (ECE.Glossary && ECE.Glossary.game && ECE.Glossary.game.name) || 'Emerald City Estates' });
+    this.anchors = A.centre(this.gCentre, Lo.scene, { board: true, title: th.title, heart: wide ? this.heartU() : null });
     this.tiles = [];
     for (var i = 0; i < Lo.n; i++) this.tiles.push(this.buildTile(i));
+    if (th.decor) this.decorTiles();
     this.setStop(0);
 
-    var an = this.anchors, decks = (ECE.CardData && ECE.CardData.DECKS) || {};
+    var an = this.anchors, decks = (th.cards && th.cards.DECKS) || {};
     this.piles = {
       rain: A.pile(this.gLive, 'rain', an.piles.rain.x, an.piles.rain.y, an.pileSize.w, an.pileSize.h, (decks.rain && decks.rain.name) || 'Rain Check'),
       buzz: A.pile(this.gLive, 'buzz', an.piles.buzz.x, an.piles.buzz.y, an.pileSize.w, an.pileSize.h, (decks.buzz && decks.buzz.name) || 'Local Buzz')
     };
-    var jarLabel = (ECE.Glossary && ECE.Glossary.places && ECE.Glossary.places.rainFund) || 'Rain Fund';
+    var jarLabel = (th.gloss && th.gloss.places && th.gloss.places.rainFund) || 'Rain Fund';
     this.jar = A.jar(this.gLive, an.jar.x, an.jar.y, an.jar.w, an.jar.h, jarLabel);
     this.jar.g.setAttribute('visibility', 'hidden');
     this.dice = [A.die(this.gDice, an.dice[0].x, an.dice[0].y, an.diceSize), A.die(this.gDice, an.dice[1].x, an.dice[1].y, an.diceSize)];
@@ -7633,22 +10638,30 @@
     this.home = { dice: [{ x: an.dice[0].x, y: an.dice[0].y }, { x: an.dice[1].x, y: an.dice[1].y }], jar: { x: an.jar.x, y: an.jar.y } };
 
     this.bindInput();
+    root.setAttribute('data-orient', Lo.orient);
+    if (wide) { root.classList.add('ece-wide'); this.wideKey = null; this.placeWide(); }
     this.container.appendChild(root);
     this.cam.vb = this.viewBox();
     this.cam.vbKey = this.cam.vb.map(r3).join(' ');
     this.scheduleMap(30);
   };
   View.seq = 0;
+  View.prototype.decorTiles = function () {
+    var th = this.th, ctx = { theme: th.id, art: th.art, el: th.art.el, board: th.board, view: this };
+    for (var i = 0; i < this.tiles.length; i++) {
+      try { th.decor(this.tiles[i].g, this.tiles[i], ctx); } catch (e) { report(e, 'tileDecor'); return; }
+    }
+  };
 
   View.prototype.viewFrame = function () {
     var rc = null;
     try { rc = this.root.getBoundingClientRect(); } catch (e) { rc = null; }
     if (!rc || !(rc.width > 0) || !(rc.height > 0)) return null;
-    var Lo = layout(), u = Math.min(rc.width / Lo.W, rc.height / Lo.H);
+    var Lo = this.Lo, u = Math.min(rc.width / Lo.W, rc.height / Lo.H);
     return { left: rc.left, top: rc.top, W: rc.width, H: rc.height, u: u, ox: (rc.width - u * Lo.W) / 2, oy: (rc.height - u * Lo.H) / 2 };
   };
   View.prototype.scheduleMap = function (ms) {
-    if (this.destroyed || this.mapOff || !ECE.SoundMap) return;
+    if (this.destroyed || this.mapOff || !this.th.map || typeof this.th.map.paintCanvas !== 'function') return;
     var self = this;
     if (this.mapTimer) clearTimeout(this.mapTimer);
     this.mapTimer = setTimeout(function () { self.mapTimer = 0; try { self.paintMap(); } catch (e) { self.mapOff = true; report(e, 'paintMap'); } }, ms);
@@ -7662,18 +10675,22 @@
     if (this.destroyed || this.mapBusy || this.mapOff) return;
     var f = this.viewFrame();
     if (!f) return;
-    var Lo = layout(), dpr = dprNow();
+    var Lo = this.Lo, dpr = dprNow();
     var W = Math.round(f.u * Lo.W * dpr), H = Math.round(W * Lo.H / Lo.W);
     var onPhone = false;
     try { onPhone = document.documentElement.classList.contains('phone'); } catch (e) { onPhone = false; }
-    var cap = dpr >= 2 && !onPhone ? 6.5e6 : 4.5e6;
+    var cap = dpr >= 2 && !onPhone ? (Lo.orient === 'wide' ? 9e6 : 6.5e6) : 4.5e6;
     if (W * H > cap) { var kk = Math.sqrt(cap / (W * H)); W = Math.round(W * kk); H = Math.round(H * kk); }
     if (this.mapPx && W <= this.mapPx * 1.15) return;
     this.mapBusy = true;
     var self = this;
     this.setSceneVar(f);
     var busy = function () { return self.inUse(); };
-    ECE.SoundMap.paintCanvas({ x: 0, y: 0, w: Lo.W, h: Lo.H }, W, H, { cards: this.cardList(), dpr: dpr, busy: busy, maxWait: 400 }, function (cv, info) {
+    var gen = this.mapGen = (this.mapGen | 0) + 1;
+    var win = this.mapWin({ x: 0, y: 0, w: Lo.W, h: Lo.H });
+    var stale = function () { return gen !== self.mapGen || self.destroyed; };
+    this.th.map.paintCanvas(win, W, H, this.mapHeart({ cards: this.mapCards(), dpr: dpr, busy: busy, maxWait: 400, cancel: stale }), function (cv, info) {
+      if (gen !== self.mapGen) { if (cv && cv.style) { cv.width = 1; cv.height = 1; } return; }
       self.mapBusy = false;
       if (self.destroyed) return;
       if (!cv || !cv.style) { self.mapOff = true; self.vectorChart(); return; }
@@ -7692,23 +10709,44 @@
     });
   };
   View.prototype.vectorChart = function () {
-    if (this.vecLines || !ECE.SoundMap || this.destroyed) return;
-    var A = ECE.Art, el = A.el;
+    if (this.vecLines || !this.th.map || typeof this.th.map.overlay !== 'function' || this.destroyed) return;
+    var A = this.th.art, el = A.el;
     var g = el('g', { 'clip-path': 'url(#' + this.uid + '-iclip)', 'class': 'ece-map-fallback' });
     this.gMap.insertBefore ? this.gMap.insertBefore(g, this.mapBase.nextSibling) : this.gMap.appendChild(g);
-    ECE.SoundMap.overlay(g, { el: el, text: A.text, colors: this.mapCols || {}, minFont: MIN_FONT, names: false });
+    var wideV = this.Lo.orient === 'wide';
+    this.th.map.overlay(g, this.mapHeart({ el: el, text: A.text, colors: this.mapCols || {}, minFont: MIN_FONT, names: false,
+      map: wideV ? this.Lo.map : null, W: wideV ? this.Lo.W : 0, H: wideV ? this.Lo.H : 0 }));
     this.vecLines = g;
   };
   View.prototype.cardList = function () {
     if (this.cards) return this.cards;
+    var A = this.th.art;
     this.cards = this.tiles.map(function (t) {
-      return { x: t.card.x, y: t.card.y, w: t.card.w, h: t.card.h, rx: t.cell.side === 'corner' ? 0.12 : 0.09, tint: t.dcolor ? ECE.Art.mapTone(t.dcolor) : null };
+      return { x: t.card.x, y: t.card.y, w: t.card.w, h: t.card.h, rx: t.cell.side === 'corner' ? 0.12 : 0.09, tint: t.dcolor ? A.mapTone(t.dcolor) : null };
     });
     return this.cards;
   };
+  View.prototype.mapCards = function () {
+    if (this.mapCards0) return this.mapCards0;
+    var Lo = this.Lo, m = Lo.map;
+    this.mapCards0 = m.z === 1 && !m.x && !m.y ? this.cardList() : this.cardList().map(function (c) {
+      var r = toMap(Lo, c);
+      return { x: r.x, y: r.y, w: r.w, h: r.h, rx: c.rx / m.z, tint: c.tint };
+    });
+    return this.mapCards0;
+  };
+  View.prototype.mapWin = function (r) {
+    var w = toMap(this.Lo, r);
+    if (this.Lo.map.z !== 1) w.lw = 1 / this.Lo.map.z;
+    return w;
+  };
+  View.prototype.mapHeart = function (o) {
+    if (o && this.Lo.orient === 'wide' && this.heartW0 > 0 && this.th.map && this.th.map !== ECE.SoundMap) o.heartW = this.heartW0;
+    return o;
+  };
   View.prototype.setSceneVar = function (f) {
     try {
-      var v = Math.round(layout().scene.h * f.u) + 'px';
+      var v = Math.round(this.Lo.scene.h * f.u) + 'px';
       var p = this.container && this.container.parentNode, list = p && p.children ? p.children : [];
       for (var i = 0; i < list.length; i++) {
         var c = list[i];
@@ -7720,7 +10758,7 @@
     } catch (e) { }
   };
   View.prototype.scheduleHi = function (ms) {
-    if (this.destroyed || this.mapOff || !ECE.SoundMap || !this.cam.on || !this.mapPx) return;
+    if (this.destroyed || this.mapOff || !this.th.map || !this.cam.on || !this.mapPx) return;
     var self = this;
     if (this.hiTimer) clearTimeout(this.hiTimer);
     this.hiTimer = setTimeout(function () { self.hiTimer = 0; try { self.paintHi(); } catch (e) { report(e, 'paintHi'); } }, ms || 450);
@@ -7728,7 +10766,7 @@
   View.prototype.paintHi = function () {
     if (this.destroyed || !this.cam.on || !this.zoomed) return;
     if (this.hiBusy || this.inUse()) { this.scheduleHi(400); return; }
-    var Lo = layout(), vb = this.cam.vb || this.viewBox(), f = this.zf;
+    var Lo = this.Lo, vb = this.cam.vb || this.viewBox(), f = this.zf;
     if (!f) return;
     var dpr = dprNow(), pxU = f.uz * dpr;
     if (pxU <= this.mapPx / Lo.W * 1.2) return;
@@ -7747,7 +10785,7 @@
     var gen = this.hiGen = (this.hiGen | 0) + 1;
     var stale = function () { return gen !== self.hiGen || self.destroyed || !self.zoomed || !self.cam.on; };
     var busy = function () { return self.inUse(); };
-    ECE.SoundMap.paintCanvas(win, W, H, { cards: this.cardList(), dpr: dpr, busy: busy, cancel: stale, maxWait: 8000, dropOnWait: true, full: { x: 0, y: 0, w: Lo.W, h: Lo.H } }, function (cv, info) {
+    this.th.map.paintCanvas(this.mapWin(win), W, H, this.mapHeart({ cards: this.mapCards(), dpr: dpr, busy: busy, cancel: stale, maxWait: 8000, dropOnWait: true, full: this.mapWin({ x: 0, y: 0, w: Lo.W, h: Lo.H }) }), function (cv, info) {
       if (gen !== self.hiGen) { if (cv && cv.style) { cv.width = 1; cv.height = 1; } return; }
       self.hiBusy = false;
       if (!self.destroyed && !cv && info && info.dropped) { self.scheduleHi(450); return; }
@@ -7766,7 +10804,7 @@
   };
 
   View.prototype.drawRoad = function () {
-    var A = ECE.Art, Lo = layout(), R = Lo.road, el = A.el, C = A.COLORS;
+    var A = this.th.art, Lo = this.Lo, R = Lo.road, el = A.el, C = A.COLORS;
     var o = Lo.inner, ix = o.x + ROAD_W, iy = o.y + ROAD_W, iw = o.w - 2 * ROAD_W, ih = o.h - 2 * ROAD_W, ir = 0.18;
     var outer = 'M' + o.x + ' ' + o.y + 'H' + (o.x + o.w) + 'V' + (o.y + o.h) + 'H' + o.x + 'Z';
     var innerP = 'M' + r3(ix + ir) + ' ' + r3(iy) + 'H' + r3(ix + iw - ir) + 'Q' + r3(ix + iw) + ' ' + r3(iy) + ' ' + r3(ix + iw) + ' ' + r3(iy + ir) +
@@ -7774,7 +10812,7 @@
       'Q' + r3(ix) + ' ' + r3(iy + ih) + ' ' + r3(ix) + ' ' + r3(iy + ih - ir) + 'V' + r3(iy + ir) + 'Q' + r3(ix) + ' ' + r3(iy) + ' ' + r3(ix + ir) + ' ' + r3(iy) + 'Z';
     el('path', { d: outer + innerP, 'fill-rule': 'evenodd', fill: C.asphalt, opacity: 0.84 }, this.gRoad);
     el('rect', { x: o.x + 0.04, y: o.y + 0.04, width: o.w - 0.08, height: o.h - 0.08, fill: 'none', stroke: C.curb, 'stroke-width': 0.012, opacity: 0.3 }, this.gRoad);
-    el('path', { d: innerP, fill: 'none', stroke: '#000000', 'stroke-width': 0.05, opacity: 0.25 }, this.gRoad);
+    el('path', { d: innerP, fill: 'none', stroke: C.roadShade || '#000000', 'stroke-width': 0.05, opacity: 0.25 }, this.gRoad);
     el('path', { d: innerP, fill: 'none', stroke: C.curb, 'stroke-width': 0.014, opacity: 0.45 }, this.gRoad);
     var x0 = R.X0, y0 = R.Y0, x1 = R.X1, y1 = R.Y1, r = R.r;
     var mid = 'M' + r3(x0 + r) + ' ' + r3(y0) + 'H' + r3(x1 - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + r3(x1) + ' ' + r3(y0 + r) + 'V' + r3(y1 - r) +
@@ -7784,16 +10822,18 @@
   };
 
   View.prototype.buildTile = function (i) {
-    var A = ECE.Art, B = ECE.BoardData, C = A.COLORS, el = A.el, Lo = layout();
-    var s = B.SPACES[i], cell = Lo.cells[i];
+    var A = this.th.art, B = this.th.board, C = A.COLORS, el = A.el, Lo = this.Lo;
+    var s = B.SPACES[i], cell = Lo.cells[i], own = ECE.BoardData.SPACES[i];
     var t = { i: i, s: s, cell: cell, kind: s.kind };
     var dd = B.districtOf(i);
     t.dcolor = dd ? dd.color : null;
-    t.aria = spaceLabel(i, null);
+    t.aria = spaceLabel(i, null, this.th);
     var g = el('g', { 'class': 'ece-space ece-k-' + s.kind, 'data-space': i, role: 'button', tabindex: '-1', 'aria-label': t.aria }, this.gSpaces);
     t.g = g;
     if (cell.side === 'corner') {
       var info = { salary: money(B.RULES.salary), em: this.em.s, minFont: MIN_FONT, road: s.kind === 'traffic' ? (s.area || 'I-5') : '' };
+      var c1 = Lo.cells[(i + 1) % Lo.n];
+      info.dir = s.kind === 'start' && c1 && c1.y >= cell.y + cell.h - 1e-9 ? 'down' : 'right';
       var kind = s.kind === 'start' ? 'start' : s.kind === 'traffic' ? 'traffic' : s.kind === 'rest' ? 'rest' : 'bridge';
       t.corner = A.corner(g, kind, cell.x, cell.y, cell.w, s.label || [s.name], info);
       if (kind === 'traffic') this.stuckRect = t.corner.stuck;
@@ -7812,8 +10852,8 @@
       s.kind === 'tax' ? C.taxTint : s.deck === 'rain' ? C.rainTint : C.buzzTint;
     t.tint = tint;
     t.cardEl = el('rect', { x: r3(card.x), y: r3(card.y), width: r3(card.w), height: r3(card.h), rx: 0.09, fill: tint, 'class': 'ece-card-bg' }, g);
-    el('rect', { x: r3(card.x), y: r3(card.y), width: r3(card.w), height: r3(card.h), rx: 0.09, fill: 'none', stroke: '#FFFFFF', 'stroke-width': 0.012, opacity: 0.55, 'class': 'ece-glass-edge' }, g);
-    t.litEl = el('path', { d: 'M' + r3(card.x + 0.1) + ' ' + r3(card.y + 0.014) + 'H' + r3(card.x + card.w - 0.1), fill: 'none', stroke: '#FFFFFF', 'stroke-width': 0.022, opacity: 0.8, 'stroke-linecap': 'round', 'class': 'ece-glass-lit' }, g);
+    el('rect', { x: r3(card.x), y: r3(card.y), width: r3(card.w), height: r3(card.h), rx: 0.09, fill: 'none', stroke: C.glassEdge || '#FFFFFF', 'stroke-width': 0.012, opacity: 0.55, 'class': 'ece-glass-edge' }, g);
+    t.litEl = el('path', { d: 'M' + r3(card.x + 0.1) + ' ' + r3(card.y + 0.014) + 'H' + r3(card.x + card.w - 0.1), fill: 'none', stroke: C.glassEdge || '#FFFFFF', 'stroke-width': 0.022, opacity: 0.8, 'stroke-linecap': 'round', 'class': 'ece-glass-lit' }, g);
     t.hatch = null; t.mortG = null;
 
     var bandD = portrait ? 0.3 : 0.28;
@@ -7828,6 +10868,7 @@
     };
     var acrossMid = portrait ? card.x + card.w / 2 : card.y + card.h / 2;
     t.portrait = portrait;
+    t.outerFirst = outerFirst;
 
     if (d) {
       var b0 = u2(0), b1 = u2(bandD);
@@ -7843,36 +10884,40 @@
       t.bandIn = portrait ? { x: band.x, y: outerFirst ? band.y + cut : band.y, w: band.w, h: band.h - cut }
         : { x: outerFirst ? band.x + cut * 0.6 : band.x, y: band.y, w: band.w - cut * 0.6, h: band.h };
       t.lineEl = el('rect', { x: r3(inl.x), y: r3(inl.y), width: r3(inl.w), height: r3(inl.h), rx: r3(ID / 2), fill: lc.fill, 'class': 'ece-inlay' }, g);
-      el('rect', { x: r3(inl.x), y: r3(inl.y), width: r3(inl.w), height: r3(inl.h), rx: r3(ID / 2), fill: 'url(#' + this.uid + '-sheen)', 'class': 'ece-band-sheen' }, g);
+      t.lineSheen = el('rect', { x: r3(inl.x), y: r3(inl.y), width: r3(inl.w), height: r3(inl.h), rx: r3(ID / 2), fill: 'url(#' + this.uid + '-sheen)', 'class': 'ece-band-sheen' }, g);
+      t.buildG = el('g', { 'class': 'ece-build' }, g);
       var pad = portrait ? 0.07 : 0.05, room = portrait ? band.w - 0.08 : band.w + 0.04 - pad;
       var tf = Math.max(MIN_FONT, Math.min(portrait ? 0.185 : 0.18, room / (this.em.t(d.tag) || 1.4)));
       var chipW = (this.em.t(d.tag) || 1.4) * tf + pad, chipH = tf * 1.5;
-      t.bandEl = el('rect', { x: 0, y: 0, width: r3(chipW), height: r3(chipH), rx: r3(chipH * 0.24), fill: tc.fill, stroke: '#D9BE86', 'stroke-width': 0.016, 'stroke-opacity': 0.9, 'class': 'ece-band' }, g);
+      t.bandEl = el('rect', { x: 0, y: 0, width: r3(chipW), height: r3(chipH), rx: r3(chipH * 0.24), fill: tc.fill, stroke: C.plateRim || '#D9BE86', 'stroke-width': 0.016, 'stroke-opacity': 0.9, 'class': 'ece-band' }, g);
       t.chipEl = t.bandEl;
       t.chipSheen = el('rect', { x: 0, y: 0, width: r3(chipW), height: r3(chipH), rx: r3(chipH * 0.24), fill: 'url(#' + this.uid + '-sheen)' }, g);
       t.chipW = chipW; t.chipH = chipH;
       t.tagEl = A.text(g, band.x + band.w / 2, band.y + band.h / 2 + tf * TAG_UP, d.tag, tf, { 'font-weight': 700, fill: tc.text, 'letter-spacing': 0.01, 'class': 'ece-tag' });
       t.tagF = tf; t.tagText = d.tag;
-      t.buildG = el('g', { 'class': 'ece-build' }, g);
+      t.ownBefore = t.bandEl;
       t.level = 0;
       t.portrait = portrait;
       this.placeTag(t, 0);
     } else {
-      var iconName = s.kind === 'transit' ? (s.mode || 'train') : s.kind === 'utility' ? (/dam|power/i.test(s.name) ? 'dam' : 'drop') :
-        s.kind === 'tax' ? (/toll/i.test(s.name) ? 'toll' : 'tax') : s.kind === 'card' ? (s.deck === 'rain' ? 'rain' : 'buzz') : 'drop';
+      var iconName = s.kind === 'transit' ? (s.mode || 'train') : s.kind === 'utility' ? (/dam|power/i.test(own.name) ? 'dam' : 'drop') :
+        s.kind === 'tax' ? (/toll/i.test(own.name) ? 'toll' : 'tax') : s.kind === 'card' ? (s.deck === 'rain' ? 'rain' : 'buzz') : 'drop';
       var isz = Math.min(iconD - 0.08, along - 0.2, portrait ? 0.44 : 0.36);
-      var ic = portrait ? { x: acrossMid, y: (u2(0) + u2(iconD)) / 2 } : { x: (u2(0) + u2(iconD)) / 2, y: acrossMid };
-      A.icon(g, iconName, ic.x, ic.y, isz, { ink: true });
+      var iu = ownable ? 0.015 : 0;
+      var ic = portrait ? { x: acrossMid, y: (u2(iu) + u2(iconD + iu)) / 2 } : { x: (u2(iu) + u2(iconD + iu)) / 2, y: acrossMid };
+      var icG = A.icon(g, iconName, ic.x, ic.y, isz, { ink: true });
+      if (ownable) t.ownBefore = icG;
     }
 
-    var textD0 = outerD + 0.03, textD1 = depth - ownD - 0.04;
+    var tshift = ownable && !portrait ? 0.012 : 0;
+    var textD0 = outerD + 0.03 - tshift, textD1 = depth - ownD - 0.04 - tshift;
     var lines = (s.label && s.label.length ? s.label : [s.name]).slice(0, 2);
     var priceText = s.price ? money(s.price) : s.kind === 'tax' ? money(s.amount) : '';
     var hasPrice = !!priceText;
     var pf = portrait ? 0.19 : 0.2;
     var textW, lineMaxF, rows;
     if (portrait) {
-      textW = card.w - 0.08;
+      textW = ownable ? card.w - 2 * OWN_IN : card.w - 0.08;
       var avail = textD1 - textD0;
       rows = lines.length + (hasPrice ? 1 : 0);
       lineMaxF = Math.min(0.23, (avail - (hasPrice ? pf * 1.25 : 0)) / (lines.length * 1.18 + 0.1));
@@ -7892,7 +10937,7 @@
       var top = (zA + zB) / 2 - blockH / 2;
       for (var k = 0; k < (showLabel ? lines.length : 0); k++) positions.push({ x: acrossMid, y: top + lh * (k + 0.5) });
       if (hasPrice) t.pricePos = { x: acrossMid, y: top + (showLabel ? lh * lines.length : 0) + pf * 0.72 };
-      if (ownable) t.ownerPos = { x: acrossMid, y: u2(depth - ownD / 2 - 0.01) };
+      if (ownable) t.ownerPos = { x: acrossMid, y: u2(depth - Math.max(ownD / 2 + 0.01, OWN_IN + 0.141)) };
     } else {
       var cxText = (u2(textD0) + u2(textD1)) / 2;
       var lh2 = Math.max(lf, 0.2) * 1.14;
@@ -7901,8 +10946,8 @@
       for (var k2 = 0; k2 < (showLabel ? lines.length : 0); k2++) positions.push({ x: cxText, y: y0 + lh2 * (k2 + 0.5) });
       var py = y0 + (showLabel ? lh2 * lines.length : 0) + pf * 0.62;
       if (ownable) {
-        var ou = depth - 0.2;
-        t.ownerPos = { x: u2(ou), y: py };
+        var ou = depth - Math.max(0.2, OWN_IN + 0.141);
+        t.ownerPos = { x: u2(ou), y: Math.min(py, card.y + card.h - OWN_IN - 0.141) };
         var pu = (textD0 + ou - 0.16) / 2;
         t.pricePos = { x: u2(pu), y: py };
       } else if (hasPrice) t.pricePos = { x: cxText, y: py };
@@ -7931,6 +10976,8 @@
       t.owner = null;
       t.mortAt = t.pricePos || t.ownerPos;
       t.mortgaged = false;
+      t.ownG = null; t.ownKey = '';
+      if (!t.ownBefore) t.ownBefore = t.labelEls[0] || t.priceEl || t.ownerG;
     }
     t.hoverEl = el('rect', { x: r3(card.x), y: r3(card.y), width: r3(card.w), height: r3(card.h), rx: 0.09, fill: 'none', 'class': 'ece-hover' }, g);
     return t;
@@ -7938,7 +10985,7 @@
 
   View.prototype.mortParts = function (t) {
     if (t.mortG || !t.mortAt) return;
-    var A = ECE.Art, C = A.COLORS, el = A.el, card = t.card, g = t.g;
+    var A = this.th.art, C = A.COLORS, el = A.el, card = t.card, g = t.g;
     var put = function (node, before) { if (before && typeof g.insertBefore === 'function') g.insertBefore(node, before); else g.appendChild(node); };
     var stripe = { fill: A.COLORS.hatch, opacity: 0.34 };
     t.hatch = el('g', { visibility: 'hidden', 'class': 'ece-hatch' });
@@ -7948,10 +10995,26 @@
     var mp = t.mortAt;
     t.mortG = el('g', { 'class': 'ece-mort', visibility: 'hidden', transform: 'translate(' + r3(mp.x) + ' ' + r3(mp.y) + ')' });
     el('circle', { cx: 0.012, cy: 0.022, r: 0.165, fill: '#000000', opacity: 0.22 }, t.mortG);
-    el('circle', { cx: 0, cy: 0, r: 0.16, fill: '#A7AEB0', stroke: '#C9AE74', 'stroke-width': 0.016 }, t.mortG);
-    el('circle', { cx: 0, cy: 0, r: 0.128, fill: 'none', stroke: '#E4E8E8', 'stroke-width': 0.008, opacity: 0.8 }, t.mortG);
-    A.text(t.mortG, 0, 0.068, 'M', 0.19, { 'font-weight': 600, fill: '#1A2328', 'font-family': A.SERIF || 'serif' });
+    el('circle', { cx: 0, cy: 0, r: 0.16, fill: C.sealFill || '#A7AEB0', stroke: C.sealRim || '#C9AE74', 'stroke-width': 0.016 }, t.mortG);
+    el('circle', { cx: 0, cy: 0, r: 0.128, fill: 'none', stroke: C.sealInner || '#E4E8E8', 'stroke-width': 0.008, opacity: 0.8 }, t.mortG);
+    A.text(t.mortG, 0, 0.068, 'M', 0.19, { 'font-weight': 600, fill: C.sealInk || '#1A2328', 'font-family': A.SERIF || 'serif' });
     put(t.mortG, t.hoverEl);
+  };
+
+  View.prototype.ownParts = function (t) {
+    if (t.ownG || !t.card) return;
+    var A = this.th.art, C = A.COLORS || {}, el = A.el, c = t.card, R = 0.09;
+    var box = function (inset, extra) {
+      var a = { x: r3(c.x + inset), y: r3(c.y + inset), width: r3(c.w - 2 * inset), height: r3(c.h - 2 * inset), rx: r3(Math.max(0.012, R - inset)), fill: 'none' };
+      for (var k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) a[k] = extra[k];
+      return a;
+    };
+    var g = el('g', { 'class': 'ece-own', visibility: 'hidden' });
+    t.ownKeyEl = el('rect', box(OWN_W + OWN_KEY / 2, { stroke: C.ownKey || '#081113', 'stroke-width': OWN_KEY, 'stroke-opacity': typeof C.ownKeyOpacity === 'number' ? C.ownKeyOpacity : 0.62, 'class': 'ece-own-key' }), g);
+    t.ownLine = el('rect', box(OWN_W / 2, { stroke: '#000000', 'stroke-width': OWN_W, 'class': 'ece-own-line' }), g);
+    var before = t.ownBefore && t.ownBefore.parentNode === t.g ? t.ownBefore : (t.mortG && t.mortG.parentNode === t.g ? t.mortG : t.hoverEl);
+    if (before && typeof t.g.insertBefore === 'function') t.g.insertBefore(g, before); else t.g.appendChild(g);
+    t.ownG = g;
   };
 
   function hatchPath(c, d) {
@@ -8009,14 +11072,14 @@
     return m;
   }
 
-  function spaceLabel(i, m) {
-    var B = ECE.BoardData, s = B.SPACES[i];
+  function spaceLabel(i, m, th) {
+    var B = (th && th.board) || ECE.BoardData, s = B.SPACES[i];
     if (!s) return '';
-    var G = ECE.Glossary || {}, places = G.places || {};
+    var G = (th && th.gloss) || ECE.Glossary || {}, places = G.places || {};
     var parts = [s.name];
     if (s.kind === 'street' || s.kind === 'transit' || s.kind === 'utility') {
       var d = s.kind === 'street' ? B.district(s.district) : null;
-      parts.push(d ? d.name : s.kind === 'utility' ? 'utility' : s.mode === 'ferry' ? 'ferry dock' : s.mode === 'bus' ? 'bus stop' : 'train station');
+      parts.push(d ? d.name : s.kind === 'utility' ? kindLabel(th, 'utility', 'utility') : s.mode === 'ferry' ? kindLabel(th, 'ferry', 'ferry dock') : s.mode === 'bus' ? kindLabel(th, 'bus', 'bus stop') : kindLabel(th, 'train', 'train station'));
       parts.push(money(s.price));
       var pr = m && m.props ? m.props[i] : null;
       var op = pr && m.byId ? m.byId[pr.owner] : null;
@@ -8031,11 +11094,17 @@
     else if (s.kind === 'start') parts.push('payday ' + money(B.RULES.salary));
     else if (s.kind === 'traffic') { if (s.area) parts.push(s.area); }
     else if (s.kind === 'rest') parts.push(m && m.fundOn ? (places.rainFund || 'Rain Fund') + ' ' + money(m.fund) : 'a rest');
-    else if (s.kind === 'bridge') parts.push('go to ' + (places.traffic || 'Stuck in Traffic'));
+    else if (s.kind === 'bridge') parts.push('go to ' + ((th && th.word && th.word('trafficThe')) || places.traffic || 'Stuck in Traffic'));
     return parts.join(', ');
   }
-  function arrowStep(i, key) {
-    var Lo = layout(), n = Lo.n, c = Lo.cells;
+  function kindLabel(th, k, dflt) {
+    if (!th || th.id === 'emerald' || !th.kinds) return dflt;
+    var w = th.kinds[k];
+    return typeof w === 'string' && w ? w.charAt(0).toLowerCase() + w.slice(1) : dflt;
+  }
+  function arrowStep(i, key, Lo) {
+    Lo = Lo || layout();
+    var n = Lo.n, c = Lo.cells;
     var dir = key === 'ArrowRight' || key === 'Right' ? [1, 0] : key === 'ArrowLeft' || key === 'Left' ? [-1, 0] :
       key === 'ArrowDown' || key === 'Down' ? [0, 1] : key === 'ArrowUp' || key === 'Up' ? [0, -1] : null;
     if (!dir || !(i >= 0 && i < n)) return null;
@@ -8078,7 +11147,7 @@
 
   View.prototype.drawLabels = function (m) {
     for (var i = 0; i < this.tiles.length; i++) {
-      var t = this.tiles[i], lab = spaceLabel(i, m);
+      var t = this.tiles[i], lab = spaceLabel(i, m, this.th);
       if (t.aria !== lab) { t.aria = lab; t.g.setAttribute('aria-label', lab); }
     }
     var me = m.you !== null && m.you !== undefined ? m.byId[m.you] : null;
@@ -8097,7 +11166,7 @@
     this.setStop(i);
     if (typeof t.g.focus === 'function') { try { t.g.focus({ preventScroll: true }); } catch (e) { t.g.focus(); } }
     if (this.cam.on) {
-      var c = layout().cells[i], vb = this.cam.vb || this.viewBox();
+      var c = this.Lo.cells[i], vb = this.cam.vb || this.viewBox();
       var inView = c.x >= vb[0] - 0.01 && c.y >= vb[1] - 0.01 && c.x + c.w <= vb[0] + vb[2] + 0.01 && c.y + c.h <= vb[1] + vb[3] + 0.01;
       if (!inView) {
         this.cam.panned = true;
@@ -8123,7 +11192,7 @@
 
   View.prototype.drawTile = function (t, pr, m) {
     if (!t.ownerG) return;
-    var A = ECE.Art, C = A.COLORS;
+    var A = this.th.art, C = A.COLORS;
     var owner = pr ? pr.owner : null;
     var op = owner !== null && owner !== undefined ? m.byId[owner] : null;
     var key = op ? owner + '|' + op.token + '|' + op.color : '';
@@ -8140,6 +11209,22 @@
       t.level = level;
       this.drawBuildings(t, level);
     }
+    var mortK = !!(pr && pr.mortgaged);
+    var fk = op ? owner + '|' + op.color + '|' + (mortK ? 'm' : '') : '';
+    if (t.ownKey !== fk) {
+      t.ownKey = fk;
+      if (op) {
+        this.ownParts(t);
+        t.ownLine.setAttribute('stroke', typeof A.ownColor === 'function' ? A.ownColor(op.color) || op.color : op.color);
+        if (mortK) { t.ownLine.setAttribute('stroke-dasharray', OWN_DASH); t.ownKeyEl.setAttribute('stroke-dasharray', OWN_DASH); }
+        else { t.ownLine.removeAttribute('stroke-dasharray'); t.ownKeyEl.removeAttribute('stroke-dasharray'); }
+        t.ownG.setAttribute('data-owner', owner);
+        t.ownG.setAttribute('data-mortgaged', mortK ? '1' : '0');
+        t.ownG.setAttribute('visibility', 'visible');
+      } else if (t.ownG) t.ownG.setAttribute('visibility', 'hidden');
+      var lv = op ? 'hidden' : 'visible';
+      if (t.lineEl && t.lineV !== lv) { t.lineV = lv; t.lineEl.setAttribute('visibility', lv); if (t.lineSheen) t.lineSheen.setAttribute('visibility', lv); }
+    }
     var mort = !!(pr && pr.mortgaged);
     if (t.mortgaged !== mort) {
       t.mortgaged = mort;
@@ -8147,10 +11232,10 @@
       if (t.hatch) t.hatch.setAttribute('visibility', mort ? 'visible' : 'hidden');
       if (t.mortG) t.mortG.setAttribute('visibility', mort ? 'visible' : 'hidden');
       if (t.priceEl) t.priceEl.setAttribute('visibility', mort ? 'hidden' : 'visible');
-      if (t.bandEl) t.bandEl.setAttribute('fill', mort ? MORT_BAND : t.tagColors.fill);
-      if (t.lineEl) t.lineEl.setAttribute('fill', mort ? MORT_LINE : t.lineColors.fill);
+      if (t.bandEl) t.bandEl.setAttribute('fill', mort ? C.mortBand || MORT_BAND : t.tagColors.fill);
+      if (t.lineEl) t.lineEl.setAttribute('fill', mort ? C.mortLine || MORT_LINE : t.lineColors.fill);
       if (t.tagEl) t.tagEl.setAttribute('fill', mort ? C.slate : t.tagColors.text);
-      for (var k = 0; k < t.labelEls.length; k++) t.labelEls[k].setAttribute('fill', mort ? MORT_TEXT : C.text);
+      for (var k = 0; k < t.labelEls.length; k++) t.labelEls[k].setAttribute('fill', mort ? C.mortText || MORT_TEXT : C.text);
       t.g.setAttribute('class', 'ece-space ece-k-' + t.kind + (mort ? ' ece-mortgaged' : ''));
     }
   };
@@ -8159,15 +11244,17 @@
     var b = t.portrait ? (t.bandIn || t.band) : t.band, tg = t.tagEl, tf = t.tagF;
     var wT = t.chipW ? t.chipW - 0.04 : (this.em.t(t.tagText) || 1.4) * tf;
     var x, y, zone;
+    var FR = OWN_IN + 0.004;
     if (level <= 0) { x = b.x + b.w / 2; y = b.y + b.h / 2 + tf * TAG_UP; zone = null; }
     else if (t.portrait) {
       x = b.x + 0.05 + wT / 2; y = b.y + b.h / 2 + tf * TAG_UP;
       var zx = b.x + 0.05 + wT + 0.03;
-      zone = { x: zx, y: b.y, w: b.x + b.w - 0.03 - zx, h: b.h };
+      zone = { x: zx, y: b.y, w: b.x + b.w - FR - zx, h: b.h };
     } else {
       x = b.x + b.w / 2; y = b.y + 0.05 + tf * 0.82;
       var zy = y - tf * TAG_UP + (t.chipH || tf * 1.5) / 2 + 0.025;
-      zone = { x: b.x, y: zy, w: b.w, h: b.y + b.h - 0.03 - zy };
+      var c0 = FR, c1 = b.w + 0.02;
+      zone = { x: t.outerFirst ? b.x + c0 : b.x + b.w - c1, y: zy, w: c1 - c0, h: b.y + b.h - FR - zy };
     }
     var k = r3(x) + ' ' + r3(y);
     if (t.tagAt !== k) {
@@ -8182,16 +11269,18 @@
   };
 
   View.prototype.drawBuildings = function (t, level) {
-    var A = ECE.Art, g = t.buildG, b = t.bandIn || t.band;
+    var A = this.th.art, g = t.buildG, b = t.bandIn || t.band;
     while (g.firstChild) g.removeChild(g.firstChild);
     var z = this.placeTag(t, level);
     if (level <= 0 || !z) return;
-    var bd = t.band;
+    var bd = t.band, FR = OWN_IN + 0.004;
     if (level >= 5) {
       if (t.portrait) {
-        var top = t.cell.side === 'top', th = Math.min(0.27, bd.h - 0.035);
-        A.tower(g, z.x + z.w / 2, top ? bd.y + bd.h - 0.012 : bd.y + bd.h - 0.024, 0.21, th);
-      } else A.tower(g, b.x + b.w / 2, z.y + z.h - 0.01, 0.19, Math.min(0.6, z.h - 0.11));
+        var top = t.cell.side === 'top';
+        var base = top ? bd.y + bd.h - 0.012 : Math.min(bd.y + bd.h - 0.024, t.card.y + t.card.h - FR);
+        var th = Math.min(0.27, bd.h - 0.035, top ? base - (t.card.y + FR) : base - (bd.y + 0.006));
+        A.tower(g, z.x + z.w / 2, base, 0.21, th);
+      } else A.tower(g, z.x + z.w / 2, z.y + z.h - 0.01, Math.min(0.19, z.w - 0.01), Math.min(0.6, z.h - 0.11));
       return;
     }
     var gap = 0.022;
@@ -8206,13 +11295,13 @@
       return;
     }
     var roomV = z.h - 0.02;
-    var hv = Math.min(0.2, (roomV - (level - 1) * gap) / (level * 0.92), b.w * 0.9);
+    var hv = Math.min(0.2, (roomV - (level - 1) * gap) / (level * 0.92), z.w * 0.9);
     var totalV = level * hv * 0.92 + (level - 1) * gap;
-    for (var k2 = 0; k2 < level; k2++) A.house(g, b.x + b.w / 2, z.y + z.h / 2 - totalV / 2 + hv * 0.92 + k2 * (hv * 0.92 + gap), hv);
+    for (var k2 = 0; k2 < level; k2++) A.house(g, z.x + z.w / 2, z.y + z.h / 2 - totalV / 2 + hv * 0.92 + k2 * (hv * 0.92 + gap), hv);
   };
 
   View.prototype.tokenNode = function (p) {
-    var A = ECE.Art, el = A.el;
+    var A = this.th.art, el = A.el, C = A.COLORS || {};
     var tk = this.tokens[p.id];
     var key = p.token + '|' + p.color;
     if (tk && tk.key === key) return tk;
@@ -8220,22 +11309,22 @@
     var g = el('g', { 'class': 'ece-token' }, this.gTokens);
     var ground = el('g', { 'class': 'ece-pin-ground' }, g);
     var halo = el('g', { 'class': 'ece-halo', visibility: 'hidden' }, g);
-    el('circle', { cx: 0, cy: 0, r: 1.46, fill: '#F0D79C', opacity: 0.1, 'class': 'ece-halo-glow' }, halo);
-    el('circle', { cx: 0, cy: 0, r: 1.36, fill: '#F0D79C', opacity: 0.12 }, halo);
+    el('circle', { cx: 0, cy: 0, r: 1.46, fill: C.haloGlow || '#F0D79C', opacity: 0.1, 'class': 'ece-halo-glow' }, halo);
+    el('circle', { cx: 0, cy: 0, r: 1.36, fill: C.haloGlow || '#F0D79C', opacity: 0.12 }, halo);
     el('circle', { cx: 0, cy: 0, r: 1.32, fill: p.color, opacity: 0.14 }, halo);
-    el('circle', { cx: 0, cy: 0, r: 1.25, fill: 'none', stroke: '#F4E4BA', 'stroke-width': 0.07, opacity: 0.95 }, halo);
+    el('circle', { cx: 0, cy: 0, r: 1.25, fill: 'none', stroke: C.haloRing || '#F4E4BA', 'stroke-width': 0.07, opacity: 0.95 }, halo);
     var body = el('g', {}, g);
     A.pin(body, p.token, p.color, { ground: ground });
     var you = el('g', { visibility: 'hidden', 'class': 'ece-you' }, body);
-    el('circle', { cx: 0, cy: 0, r: 1.235, fill: 'none', stroke: '#06100F', 'stroke-width': 0.06, opacity: 0.75 }, you);
-    el('circle', { cx: 0, cy: 0, r: 1.14, fill: 'none', stroke: '#F2ECDF', 'stroke-width': 0.12 }, you);
+    el('circle', { cx: 0, cy: 0, r: 1.235, fill: 'none', stroke: C.ringKey || '#06100F', 'stroke-width': 0.06, opacity: 0.75 }, you);
+    el('circle', { cx: 0, cy: 0, r: 1.14, fill: 'none', stroke: C.youRing || '#F2ECDF', 'stroke-width': 0.12 }, you);
     tk = { g: g, halo: halo, body: body, ground: ground, youRing: you, key: key, x: null, y: null, r: null, lift: 0, scale: 1, shown: null, op: 1 };
     this.tokens[p.id] = tk;
     return tk;
   };
 
   View.prototype.restPositions = function () {
-    var m = this.model, Lo = layout(), R = Lo.road;
+    var m = this.model, Lo = this.Lo, R = Lo.road;
     var out = {}, groups = {};
     var order = m.players.slice();
     order.sort(function (a, b) { return rank(a) - rank(b); });
@@ -8251,7 +11340,7 @@
       for (var j = 0; j < list.length; j++) {
         var at;
         if (k === 'stuck' && this.stuckRect) at = stuckAt(this.stuckRect, list.length, j);
-        else if (R.rest[(+k) % Lo.n]) at = cornerAt((+k) % Lo.n, list.length, j);
+        else if (R.rest[(+k) % Lo.n]) at = cornerAt((+k) % Lo.n, list.length, j, Lo);
         else at = clusterAt(R.point(R.stops[(+k) % Lo.n]), list.length, j);
         out[list[j].id] = at;
       }
@@ -8356,7 +11445,8 @@
     if (this.drawn.jarOn !== on) {
       this.drawn.jarOn = on;
       this.jar.g.setAttribute('visibility', on ? 'visible' : 'hidden');
-      if (this.centreTop !== null && this.centreTop !== undefined) this.placeCentre();
+      if (this.Lo.orient === 'wide') this.placeWide();
+      else if (this.centreTop !== null && this.centreTop !== undefined) this.placeCentre();
     }
     if (on) this.jar.set(money(m.fund), Math.min(1, m.fund / 1000));
   };
@@ -8391,7 +11481,7 @@
     var key = (top === null || top === undefined ? '' : r3(top)) + '|' + jarOn;
     if (this.centreKey === key) return;
     this.centreKey = key;
-    var an = this.anchors, H = this.home, Lo = layout(), sc = Lo.scene, ds = an.diceSize;
+    var an = this.anchors, H = this.home, Lo = this.Lo, sc = Lo.scene, ds = an.diceSize;
     var dice = [H.dice[0], H.dice[1]], jar = H.jar;
     if (top !== null && top !== undefined) {
       var lim = top - 0.14;
@@ -8414,6 +11504,145 @@
     }
     this.jar.g.setAttribute('transform', 'translate(' + r3(jar.x) + ' ' + r3(jar.y) + ')');
     an.jar.x = jar.x; an.jar.y = jar.y;
+  };
+
+  View.prototype.boxSize = function () {
+    if (this.box && this.box.w > 0 && this.box.h > 0) return this.box;
+    var w = 0, h = 0;
+    try { var st = this.container && this.container.style; w = parseFloat(st && st.width) || 0; h = parseFloat(st && st.height) || 0; } catch (e) { w = 0; }
+    if (!(w > 0 && h > 0)) { try { w = (window.innerWidth || 0) - 24; h = (window.innerHeight || 0) - 24; } catch (e2) { w = 0; h = 0; } }
+    return { w: w, h: h };
+  };
+  View.prototype.splitU = function (w, h) {
+    var Lo = this.Lo, unit = Math.min(w / Lo.W, h / Lo.H);
+    if (!(unit > 0)) unit = 0;
+    var def = wideSplit(Lo, unit);
+    var hb = this.hudBox;
+    if (!this.hudPx || !(unit > 0) || !hb || Math.abs(hb.w - w) > 1.5 || Math.abs(hb.h - h) > 1.5) return def;
+    var ox = (w - unit * Lo.W) / 2, oy = (h - unit * Lo.H) / 2, S = Lo.scene, mid = Lo.W / 2;
+    var lx = S.x, rx = S.x + S.w, left = null, right = null;
+    var grow = function (a, b) {
+      if (!a) return b;
+      var x0 = Math.min(a.x, b.x), y0 = Math.min(a.y, b.y);
+      return { x: x0, y: y0, w: Math.max(a.x + a.w, b.x + b.w) - x0, h: Math.max(a.y + a.h, b.y + b.h) - y0 };
+    };
+    for (var i = 0; i < this.hudPx.length; i++) {
+      var r = this.hudPx[i], q = { x: (r.x - ox) / unit, y: (r.y - oy) / unit, w: r.w / unit, h: r.h / unit };
+      if (q.x + q.w / 2 < mid) { lx = Math.max(lx, q.x + q.w); left = grow(left, q); } else { rx = Math.min(rx, q.x); right = grow(right, q); }
+    }
+    if (rx - lx < 1) return def;
+    return { left: left || def.left, right: right || def.right, heart: { x: lx, y: S.y, w: rx - lx, h: S.h } };
+  };
+  View.prototype.heartU = function () { var b = this.boxSize(); return this.splitU(b.w, b.h).heart; };
+
+  View.prototype.placeWide = function () {
+    if (this.destroyed || this.Lo.orient !== 'wide' || !this.anchors || !this.piles) return;
+    var A = this.th.art, M = this.th.map, Lo = this.Lo, heart = this.heartU(), jarOn = !!this.drawn.jarOn;
+    var key = [heart.x, heart.w].map(r3).join(',') + '|' + jarOn;
+    if (key === this.wideKey) return;
+    this.wideKey = key;
+    var an = A.centreAnchors(Lo.scene, { heart: heart, jar: jarOn }), cur = this.anchors;
+    if (cur.titleHolder) cur.titleHolder.setAttribute('transform', 'translate(' + r3(an.titleAt.x) + ' ' + r3(an.titleAt.y) + ') scale(' + r3(an.titleAt.s) + ')');
+    cur.titleAt = an.titleAt;
+    this.tBox = undefined;
+    var decks = (this.th.cards && this.th.cards.DECKS) || {}, self = this;
+    ['rain', 'buzz'].forEach(function (d) {
+      var pl = self.piles[d], to = an.piles[d], sz = an.pileSize;
+      if (!pl || Math.abs(pl.w - sz.w) > 0.01) {
+        var op = pl && pl.g ? pl.g.getAttribute('opacity') : null;
+        if (pl && pl.g && pl.g.parentNode) pl.g.parentNode.removeChild(pl.g);
+        pl = self.piles[d] = A.pile(self.gLive, d, to.x, to.y, sz.w, sz.h, (decks[d] && decks[d].name) || (d === 'rain' ? 'Rain Check' : 'Local Buzz'));
+        if (op !== null) pl.g.setAttribute('opacity', op);
+        if (self.jar && self.jar.g && self.jar.g.parentNode === self.gLive) self.gLive.appendChild(self.jar.g);
+      } else {
+        pl.g.setAttribute('transform', 'translate(' + r3(to.x) + ' ' + r3(to.y) + ')');
+        pl.x = to.x; pl.y = to.y;
+      }
+    });
+    cur.piles = an.piles; cur.pileSize = an.pileSize;
+    if (Math.abs((cur.diceSize || 0) - an.diceSize) > 0.01 && this.dice) {
+      for (var i = 0; i < 2; i++) if (this.dice[i].g.parentNode) this.dice[i].g.parentNode.removeChild(this.dice[i].g);
+      this.dice = [A.die(this.gDice, an.dice[0].x, an.dice[0].y, an.diceSize), A.die(this.gDice, an.dice[1].x, an.dice[1].y, an.diceSize)];
+      this.diceG = this.dice.map(function (dd) { return dd.g; });
+      this.drawn.dice = null; this.drawn.diceVis = null;
+      if (this.noteOn) for (var k = 0; k < 2; k++) this.dice[k].g.setAttribute('opacity', 0);
+      if (this.model) this.drawDice(this.model.dice, this.model.lastRoll);
+    }
+    cur.diceSize = an.diceSize;
+    cur.dice = [{ x: an.dice[0].x, y: an.dice[0].y }, { x: an.dice[1].x, y: an.dice[1].y }];
+    cur.jar = an.jar; cur.cardSpot = an.cardSpot; cur.heart = an.heart;
+    this.home = { dice: [{ x: an.dice[0].x, y: an.dice[0].y }, { x: an.dice[1].x, y: an.dice[1].y }], jar: { x: an.jar.x, y: an.jar.y } };
+    this.centreKey = null;
+    this.placeCentre();
+    if (this.northG) {
+      if (an.north) { this.northG.setAttribute('transform', 'translate(' + r3(an.north.x) + ' ' + r3(an.north.y) + ')'); this.northG.setAttribute('visibility', 'visible'); }
+      else this.northG.setAttribute('visibility', 'hidden');
+    }
+    if (this.mapNames && M && typeof M.overlay === 'function') {
+      while (this.mapNames.firstChild) this.mapNames.removeChild(this.mapNames.firstChild);
+      var S = Lo.scene, m = 0.08, ts = an.titleAt.s, blocks = [
+        { x: an.titleAt.x - 1.96 * ts, y: an.titleAt.y - 0.5 * ts, w: 3.92 * ts, h: 1.08 * ts },
+        { x: an.piles.rain.x - an.pileSize.w / 2 - 0.05, y: an.piles.rain.y - an.pileSize.h / 2 - 0.06, w: an.pileSize.w + 0.1, h: an.pileSize.h + 0.16 },
+        { x: an.piles.buzz.x - an.pileSize.w / 2 - 0.05, y: an.piles.buzz.y - an.pileSize.h / 2 - 0.06, w: an.pileSize.w + 0.1, h: an.pileSize.h + 0.16 },
+        { x: an.dice[0].x - an.diceSize * 0.6, y: an.dice[0].y - an.diceSize * 0.62, w: an.dice[1].x - an.dice[0].x + an.diceSize * 1.2, h: an.diceSize * 1.3 }
+      ];
+      if (jarOn) blocks.push({ x: an.jar.x - an.jar.w * 0.65, y: an.jar.y - an.jar.h / 2 - 0.05, w: an.jar.w * 1.3, h: an.jar.h + 0.5 });
+      if (an.north) blocks.push({ x: an.north.x - 0.3, y: an.north.y - 0.42, w: 0.6, h: 0.74 });
+      var box = { x: heart.x + m, y: S.y + m, w: heart.w - 2 * m, h: S.h - 2 * m };
+      var fit = function (b) {
+        if (b.x < box.x || b.y < box.y || b.x + b.w > box.x + box.w || b.y + b.h > box.y + box.h) return false;
+        for (var j = 0; j < blocks.length; j++) {
+          var q = blocks[j];
+          if (b.x < q.x + q.w && b.x + b.w > q.x && b.y < q.y + q.h && b.y + b.h > q.y) return false;
+        }
+        blocks.push(b);
+        return true;
+      };
+      M.overlay(this.mapNames, this.mapHeart({ el: A.el, text: A.text, em: this.em.p, colors: this.mapCols || {}, minFont: MIN_FONT, lines: false, map: Lo.map, fit: fit, W: Lo.W, H: Lo.H }));
+    }
+  };
+
+  View.prototype.setHud = function (rects) {
+    if (this.destroyed) return;
+    try {
+      var list = [];
+      if (Array.isArray(rects)) {
+        for (var i = 0; i < rects.length; i++) {
+          var r = rects[i];
+          if (r && isFinite(r.x) && isFinite(r.y) && r.w > 0 && r.h > 0) list.push({ x: +r.x, y: +r.y, w: +r.w, h: +r.h });
+        }
+      }
+      var rc = null;
+      try { rc = this.root.getBoundingClientRect(); } catch (e0) { rc = null; }
+      if (rc && rc.width > 0 && rc.height > 0) this.box = { w: rc.width, h: rc.height };
+      var bs = this.boxSize();
+      var key = list.map(function (q) { return [q.x, q.y, q.w, q.h].map(Math.round).join(','); }).join(';') + '@' + Math.round(bs.w) + 'x' + Math.round(bs.h);
+      if (key === (this.hudKey || '')) return;
+      this.hudKey = key;
+      this.hudPx = list.length ? list : null;
+      this.hudBox = { w: bs.w, h: bs.h };
+      if (this.Lo.orient === 'wide') this.placeWide();
+    } catch (e) { report(e, 'setHud'); }
+  };
+  View.prototype.orientation = function () { return this.Lo.orient; };
+  View.prototype.geometry = function () {
+    var rc = null;
+    try { rc = this.root.getBoundingClientRect(); } catch (e) { rc = null; }
+    var w = rc && rc.width > 0 ? rc.width : 0, h = rc && rc.height > 0 ? rc.height : 0;
+    return geoOf(this.Lo, w, h, this.Lo.orient === 'wide' ? this.splitU(w, h) : null);
+  };
+  View.prototype.spaceRect = function (i) {
+    var t = this.tiles && this.tiles[i];
+    if (!t || this.destroyed) return null;
+    try {
+      var rc = this.root.getBoundingClientRect();
+      var vb = this.cam.vb || this.viewBox();
+      var sc = Math.min(rc.width / vb[2], rc.height / vb[3]);
+      if (!(sc > 0)) return null;
+      var ox = (rc.width - vb[2] * sc) / 2, oy = (rc.height - vb[3] * sc) / 2, c = t.card;
+      var left = rc.left + ox + (c.x - vb[0]) * sc, top = rc.top + oy + (c.y - vb[1]) * sc;
+      return { left: left, top: top, width: c.w * sc, height: c.h * sc, right: left + c.w * sc, bottom: top + c.h * sc };
+    } catch (e) { report(e, 'spaceRect'); return null; }
   };
 
   View.prototype.focusScreen = function () {
@@ -8521,6 +11750,7 @@
   View.prototype.afterPlay = function () {
     this.queued = Math.max(0, this.queued - 1);
     if (this.queued || this.destroyed) return;
+    if (this.pendingLayout) { var nl = this.pendingLayout; this.pendingLayout = null; this.flying = {}; if (this.pendingRender) { this.model = modelFrom(this.pendingRender.state, this.pendingRender.opts.you); this.pendingRender = null; } this.relayout(nl); this.resize(); return; }
     this.flying = {};
     var late = !!this.pendingRender;
     if (late) {
@@ -8540,7 +11770,8 @@
     if (!at) return;
     var vb = this.cam.vb, m = (at.r || 0.29) + 0.1;
     var cov = this.cam.coverPx > 0 && this.cam.hostH > 0 ? Math.min(vb[3] * 0.8, this.cam.coverPx * vb[3] / this.cam.hostH) : 0;
-    if (at.x - m >= vb[0] && at.x + m <= vb[0] + vb[2] && at.y - m >= vb[1] && at.y + m <= vb[1] + vb[3] - cov) return;
+    var covX = this.sideCover(vb[2]);
+    if (at.x - m >= vb[0] && at.x + m <= vb[0] + vb[2] - covX && at.y - m >= vb[1] && at.y + m <= vb[1] + vb[3] - cov) return;
     var pt = this.cam.coverPx > 0 ? this.sheetFocus(id, { x: at.x, y: at.y }) : { x: at.x, y: at.y };
     this.cam.cx = pt.x; this.cam.cy = pt.y;
     this.animateViewBox(vb, this.viewBox());
@@ -8749,11 +11980,11 @@
     var tk = this.tokens[pid];
     if (tk && tk.x !== null && tk.shown) return { x: tk.x, y: tk.y, r: tk.r };
     var rest = this.model ? this.restPositions().at[pid] : null;
-    return rest || { x: 5, y: 7, r: 0.25 };
+    return rest || { x: this.Lo.W / 2, y: this.Lo.H / 2, r: 0.25 };
   };
 
   View.prototype.moveToken = function (ev, list, at) {
-    var self = this, m = this.model, Lo = layout(), R = Lo.road, B = ECE.BoardData;
+    var self = this, m = this.model, Lo = this.Lo, R = Lo.road, B = ECE.BoardData;
     var p = m.byId[ev.p];
     if (!p) return null;
     var tk = this.tokenNode(p);
@@ -8906,16 +12137,47 @@
         var f = parseFloat(t.getAttribute('font-size')) || 0.58, x = parseFloat(t.getAttribute('x')), y = parseFloat(t.getAttribute('y'));
         var w = (this.em.t(String(t.textContent || '')) || 6) * f + 0.08;
         if (isFinite(x) && isFinite(y)) box = { x: x - w / 2, y: y - f * 0.78 - 0.04, w: w, h: f + 0.08 };
+        var ta = this.anchors && this.anchors.titleAt;
+        if (box && ta) box = { x: ta.x + box.x * ta.s, y: ta.y + box.y * ta.s, w: box.w * ta.s, h: box.h * ta.s };
       }
     } catch (e) { box = null; }
     this.tBox = box;
     return box;
   };
 
+  View.prototype.platesU = function () {
+    if (this.Lo.orient !== 'wide' || !this.hudPx || !this.hudPx.length || this.cam.on) return [];
+    var b = this.boxSize(), Lo = this.Lo, hb = this.hudBox, unit = Math.min(b.w / Lo.W, b.h / Lo.H);
+    if (!(unit > 0) || !hb || Math.abs(hb.w - b.w) > 1.5 || Math.abs(hb.h - b.h) > 1.5) return [];
+    var ox = (b.w - unit * Lo.W) / 2, oy = (b.h - unit * Lo.H) / 2;
+    return this.hudPx.map(function (r) { return { x: (r.x - ox) / unit, y: (r.y - oy) / unit, w: r.w / unit, h: r.h / unit }; });
+  };
+
   View.prototype.popAt = function (pid, textS, plus) {
-    var pt = this.tokenPoint(pid);
-    if (pt.y < layout().c + ROAD_W + 0.2) this.pop(pt.x, pt.y + (pt.r || 0.25) + 0.3, textS, plus, 'p' + pid, true);
-    else this.pop(pt.x, pt.y - (pt.r || 0.25) - 0.22, textS, plus, 'p' + pid);
+    var pt = this.tokenPoint(pid), Lo = this.Lo, r = pt.r || 0.25, key = 'p' + pid;
+    var top = pt.y < Lo.c + ROAD_W + 0.2, yDown = pt.y + r + 0.3, yUp = pt.y - r - 0.22;
+    var plates = this.platesU();
+    if (plates.length) {
+      var half = (this.em.t(String(textS)) || 3) * POP_F / 2 + 0.08;
+      var meets = function (x, y0, y1) {
+        for (var i = 0; i < plates.length; i++) { var p = plates[i]; if (x + half > p.x && x - half < p.x + p.w && y1 > p.y && y0 < p.y + p.h) return true; }
+        return false;
+      };
+      var n = this.popN(key), dx = (n % 2 ? 1 : -1) * Math.ceil(n / 2) * 0.8, xs = clamp(pt.x + dx, 0.7, Lo.W - 0.7);
+      var bottom = pt.y > Lo.H - Lo.c - ROAD_W - 0.2, cap = POP_F * 0.8, yu = yUp - n * 0.34;
+      if (top) {
+        if (meets(xs, yDown - cap, yDown + 0.36 + POP_DESC)) { this.pop(pt.x, yUp, textS, plus, key, false, true); return; }
+      } else if (bottom) {
+        if (meets(pt.x, yu - 0.5 - cap, yu + POP_DESC)) { this.pop(pt.x, yDown, textS, plus, key, true, true); return; }
+      } else if (meets(pt.x, yu - 0.5 - cap, yu + POP_DESC)) {
+        var x = pt.x, left = pt.x < Lo.W / 2;
+        for (var j = 0; j < plates.length; j++) x = left ? Math.min(x, plates[j].x - half - 0.02) : Math.max(x, plates[j].x + plates[j].w + half + 0.02);
+        this.pop(x, yUp, textS, plus, key);
+        return;
+      }
+    }
+    if (top) this.pop(pt.x, yDown, textS, plus, key, true);
+    else this.pop(pt.x, yUp, textS, plus, key);
   };
 
   View.prototype.popSpace = function (i, textS, plus) {
@@ -8925,19 +12187,23 @@
     this.pop(c.x + c.w / 2, c.y + c.h / 2, textS, plus, 's' + i);
   };
 
-  View.prototype.pop = function (x, y, textS, plus, slotKey, down) {
-    var A = ECE.Art, C = A.COLORS, self = this;
-    var now = Date.now();
+  View.prototype.popN = function (slotKey) {
     var slot = this.popSlots[slotKey];
-    var n = slot && now - slot.t < 600 ? slot.n + 1 : 0;
+    return slot && Date.now() - slot.t < 600 ? slot.n + 1 : 0;
+  };
+  View.prototype.pop = function (x, y, textS, plus, slotKey, down, edge) {
+    var A = this.th.art, C = A.COLORS, self = this;
+    var now = Date.now();
+    var n = this.popN(slotKey);
     this.popSlots[slotKey] = { t: now, n: n };
-    var Lo = layout();
-    if (down) x += (n % 2 ? 1 : -1) * Math.ceil(n / 2) * 0.8;
+    var Lo = this.Lo;
+    if (down || edge) x += (n % 2 ? 1 : -1) * Math.ceil(n / 2) * 0.8;
     else y -= n * 0.34;
     x = clamp(x, 0.7, Lo.W - 0.7);
     y = clamp(y, 0.35, Lo.H - 0.2);
     var rise = this.reduce ? 0 : down ? -0.36 : 0.5;
-    if (down) {
+    if (edge) { if (rise) rise = down ? -Math.max(0, Math.min(-rise, Lo.H - 0.05 - POP_DESC - y)) : Math.max(0, Math.min(rise, y - POP_F * 0.8 - 0.05)); }
+    else if (down) {
       var tb = this.titleBox(), hw = (this.em.t(String(textS)) || 3) * POP_F / 2 + 0.22;
       if (tb && x + hw > tb.x && x - hw < tb.x + tb.w) {
         var low = tb.y - 0.03 - POP_DESC;
@@ -8946,7 +12212,7 @@
       }
     }
     var g = A.el('g', { 'class': 'ece-pop', transform: 'translate(' + r3(x) + ' ' + r3(y) + ')' }, this.gFx);
-    A.text(g, 0, 0, textS, POP_F, { 'font-weight': 700, fill: plus ? C.popPlus : C.popMinus, stroke: '#061318', 'stroke-width': 0.09,
+    A.text(g, 0, 0, textS, POP_F, { 'font-weight': 700, fill: plus ? C.popPlus : C.popMinus, stroke: C.popEdge || '#061318', 'stroke-width': 0.09,
       'paint-order': 'stroke', 'stroke-linejoin': 'round' });
     var ms = 1000 * Math.max(0.6, this.pace());
     this.tween(ms, function (q) {
@@ -8979,8 +12245,8 @@
   View.prototype.tilePulse = function (i) {
     var t = this.tiles[i];
     if (!t || this.reduce) return;
-    var c = t.card, A = ECE.Art;
-    var ring = A.el('rect', { x: r3(c.x), y: r3(c.y), width: r3(c.w), height: r3(c.h), rx: 0.09, fill: 'none', stroke: '#F4E4BA', 'stroke-width': 0.07 }, this.gFx);
+    var c = t.card, A = this.th.art;
+    var ring = A.el('rect', { x: r3(c.x), y: r3(c.y), width: r3(c.w), height: r3(c.h), rx: 0.09, fill: 'none', stroke: A.COLORS.pulse || '#F4E4BA', 'stroke-width': 0.07 }, this.gFx);
     this.tween(420 * this.pace(), function (q) {
       ring.setAttribute('opacity', r3(1 - q));
       if (q >= 1 && ring.parentNode) ring.parentNode.removeChild(ring);
@@ -8988,7 +12254,7 @@
   };
 
   View.prototype.tokenPulse = function (pid) {
-    var pt = this.tokenPoint(pid), A = ECE.Art;
+    var pt = this.tokenPoint(pid), A = this.th.art;
     if (this.reduce) return this.wait(200 * this.pace());
     var ring = A.el('circle', { cx: r3(pt.x), cy: r3(pt.y), r: r3((pt.r || 0.25) * 1.2), fill: 'none', stroke: A.COLORS.minus, 'stroke-width': 0.07 }, this.gFx);
     return this.tween(460 * this.pace(), function (q) {
@@ -8999,7 +12265,7 @@
   };
 
   View.prototype.coinFly = function (a, b, ms) {
-    var A = ECE.Art, self = this;
+    var A = this.th.art, self = this;
     if (!a || !b || this.reduce) return this.wait(Math.min(ms, 200));
     var mx = (a.x + b.x) / 2, my = Math.min(a.y, b.y) - 0.8 - Math.abs(a.x - b.x) * 0.08;
     var coins = [], lag = 0.16;
@@ -9024,7 +12290,7 @@
   };
 
   View.prototype.cardDraw = function (deck) {
-    var self = this, A = ECE.Art;
+    var self = this, A = this.th.art;
     var pl = this.piles[deck === 'rain' ? 'rain' : 'buzz'];
     var spot = this.anchors.cardSpot;
     var g = A.el('g', { 'class': 'ece-drawn', transform: 'translate(' + r3(pl.x) + ' ' + r3(pl.y) + ') rotate(' + ((deck === 'rain' ? -1 : 1) * 8) + ') scale(1)' }, this.gFx);
@@ -9051,10 +12317,10 @@
   };
 
   View.prototype.gavelAt = function (i, knock) {
-    var A = ECE.Art, t = this.tiles[i], k = this.pace();
+    var A = this.th.art, t = this.tiles[i], k = this.pace();
     if (!t) return null;
     var c = t.card;
-    var Lo = layout();
+    var Lo = this.Lo;
     var x = clamp(c.x + c.w / 2 + (Lo.W / 2 - (c.x + c.w / 2)) * 0.12, 0.6, Lo.W - 0.6);
     var y = clamp(c.y + c.h / 2 + (Lo.H / 2 - (c.y + c.h / 2)) * 0.08, 0.6, Lo.H - 0.6);
     var holder = A.el('g', { transform: 'translate(' + r3(x) + ' ' + r3(y) + ') scale(1.25)' }, this.gFx);
@@ -9091,17 +12357,17 @@
       var key = Object.keys(set).sort().join(',');
       if (key === this.drawn.hl) return;
       this.drawn.hl = key;
-      var g = this.gHl, A = ECE.Art;
+      var g = this.gHl, A = this.th.art;
       while (g.firstChild) g.removeChild(g.firstChild);
       if (!key) return;
       for (var j = 0; j < this.tiles.length; j++) {
         var c = this.tiles[j].card;
         if (set[j]) {
           var rg = A.el('g', { 'class': 'ece-hl-ring' }, g);
-          A.el('rect', { x: r3(c.x - 0.02), y: r3(c.y - 0.02), width: r3(c.w + 0.04), height: r3(c.h + 0.04), rx: 0.11, fill: 'none', stroke: '#06100F', 'stroke-opacity': 0.8, 'stroke-width': 0.1 }, rg);
-          A.el('rect', { x: r3(c.x - 0.02), y: r3(c.y - 0.02), width: r3(c.w + 0.04), height: r3(c.h + 0.04), rx: 0.11, fill: 'none', stroke: '#D6BC86', 'stroke-width': 0.05 }, rg);
+          A.el('rect', { x: r3(c.x - 0.02), y: r3(c.y - 0.02), width: r3(c.w + 0.04), height: r3(c.h + 0.04), rx: 0.11, fill: 'none', stroke: A.COLORS.ringKey || '#06100F', 'stroke-opacity': 0.8, 'stroke-width': 0.1 }, rg);
+          A.el('rect', { x: r3(c.x - 0.02), y: r3(c.y - 0.02), width: r3(c.w + 0.04), height: r3(c.h + 0.04), rx: 0.11, fill: 'none', stroke: A.COLORS.hlLine || '#D6BC86', 'stroke-width': 0.05 }, rg);
         } else {
-          A.el('rect', { x: r3(c.x), y: r3(c.y), width: r3(c.w), height: r3(c.h), rx: 0.09, fill: '#071219', opacity: 0.58, 'class': 'ece-hl-veil' }, g);
+          A.el('rect', { x: r3(c.x), y: r3(c.y), width: r3(c.w), height: r3(c.h), rx: 0.09, fill: A.COLORS.hlVeil || '#071219', opacity: 0.58, 'class': 'ece-hl-veil' }, g);
         }
       }
     } catch (e) { report(e, 'highlight'); }
@@ -9124,7 +12390,7 @@
     try {
       on = !!on;
       if (this.cam.on === on) return;
-      var Lo = layout();
+      var Lo = this.Lo;
       if (!on) this.unzoom();
       this.cam.on = on;
       this.root.classList.toggle('ece-closeup', on);
@@ -9155,18 +12421,32 @@
     var tk = id !== null && id !== undefined ? this.tokens[id] : null;
     if (tk && tk.shown && tk.x !== null) return { x: tk.x, y: tk.y };
     var rest = this.model && id !== null && id !== undefined ? this.restPositions().at[id] : null;
-    return rest ? { x: rest.x, y: rest.y } : { x: 5, y: 7 };
+    return rest ? { x: rest.x, y: rest.y } : { x: this.Lo.W / 2, y: this.Lo.H / 2 };
   };
 
   View.prototype.viewBox = function () {
-    var Lo = layout();
+    var Lo = this.Lo;
     if (!this.cam.on) return [0, 0, Lo.W, Lo.H];
     var w = Lo.W / this.cam.z, h = Lo.H / this.cam.z;
     var cov = this.cam.coverPx > 0 && this.cam.hostH > 0 ? Math.min(h * 0.8, this.cam.coverPx * h / this.cam.hostH) : 0;
     var hv = h - cov;
-    var x = clamp(this.cam.cx - w / 2, 0, Lo.W - w), y = clamp(this.cam.cy - hv / 2, 0, Lo.H - hv);
-    this.cam.cx = x + w / 2; this.cam.cy = y + hv / 2;
+    var wv = w - this.sideCover(w);
+    var x = clamp(this.cam.cx - wv / 2, 0, Lo.W - wv), y = clamp(this.cam.cy - hv / 2, 0, Lo.H - hv);
+    this.cam.cx = x + wv / 2; this.cam.cy = y + hv / 2;
     return [x, y, w, h];
+  };
+  View.prototype.sideCover = function (w) {
+    return this.cam.sidePx > 0 && this.cam.hostW > 0 ? Math.min(w * 0.6, this.cam.sidePx * w / this.cam.hostW) : 0;
+  };
+  View.prototype.setSideInset = function (px) {
+    if (this.destroyed) return;
+    px = px > 0 ? Math.round(px) : 0;
+    if (px === this.cam.sidePx) return;
+    var ww = 0;
+    try { ww = this.root.getBoundingClientRect().width || 0; } catch (e) { ww = 0; }
+    this.cam.sidePx = px;
+    this.cam.hostW = ww;
+    if (this.cam.on) { this.cam.panned = false; this.centreOn(this.followId(), true); }
   };
 
   View.prototype.setBottomInset = function (px) {
@@ -9181,7 +12461,7 @@
   };
 
   View.prototype.sheetFocus = function (pid, pt) {
-    var Lo = layout(), m = this.model, p = m && m.byId ? m.byId[pid] : null;
+    var Lo = this.Lo, m = this.model, p = m && m.byId ? m.byId[pid] : null;
     var pos = p ? ((p.pos | 0) % Lo.n + Lo.n) % Lo.n : -1, cell = pos >= 0 ? Lo.cells[pos] : null;
     if (!cell || !(this.cam.coverPx > 0) || !(this.cam.hostH > 0)) return pt;
     var h = Lo.H / this.cam.z;
@@ -9222,7 +12502,7 @@
     this.cam.vb = vb;
     if (this.zoomed) { this.placeLayers(); this.scheduleHi(450); return; }
     if (this.placeLayers()) {
-      if (this.vbAttr) { var full = '0 0 ' + layout().W + ' ' + layout().H; this.vbAttr = null; this.svg.setAttribute('viewBox', full); this.liveSvg.setAttribute('viewBox', full); }
+      if (this.vbAttr) { var full = '0 0 ' + this.Lo.W + ' ' + this.Lo.H; this.vbAttr = null; this.svg.setAttribute('viewBox', full); this.liveSvg.setAttribute('viewBox', full); }
       return;
     }
     this.vbAttr = key;
@@ -9231,7 +12511,7 @@
   };
 
   View.prototype.placeLayers = function () {
-    var Lo = layout(), vb = this.cam.vb || [0, 0, Lo.W, Lo.H];
+    var Lo = this.Lo, vb = this.cam.vb || [0, 0, Lo.W, Lo.H];
     var dpr = dprNow(), snap = function (v) { return Math.round(v * dpr) / dpr; };
     if (this.zoomed && this.zf) {
       var f = this.zf, uz = f.uz;
@@ -9274,7 +12554,7 @@
     this.scheduleHi(450);
   };
   View.prototype.layoutZoomed = function (f) {
-    var Lo = layout(), uz = f.u * this.cam.z;
+    var Lo = this.Lo, uz = f.u * this.cam.z;
     this.zf = { W: f.W, H: f.H, u: f.u, uz: uz };
     var full = '0 0 ' + Lo.W + ' ' + Lo.H, w = r3(uz * Lo.W) + 'px', h = r3(uz * Lo.H) + 'px';
     var list = [this.svg, this.liveSvg];
@@ -9363,13 +12643,29 @@
       }
     });
     var fire = function (i) { if (i !== null && typeof self.opts.onSpaceTap === 'function') self.opts.onSpaceTap(i); };
+    var outsideRect = function (x, y, r) { return !!r && (x < r.left - 0.5 || x > r.right + 0.5 || y < r.top - 0.5 || y > r.bottom + 0.5); };
+    var passOn = function (p) {
+      var t = null;
+      try { t = typeof document.elementFromPoint === 'function' ? document.elementFromPoint(p.x, p.y) : null; } catch (er) { t = null; }
+      if (!t || (self.root && self.root.contains && self.root.contains(t))) return;
+      var b = t.closest ? t.closest('button') : null;
+      if (b && !b.disabled && typeof b.click === 'function') b.click();
+    };
     this.onUp = safe(function (e) {
       if (!down || e.pointerId !== down.id) return;
       var d = down;
       down = null;
       if (d.drag) return;
       var i = self.hitTest(e.clientX, e.clientY, d.rect);
-      if (i === null) return;
+      if (i === null) {
+        if ((e.pointerType === 'touch' || e.pointerType === 'pen') && outsideRect(d.x, d.y, d.rect) && outsideRect(e.clientX, e.clientY, d.rect)) {
+          if (self.passWait) clearTimeout(self.passWait.timer);
+          var pass = { x: e.clientX, y: e.clientY, timer: 0 };
+          pass.timer = setTimeout(safe(function () { if (self.passWait === pass) { self.passWait = null; passOn(pass); } }), 450);
+          self.passWait = pass;
+        }
+        return;
+      }
       if (e.pointerType === 'touch' || e.pointerType === 'pen') {
         if (self.tapWait) clearTimeout(self.tapWait.timer);
         var tap = { i: i, timer: 0 };
@@ -9380,6 +12676,8 @@
       fire(i);
     });
     this.onClick = safe(function (e) {
+      var pass = self.passWait;
+      if (pass) { self.passWait = null; clearTimeout(pass.timer); passOn(pass); return; }
       var tap = self.tapWait;
       if (!tap) {
         if (e && e.detail === 0) { var j = spaceOf(e); if (j !== null) fire(j); }
@@ -9412,7 +12710,7 @@
         if (!e.repeat) fire(i);
         return;
       }
-      var to = k === 'Home' ? 0 : k === 'End' ? self.tiles.length - 1 : arrowStep(i, k);
+      var to = k === 'Home' ? 0 : k === 'End' ? self.tiles.length - 1 : arrowStep(i, k, self.Lo);
       if (to === null || to === undefined) return;
       if (e.preventDefault) e.preventDefault();
       self.focusSpace(to);
@@ -9441,11 +12739,11 @@
     if (!(sc > 0)) return null;
     var ox = (rect.width - vb[2] * sc) / 2, oy = (rect.height - vb[3] * sc) / 2;
     var ux = vb[0] + (clientX - rect.left - ox) / sc, uy = vb[1] + (clientY - rect.top - oy) / sc;
-    return spaceAt(ux, uy);
+    return spaceAt(ux, uy, this.Lo);
   };
 
-  function spaceAt(ux, uy) {
-    var cells = layout().cells;
+  function spaceAt(ux, uy, Lo) {
+    var cells = (Lo || layout()).cells;
     for (var i = 0; i < cells.length; i++) {
       var c = cells[i];
       if (ux >= c.x && ux < c.x + c.w && uy >= c.y && uy < c.y + c.h) return i;
@@ -9453,46 +12751,106 @@
     return null;
   }
 
-  View.prototype.resize = function () {
+  View.prototype.resize = function (opts) {
     if (this.destroyed) return;
     try {
+      if (opts && typeof opts === 'object' && opts.orientation) this.pref = normOrient(opts.orientation);
+      var rc = null;
+      try { rc = this.root.getBoundingClientRect(); } catch (e0) { rc = null; }
+      if (rc && rc.width > 0 && rc.height > 0) this.box = { w: rc.width, h: rc.height };
+      var b = this.boxSize();
+      var want = layoutFor(b.w, b.h, pickOrient(b.w, b.h, this.pref));
+      var near = want.orient === 'wide' && this.Lo.orient === 'wide' && Math.abs(want.W - this.Lo.W) <= WIDE.step + 1e-6;
+      if (want !== this.Lo && !near) this.relayout(want);
       var f = this.viewFrame();
       this.fr = f;
       if (f) this.setSceneVar(f);
       if (this.zoomed) { if (f) this.layoutZoomed(f); else this.unzoom(); }
       this.cam.vbKey = null;
       this.applyCamera();
+      if (this.Lo.orient === 'wide') this.placeWide();
     } catch (e) { report(e, 'resize'); }
     this.scheduleMap(this.mapPx ? 300 : 30);
+  };
+
+  View.prototype.relayout = function (Lo) {
+    if (!Lo || Lo === this.Lo || this.destroyed) return;
+    if (this.queued) { this.pendingLayout = Lo; return; }
+    this.pendingLayout = null;
+    var keep = { hl: this.drawn.hl, note: this.noteOn, title: this.drawn.title, top: this.centreTop, at: this.kbd.at, moved: this.kbd.moved,
+      cam: this.cam.on, focus: null };
+    try {
+      var ae = typeof document !== 'undefined' ? document.activeElement : null;
+      for (var n = ae; n && n !== this.root; n = n.parentNode) {
+        if (n.getAttribute && n.getAttribute('data-space') !== null) { keep.focus = +n.getAttribute('data-space'); break; }
+      }
+      if (keep.focus !== null && ae && !this.root.contains(ae)) keep.focus = null;
+    } catch (e) { keep.focus = null; }
+    this.teardown();
+    this.Lo = Lo;
+    this.drawn = { spaces: [], tokens: {}, dice: null, jar: null, turn: undefined, hl: '' };
+    this.tokens = {}; this.flying = {}; this.popSlots = {}; this.drawnCards = [];
+    this.noteOn = false; this.cards = null; this.mapCards0 = null; this.mapPx = 0; this.mapCv = null; this.mapInfo = null; this.mapBusy = false;
+    this.mapGen = (this.mapGen | 0) + 1;
+    this.hi = null; this.hiBusy = false; this.zoomed = false; this.zf = null; this.fr = null; this.tBox = undefined;
+    this.centreKey = null; this.wideKey = null; this.vecLines = null; this.stuckRect = null; this.bridge = null; this.vbAttr = null;
+    this.kbd = { at: -1, moved: false };
+    this.cam.on = false; this.cam.vb = null; this.cam.vbKey = null; this.cam.anim = null; this.camDirty = false; this.cam.panned = false;
+    this.build();
+    this.relayouts = (this.relayouts | 0) + 1;
+    if (this.mapOff) this.vectorChart();
+    if (keep.top !== null && keep.top !== undefined) { this.centreTop = keep.top; this.centreKey = null; this.placeCentre(); }
+    if (this.model) this.draw();
+    if (keep.hl) this.highlight(keep.hl.split(',').map(Number));
+    if (keep.note) this.setNote(true);
+    if (keep.title === 'hidden') this.setTitle(false);
+    this.kbd.moved = keep.moved;
+    if (keep.at >= 0) this.setStop(keep.at);
+    if (keep.cam) {
+      this.cam.on = true;
+      this.root.classList.add('ece-closeup');
+      var pt = this.focusPoint();
+      this.cam.cx = pt.x; this.cam.cy = pt.y;
+      this.setVB(this.viewBox());
+      this.zoom();
+      if (this.cam.coverPx > 0) this.centreOn(this.followId(), false);
+    }
+    if (keep.focus !== null && this.tiles[keep.focus] && typeof this.tiles[keep.focus].g.focus === 'function') {
+      try { this.tiles[keep.focus].g.focus({ preventScroll: true }); } catch (e2) { }
+    }
+  };
+
+  View.prototype.teardown = function () {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    if (this.mapTimer) { clearTimeout(this.mapTimer); this.mapTimer = 0; }
+    if (this.hiTimer) { clearTimeout(this.hiTimer); this.hiTimer = 0; }
+    this.hiGen = (this.hiGen | 0) + 1;
+    this.mapGen = (this.mapGen | 0) + 1;
+    if (this.mapCv) { try { this.mapCv.width = 1; this.mapCv.height = 1; } catch (e1) { } this.mapCv = null; }
+    if (this.hi && this.hi.cv) { try { this.hi.cv.width = 1; this.hi.cv.height = 1; } catch (e2) { } }
+    this.hi = null;
+    var list = this.tweens.slice();
+    for (var i = 0; i < list.length; i++) finish(this, list[i]);
+    this.tweens = [];
+    var svg = this.svg;
+    svg.removeEventListener('pointerdown', this.onDown);
+    svg.removeEventListener('pointermove', this.onMove);
+    svg.removeEventListener('pointerup', this.onUp);
+    svg.removeEventListener('pointercancel', this.onCancel);
+    svg.removeEventListener('click', this.onClick);
+    this.root.removeEventListener('keydown', this.onKey);
+    this.root.removeEventListener('focusin', this.onFocusIn);
+    this.root.removeEventListener('focusout', this.onFocusOut);
+    if (this.tapWait) { clearTimeout(this.tapWait.timer); this.tapWait = null; }
+    if (this.passWait) { clearTimeout(this.passWait.timer); this.passWait = null; }
+    if (this.root.parentNode) this.root.parentNode.removeChild(this.root);
   };
 
   View.prototype.destroy = function () {
     if (this.destroyed) return;
     this.destroyed = true;
-    try {
-      if (this.raf) cancelAnimationFrame(this.raf);
-      this.raf = 0;
-      if (this.mapTimer) { clearTimeout(this.mapTimer); this.mapTimer = 0; }
-      if (this.hiTimer) { clearTimeout(this.hiTimer); this.hiTimer = 0; }
-      this.hiGen = (this.hiGen | 0) + 1;
-      if (this.mapCv) { try { this.mapCv.width = 1; this.mapCv.height = 1; } catch (e1) { } this.mapCv = null; }
-      if (this.hi && this.hi.cv) { try { this.hi.cv.width = 1; this.hi.cv.height = 1; } catch (e2) { } }
-      this.hi = null;
-      var list = this.tweens.slice();
-      for (var i = 0; i < list.length; i++) finish(this, list[i]);
-      this.tweens = [];
-      var svg = this.svg;
-      svg.removeEventListener('pointerdown', this.onDown);
-      svg.removeEventListener('pointermove', this.onMove);
-      svg.removeEventListener('pointerup', this.onUp);
-      svg.removeEventListener('pointercancel', this.onCancel);
-      svg.removeEventListener('click', this.onClick);
-      this.root.removeEventListener('keydown', this.onKey);
-      this.root.removeEventListener('focusin', this.onFocusIn);
-      this.root.removeEventListener('focusout', this.onFocusOut);
-      if (this.tapWait) { clearTimeout(this.tapWait.timer); this.tapWait = null; }
-      if (this.root.parentNode) this.root.parentNode.removeChild(this.root);
-    } catch (e) { report(e, 'destroy'); }
+    try { this.teardown(); } catch (e) { report(e, 'destroy'); }
   };
 
   function mount(container, opts) {
@@ -9509,10 +12867,15 @@
       setTitle: function (on) { v.setTitle(on); },
       setCentreInset: function (u) { v.setCentreInset(u); },
       setBottomInset: function (px) { v.setBottomInset(px); },
+      setSideInset: function (px) { v.setSideInset(px); },
       focusScreen: function () { return v.focusScreen(); },
-      resize: function () { v.resize(); },
+      resize: function (o) { v.resize(o); },
       destroy: function () { v.destroy(); },
       busy: function () { return v.busy(); },
+      orientation: function () { return v.orientation(); },
+      geometry: function () { return v.geometry(); },
+      setHud: function (rects) { v.setHud(rects); },
+      spaceRect: function (i) { return v.spaceRect(i); },
       _view: v
     };
   }
@@ -9520,6 +12883,8 @@
   ECE.BoardView = {
     mount: mount,
     geometry: geometry,
+    WIDE: { minAspect: WIDE.minAspect, maxAspect: WIDE.maxAspect, step: WIDE.step },
+    pick: function (w, h, want) { return pickOrient(+w || 0, +h || 0, want); },
     _layout: layout,
     _clusterAt: clusterAt,
     _cornerAt: cornerAt,
@@ -9528,7 +12893,13 @@
     _spaceAt: spaceAt,
     _modelFrom: modelFrom,
     _spaceLabel: spaceLabel,
+    _themeOf: themeOf,
     _arrowStep: arrowStep,
+    _wideLayout: wideLayout,
+    _wideUnits: wideUnits,
+    _wideSplit: wideSplit,
+    _toMap: toMap,
+    OWN: { w: OWN_W, key: OWN_KEY, inset: OWN_IN, dash: OWN_DASH },
     _dpr: dprNow,
     MIN_FONT: MIN_FONT,
     HOP_MS: HOP,
@@ -9806,6 +13177,9 @@
   function R() { return ECE.Rules; }
   function money(n) { return Dom.money(n); }
   function call(name, args, fallback) {
+    if (name === 'text' && ECE.Theme && typeof ECE.Theme.text === 'function') {
+      try { return ECE.Theme.text.apply(ECE.Theme, args); } catch (e0) { Dom.report(e0, 'theme.text'); return fallback; }
+    }
     var Rl = R();
     if (!Rl || typeof Rl[name] !== 'function') return fallback;
     try { return Rl[name].apply(Rl, args); } catch (e) { Dom.report(e, 'rules.' + name); return fallback; }
@@ -9860,8 +13234,9 @@
         if (me.stuck) {
           var alts = [];
           var fee = B.RULES.trafficFee;
-          if (has(legal, 'payFee')) alts.push({ label: 'PAY ' + money(fee), action: { t: 'payFee' }, aria: 'Pay ' + money(fee) + ' to leave Stuck in Traffic' });
-          if (has(legal, 'usePass')) alts.push({ label: 'USE CARPOOL PASS', action: { t: 'usePass' }, aria: 'Use a Carpool Pass to leave Stuck in Traffic' });
+          var stuckAt = Dom.word('trafficThe', Dom.word('traffic', 'Stuck in Traffic')), pass = Dom.word('carpool', 'Carpool Pass');
+          if (has(legal, 'payFee')) alts.push({ label: 'PAY ' + money(fee), action: { t: 'payFee' }, aria: 'Pay ' + money(fee) + ' to leave ' + stuckAt });
+          if (has(legal, 'usePass')) alts.push({ label: 'USE ' + pass.toUpperCase(), action: { t: 'usePass' }, aria: 'Use a ' + pass + ' to leave ' + stuckAt });
           var tries = (me.stuckTries | 0) + 1, max = B.RULES.trafficMaxTries;
           return { label: 'ROLL FOR DOUBLES', sub: 'Try ' + Math.min(tries, max) + ' of ' + max, action: { t: 'roll' }, alts: alts };
         }
@@ -9946,6 +13321,13 @@
       (parseFloat(cs.borderLeftWidth) || 0) - (parseFloat(cs.borderRightWidth) || 0);
     return rg.getBoundingClientRect().width > room + 0.01;
   };
+  Panel.LINE_STEPS = ['ui-fit-tight', 'ui-fit-snug', 'ui-fit-wrap'];
+  Panel.lineStep = function (over, steps) {
+    steps = steps || Panel.LINE_STEPS;
+    if (!over('')) return '';
+    for (var i = 0; i < steps.length - 1; i++) if (!over(steps[i])) return steps[i];
+    return steps[steps.length - 1];
+  };
 
   Panel.linePlayer = function (st, ev, text, you) {
     if (!st || !ev) return null;
@@ -10007,6 +13389,35 @@
     return tie ? null : best;
   };
 
+  Panel.hitBox = function (r, blocks, chips, clipTop, clipBottom, min) {
+    min = min || 44;
+    var hgt = r.bottom - r.top, need = Math.max(0, min - hgt);
+    if (!need) return { up: 0, down: 0 };
+    var up = Math.max(isFinite(clipTop) ? clipTop : -Infinity, r.top - min), down = Math.min(isFinite(clipBottom) ? clipBottom : Infinity, r.bottom + min);
+    var across = function (o) { return o.right > r.left + 1 && o.left < r.right - 1; };
+    var j, b;
+    for (j = 0; j < (blocks || []).length; j++) {
+      b = blocks[j];
+      if (!across(b)) continue;
+      if (b.bottom <= r.top + 0.5) up = Math.max(up, b.bottom);
+      else if (b.top >= r.bottom - 0.5) down = Math.min(down, b.top);
+      else {
+        if (b.top < r.top) up = Math.max(up, r.top);
+        if (b.bottom > r.bottom) down = Math.min(down, r.bottom);
+      }
+    }
+    for (j = 0; j < (chips || []).length; j++) {
+      b = chips[j];
+      if (b === r || !across(b)) continue;
+      if (b.bottom <= r.top + 0.5) up = Math.max(up, (b.bottom + r.top) / 2);
+      else if (b.top >= r.bottom - 0.5) down = Math.min(down, (b.top + r.bottom) / 2);
+    }
+    var roomUp = Math.max(0, r.top - up), roomDown = Math.max(0, down - r.bottom);
+    var u = Math.min(roomUp, need / 2), d = Math.min(roomDown, need - u);
+    u = Math.min(roomUp, need - d);
+    return { up: Math.round(u * 10) / 10, down: Math.round(d * 10) / 10 };
+  };
+
   function spacesOf(st, id) {
     var n = 0;
     if (!st || !st.props) return 0;
@@ -10028,7 +13439,7 @@
     var nm = id === you ? 'You' : p.name;
     var list = ownedBy(st, id);
     if (!list.length) return nm + ': no spaces yet';
-    var whole = (ECE.BoardData.DISTRICTS || []).filter(function (d) { return call('ownsDistrict', [st, id, d.id], false); }).map(function (d) { return d.name; });
+    var whole = (Dom.board().DISTRICTS || []).filter(function (d) { return call('ownsDistrict', [st, id, d.id], false); }).map(function (d) { return d.name; });
     return nm + ': ' + list.length + (list.length === 1 ? ' space' : ' spaces') + (whole.length ? ', all of ' + whole.join(' and ') : '');
   };
 
@@ -10062,13 +13473,25 @@
     });
   };
 
+  function panelName() {
+    var d = ECE.Theme && typeof ECE.Theme.data === 'function' ? ECE.Theme.data() : null;
+    return (d && d.title) || (ECE.Glossary && ECE.Glossary.game.name) || 'Emerald City Estates';
+  }
+  function passBadge(n) {
+    var w = String(n > 1 ? Dom.word('carpools', 'Carpool Passes') : Dom.word('carpool', 'Carpool Pass')).toLowerCase();
+    var k = w.lastIndexOf(' '), lead = k > 0 ? w.slice(0, k + 1) : '', last = k > 0 ? w.slice(k + 1) : w;
+    var out = [h('span', { cls: 'ui-badge-long' }, lead), last];
+    return n > 1 ? [n + ' '].concat(out) : out;
+  }
+  Panel.passBadge = passBadge;
+
   Panel.mount = function (el, handlers) {
     handlers = handlers || {};
     Dom.clear(el);
     el.classList.add('ui-panel');
     var head = h('div', { cls: 'ui-panel-head' });
     var menuBtn = Dom.btn(Dom.icon('menu'), function () { handlers.onMenu && handlers.onMenu(); }, { ghost: true, cls: 'ui-icon-btn', aria: 'Menu' });
-    var title = h('div', { cls: 'ui-panel-title' }, [h('div', { cls: 'ui-panel-name' }, (ECE.Glossary && ECE.Glossary.game.name) || 'Emerald City Estates'), h('div', { cls: 'ui-panel-round', 'aria-live': 'off' })]);
+    var title = h('div', { cls: 'ui-panel-title' }, [h('div', { cls: 'ui-panel-name' }, panelName()), h('div', { cls: 'ui-panel-round', 'aria-live': 'off' })]);
     var camBtn = Dom.btn(Dom.icon('zoom'), function () { handlers.onCloseUp && handlers.onCloseUp(); }, { ghost: true, cls: 'ui-icon-btn ui-cam-btn', aria: 'Close-up camera', pressed: false });
     head.appendChild(menuBtn); head.appendChild(title); head.appendChild(camBtn);
 
@@ -10117,6 +13540,10 @@
       if (handlers.onPick) handlers.onPick(selected, selected === null ? [] : ownedBy(lastSt, selected));
       renderPanel(lastSt, lastCtx || {});
     }
+    function chipTap(id) {
+      if (handlers.onChip) { handlers.onChip(id); return; }
+      pick(id);
+    }
     var lastCtx = null;
     var panel = {
       el: el, actionsEl: actions, primaryEl: primaryBtn, manageEl: manageBtn, tradeEl: tradeBtn, logEl: logBtn, recentEl: recent,
@@ -10147,7 +13574,9 @@
         if (!ctx.centerChips && chips.parentNode !== el) el.insertBefore(chips, logBtn);
       }
 
+      Dom.text(title.firstChild, panelName());
       Dom.text(title.lastChild, Panel.roundText(st));
+      fitRound();
       camBtn.setAttribute('aria-pressed', ctx.closeUp ? 'true' : 'false');
       Dom.clear(camBtn).appendChild(Dom.icon(ctx.closeUp ? 'unzoom' : 'zoom'));
       Dom.toggle(camBtn, 'ui-on', !!ctx.closeUp);
@@ -10168,11 +13597,12 @@
       else if (!tp) line = '';
       else {
         line = tp.id === you ? 'Your turn' : tp.name + '’s turn';
-        if (tp.stuck) line += ' · stuck in traffic';
+        if (tp.stuck) line += ' · ' + Dom.word('stuck', 'stuck in traffic');
         else if (st.phase === 'roll' && st.rolled && (st.doubles | 0) > 0) line += ' · doubles, roll again';
         if (st.phase === 'auction') line += ' · auction';
       }
       Dom.text(turnText, line);
+      fitTurn();
       Dom.toggle(turn, 'ui-mine', !!tp && tp.id === you && st.phase !== 'over');
 
       var lead = Panel.leader(st);
@@ -10191,9 +13621,10 @@
           var cur = !!tp && tp.id === p.id && st.phase !== 'over';
           var c = h('div', { cls: 'ui-chip' + (cur ? ' ui-current' : '') + (p.out ? ' ui-out' : '') + (p.stuck && !p.out ? ' ui-is-stuck' : '') + (p.id === you ? ' ui-you' : '') + (actor === p.id && !cur ? ' ui-acting' : '') + (lead === p.id ? ' ui-lead' : '') + (selected === p.id ? ' ui-picked' : ''), role: 'listitem' });
           c.style.setProperty('--seat', p.color);
+          c.dataset.player = String(p.id);
           var nm = p.id === you ? (p.name || 'You') : p.name;
           var spaces = spacesOf(st, p.id);
-          var label = nm + (p.id === you && !/^you$/i.test(String(nm).trim()) ? ' (you)' : '') + ', ' + money(p.cash) + (p.out ? '' : ', worth ' + money(worth[p.id])) + ', ' + spaces + (spaces === 1 ? ' space' : ' spaces') + (lead === p.id ? ', in the lead' : '') + (p.stuck ? ', stuck in traffic' : '') + (p.out ? ', out' : '') + (cur ? ', playing now' : '');
+          var label = nm + (p.id === you && !/^you$/i.test(String(nm).trim()) ? ' (you)' : '') + ', ' + money(p.cash) + (p.out ? '' : ', worth ' + money(worth[p.id])) + ', ' + spaces + (spaces === 1 ? ' space' : ' spaces') + (lead === p.id ? ', in the lead' : '') + (p.stuck ? ', ' + Dom.word('stuck', 'stuck in traffic') : '') + (p.out ? ', out' : '') + (cur ? ', playing now' : '');
           c.setAttribute('aria-label', label);
           c.appendChild(Dom.token(p.token, p.color, 26));
           var info = h('div', { cls: 'ui-chip-info' });
@@ -10209,14 +13640,16 @@
           else {
             meta.appendChild(h('span', { cls: 'ui-chip-spaces ui-chip-worth' }, 'worth ' + money(worth[p.id])));
             if (p.stuck) meta.appendChild(h('span', { cls: 'ui-badge ui-badge-stuck' }, 'stuck'));
-            if ((p.passes || []).length) meta.appendChild(h('span', { cls: 'ui-badge ui-badge-pass', title: null }, (p.passes || []).length > 1 ? (p.passes || []).length + ' carpool passes' : 'carpool pass'));
+            var np = (p.passes || []).length;
+            if (np) meta.appendChild(h('span', { cls: 'ui-badge ui-badge-pass', title: null }, passBadge(np)));
           }
           c.appendChild(meta);
           if (cur) c.appendChild(h('span', { cls: 'ui-chip-turn', 'aria-hidden': 'true' }, '▶'));
           if (lead === p.id) c.appendChild(h('span', { cls: 'ui-chip-lead', 'aria-hidden': 'true' }, '1st'));
-          if (!p.out) {
-            var hit = h('button', { type: 'button', cls: 'ui-chip-hit', 'aria-label': 'Show ' + (p.id === you ? 'your' : p.name + '’s') + ' spaces on the board', 'aria-pressed': selected === p.id ? 'true' : 'false' });
-            Dom.on(hit, 'click', function () { pick(p.id); });
+          if (!p.out || handlers.onChip) {
+            var hit = h('button', { type: 'button', cls: 'ui-chip-hit', 'aria-label': p.out ? 'Show ' + p.name + '’s sheet (out of the game)' : 'Show ' + (p.id === you ? 'your' : p.name + '’s') + (handlers.onChip ? ' spaces, homes and cash' : ' spaces on the board'), 'aria-pressed': selected === p.id ? 'true' : 'false' });
+            if (handlers.onChip) { hit.setAttribute('aria-haspopup', 'dialog'); hit.removeAttribute('aria-pressed'); }
+            Dom.on(hit, 'click', function () { chipTap(p.id); });
             c.appendChild(hit);
           }
           chips.appendChild(c);
@@ -10266,16 +13699,71 @@
     }
     panel.clearPick = function () { if (selected === null) return false; selected = null; chipSig = ''; if (handlers.onPick) handlers.onPick(null, []); if (lastSt) renderPanel(lastSt, lastCtx || {}); return true; };
     panel.picked = function () { return selected; };
+    panel.setPick = function (id) {
+      var want = id === undefined || id === null ? null : id;
+      if (want !== null && (!lastSt || !Dom.player(lastSt, want))) want = null;
+      if (want === selected) return;
+      selected = want;
+      chipSig = '';
+      if (handlers.onPick) handlers.onPick(selected, selected === null || !lastSt ? [] : ownedBy(lastSt, selected));
+      if (lastSt) renderPanel(lastSt, lastCtx || {});
+    };
 
     function fitChips() {
       chips.classList.remove('ui-tight');
       if (!chips.isConnected || !chips.getClientRects || !chips.getClientRects().length) return;
       var list = chips.querySelectorAll('.ui-chip-cash');
       for (var i = 0; i < list.length; i++) {
-        if (list[i].scrollWidth > list[i].clientWidth + 1) { chips.classList.add('ui-tight'); return; }
+        if (list[i].scrollWidth > list[i].clientWidth + 1) { chips.classList.add('ui-tight'); break; }
       }
+      fitHits();
     }
     panel.fitChips = fitChips;
+
+    function fitHits() {
+      var hits = chips.querySelectorAll('.ui-chip-hit'), k;
+      for (k = 0; k < hits.length; k++) { hits[k].style.top = ''; hits[k].style.height = ''; }
+      var root = typeof document !== 'undefined' ? document.documentElement : null;
+      var g = chips.closest ? chips.closest('.ui-screen-game') : null;
+      if (!root || !root.classList.contains('phone') || !g || !g.dataset.chips || g.dataset.chips === 'full' || !hits.length) return;
+      var MIN = 44, own = [], block = [];
+      var all = g.querySelectorAll('button, [role="button"], [data-space], #board .ece-die, #board .ece-jar');
+      var box = chips.closest ? chips.closest('.ui-center-actions') : null, bx = box && box.getClientRects().length ? box.getBoundingClientRect() : null;
+      for (k = 0; k < all.length; k++) {
+        var e = all[k];
+        if (chips.contains(e) || (box && box.contains(e)) || !e.getClientRects().length) continue;
+        if (e.getAttribute && (e.getAttribute('visibility') === 'hidden' || e.getAttribute('opacity') === '0')) continue;
+        var q = e.getBoundingClientRect(), qq = { top: q.top, bottom: q.bottom, left: q.left, right: q.right };
+        if (bx && qq.right > bx.left && qq.left < bx.right) {
+          if (qq.top < bx.top && qq.bottom > bx.top) qq.bottom = bx.top;
+          else if (qq.top < bx.bottom && qq.bottom > bx.bottom) qq.top = bx.bottom;
+          else if (qq.top >= bx.top && qq.bottom <= bx.bottom) continue;
+        }
+        if (qq.right - qq.left > 0 && qq.bottom - qq.top > 0) block.push(qq);
+      }
+      if (box) {
+        var inBox = box.querySelectorAll('button');
+        for (k = 0; k < inBox.length; k++) if (!chips.contains(inBox[k]) && inBox[k].getClientRects().length) block.push(inBox[k].getBoundingClientRect());
+      }
+      var list = chips.querySelectorAll('.ui-chip');
+      for (k = 0; k < list.length; k++) if (list[k].getClientRects().length) own.push(list[k].getBoundingClientRect());
+      var clipTop = -Infinity, clipBottom = Infinity;
+      for (var n = chips.parentElement; n && n !== document.body; n = n.parentElement) {
+        var cs = getComputedStyle(n);
+        if (cs.overflowY !== 'visible' || cs.overflowX !== 'visible') { var cr = n.getBoundingClientRect(); clipTop = Math.max(clipTop, cr.top); clipBottom = Math.min(clipBottom, cr.bottom); }
+      }
+      for (k = 0; k < hits.length; k++) {
+        var hit = hits[k], chip = hit.parentElement;
+        if (!chip || !chip.getClientRects().length) continue;
+        var r = chip.getBoundingClientRect();
+        if (r.height >= MIN) continue;
+        var box = Panel.hitBox(r, block, own, clipTop, clipBottom, MIN);
+        var bt = parseFloat(getComputedStyle(chip).borderTopWidth) || 0;
+        hit.style.top = (-box.up - bt).toFixed(1) + 'px';
+        hit.style.height = (r.height + box.up + box.down).toFixed(1) + 'px';
+      }
+    }
+    panel.fitHits = fitHits;
 
     function fitPrimary() {
       primaryBtn.classList.remove('ui-primary-tight');
@@ -10284,7 +13772,8 @@
       var lab = primaryBtn.firstChild;
       var wraps = function () {
         var cs = getComputedStyle(lab), lh = parseFloat(cs.lineHeight) || (parseFloat(cs.fontSize) || 19) * 1.2;
-        return lab.getBoundingClientRect().height > lh * 1.5 || primaryBtn.scrollWidth > primaryBtn.clientWidth + 1;
+        var tall = lab.offsetHeight || lab.getBoundingClientRect().height;
+        return tall > lh * 1.5 || primaryBtn.scrollWidth > primaryBtn.clientWidth + 1;
       };
       if (!wraps()) return;
       primaryBtn.classList.add('ui-primary-tight');
@@ -10292,6 +13781,27 @@
       primaryBtn.classList.add('ui-primary-snug');
     }
     panel.fitPrimary = fitPrimary;
+
+    var lineKeys = { round: null, turn: null };
+    function onPlates(e) { return !!(e && e.closest && e.closest('.ui-layout-wide:not(.ui-wide-dock)') && e.getClientRects && e.getClientRects().length); }
+    function fitLine(e, name, key) {
+      var on = onPlates(e);
+      key = on ? key() : '';
+      if (key === lineKeys[name]) return;
+      lineKeys[name] = key;
+      var steps = Panel.LINE_STEPS;
+      var set = function (c) { for (var i = 0; i < steps.length; i++) Dom.toggle(e, steps[i], steps[i] === c); };
+      set(on ? Panel.lineStep(function (c) { set(c); return Panel.runsOver(e); }) : '');
+    }
+    function fitRound() {
+      var r = title.lastChild;
+      fitLine(r, 'round', function () { return String(r.textContent || '').length + '|' + title.clientWidth; });
+    }
+    function fitTurn() {
+      fitLine(turnText, 'turn', function () { return String(turnText.textContent || '') + '|' + turn.clientWidth + '|' + (dice.hidden ? 0 : dice.children.length); });
+    }
+    panel.fitRound = fitRound;
+    panel.fitLines = function () { lineKeys.round = null; lineKeys.turn = null; fitRound(); fitTurn(); };
 
     function renderRecent(st, you) {
       var log = st.log || [];
@@ -10603,7 +14113,13 @@
   };
 
   var h = function (t, p, k) { return Dom.h(t, p, k); };
-  function B() { return ECE.BoardData; }
+  function B() { return Dom.board(); }
+  function W(key, dflt) { return Dom.word(key, dflt); }
+  function passWords(n) { return n === 1 ? 'a ' + W('carpool', 'Carpool Pass') : n + ' ' + W('carpools', 'Carpool Passes'); }
+  function kindWord(k, dflt) {
+    var d = ECE.Theme ? ECE.Theme.data() : null, w = d && d.kinds ? d.kinds[k] : '';
+    return typeof w === 'string' && w ? w : dflt;
+  }
   function R() { return ECE.Rules; }
   function money(n) { return Dom.money(n); }
   function pl(state, id) { return Dom.player(state, id); }
@@ -10614,6 +14130,11 @@
     return p ? p.name : 'someone';
   }
   function Who(ctx, id) { var w = who(ctx, id); return w.charAt(0).toUpperCase() + w.slice(1); }
+  function wholeName(name) {
+    var d = ECE.Theme && typeof ECE.Theme.data === 'function' ? ECE.Theme.data() : null;
+    return d && d.wholeNames === true && typeof name === 'string' ? name.replace(/ /g, '\u00a0') : name;
+  }
+  D.wholeName = wholeName;
   function prop(state, i) { return state && state.props ? state.props[i] || state.props[String(i)] || null : null; }
   function ruleCall(name, args, fallback) {
     var Rl = R();
@@ -10656,7 +14177,8 @@
     var about = withAbout && typeof s.about === 'string' && s.about;
     var d = s.district ? B().district(s.district) : null;
     var area = d ? d.name : (s.area || '');
-    var head = h('div', { cls: 'ui-space-head' }, [Dom.spaceBadge(i), h('div', { cls: 'ui-space-names' }, [h('div', { cls: 'ui-space-name' }, s.name || ''), area ? h('div', { cls: 'ui-space-area' }, area) : null, about ? h('div', { cls: 'ui-space-about' }, s.about) : null])]);
+    if (typeof s.street === 'string' && s.street) { var where = s.area || area, sn = s.street.replace(/ /g, '\u00a0'); area = where ? where + ' · ' + sn : sn; }
+    var head = h('div', { cls: 'ui-space-head' }, [Dom.spaceBadge(i), h('div', { cls: 'ui-space-names' }, [h('div', { cls: 'ui-space-name' }, s.name ? Dom.spaceNameNodes(i) : ''), area ? h('div', { cls: 'ui-space-area' }, area) : null, about ? h('div', { cls: 'ui-space-about' }, s.about) : null])]);
     if (d) head.style.borderColor = Dom.tagColors(d.color).fill;
     return head;
   }
@@ -10681,7 +14203,7 @@
       var names = (ECE.Glossary && ECE.Glossary.buildings && ECE.Glossary.buildings.levelNames) || ['No buildings', '1 home', '2 homes', '3 homes', '4 homes', 'Tower'];
       var full = owner !== null && owner !== undefined ? !!ruleCall('ownsDistrict', [state, owner, s.district], false) : false;
       for (var lv = 0; lv <= 5; lv++) {
-        var r = { label: names[lv], amount: s.rent[lv], current: !!pp && !pp.mortgaged && (pp.level | 0) === lv };
+        var r = { label: Dom.say(names[lv]), amount: s.rent[lv], current: !!pp && !pp.mortgaged && (pp.level | 0) === lv };
         if (lv === 0) { r.extra = 'all 3: ' + money(s.rent[0] * 2); if (r.current && full) r.boost = true; }
         out.push(r);
       }
@@ -10720,7 +14242,7 @@
     if (!B().isOwnable(i)) return null;
     if (!pp) return row('Owner', 'Nobody yet', 'ui-owner');
     var p = pl(ctx.state, pp.owner);
-    var v = h('span', { cls: 'ui-owner-v' }, [p ? Dom.token(p.token, p.color, 18) : null, ' ', pp.owner === ctx.you ? 'You' : (p ? p.name : '?'), pp.mortgaged ? h('span', { cls: 'ui-badge ui-badge-m' }, 'Mortgaged') : null]);
+    var v = h('span', { cls: 'ui-owner-v' }, [h('span', { cls: 'ui-owner-who' }, [p ? Dom.token(p.token, p.color, 18) : null, ' ', pp.owner === ctx.you ? 'You' : (p ? p.name : '?')]), pp.mortgaged ? h('span', { cls: 'ui-badge ui-badge-m' }, 'Mortgaged') : null]);
     if (s && s.kind === 'street' && (pp.level | 0) > 0) v.appendChild(Dom.levelGlyphs(pp.level | 0, false));
     return row('Owner', v, 'ui-owner');
   }
@@ -10743,15 +14265,15 @@
 
   function kindTitle(s) {
     switch (s.kind) {
-      case 'street': { var d = B().district(s.district); return (d ? d.name + ' ' : '') + 'street'; }
-      case 'transit': return s.mode === 'ferry' ? 'Ferry dock' : s.mode === 'bus' ? 'Bus transit stop' : 'Train station';
-      case 'utility': return 'Utility';
-      case 'tax': return /toll/i.test(s.name || '') ? 'Toll' : 'Tax';
-      case 'card': return 'Card space';
-      case 'start': return 'Payday';
-      case 'traffic': return 'Traffic jam';
-      case 'rest': return 'Rest stop';
-      case 'bridge': return 'Drawbridge';
+      case 'street': { var d = B().district(s.district); return (d ? d.name + ' ' : '') + kindWord('street', 'street'); }
+      case 'transit': return s.mode === 'ferry' ? kindWord('ferry', 'Ferry dock') : s.mode === 'bus' ? kindWord('bus', 'Bus transit stop') : kindWord('train', 'Train station');
+      case 'utility': return kindWord('utility', 'Utility');
+      case 'tax': return /toll/i.test(((ECE.BoardData.SPACES[s.i] || {}).name) || '') ? kindWord('toll', 'Toll') : kindWord('tax', 'Tax');
+      case 'card': return kindWord('card', 'Card space');
+      case 'start': return kindWord('start', 'Payday');
+      case 'traffic': return kindWord('traffic', 'Traffic jam');
+      case 'rest': return kindWord('rest', 'Rest stop');
+      case 'bridge': return kindWord('bridge', 'Drawbridge');
       default: return 'Corner';
     }
   }
@@ -10776,25 +14298,25 @@
             body.appendChild(row('Build', money(Bd.buildCost(i)) + ' per home or tower'));
             var dp = prop(st, i);
             var whole = !!dp && !!d && !!ruleCall('ownsDistrict', [st, dp.owner, d.id], false);
-            if (whole && dp.owner === ctx.you) body.appendChild(para('You own all of ' + d.name + '. Build evenly; a tower needs ' + homesForTower() + ' homes on each street.', 'ui-small'));
+            if (whole && dp.owner === ctx.you) body.appendChild(para(Dom.say('You own all of ' + d.name + '. Build evenly; a tower needs ' + homesForTower() + ' homes on each street.'), 'ui-small'));
             else if (whole) body.appendChild(para(Who(ctx, dp.owner) + ' owns all of ' + d.name + '.', 'ui-small'));
             else body.appendChild(para('Own all of ' + (d ? d.name : 'the district') + ' (' + (d ? d.spaces.map(Dom.spaceName).join(', ') : '') + ') to build.', 'ui-small'));
           }
           body.appendChild(row('Mortgage', money(Bd.mortgageValue(i)) + ' (pay off ' + money(Bd.unmortgageCost(i)) + ')'));
         } else if (s.kind === 'tax') {
           body.appendChild(row('Pay', money(s.amount)));
-          if (st && st.rules && st.rules.rainFund) body.appendChild(para('With the Rain Fund rule on, this goes into the Rain Fund.', 'ui-small'));
+          if (st && st.rules && st.rules.rainFund) body.appendChild(para('With the ' + W('rainFund', 'Rain Fund') + ' rule on, this goes into the ' + W('rainFund', 'Rain Fund') + '.', 'ui-small'));
         } else if (s.kind === 'card') {
-          var deck = ECE.CardData && ECE.CardData.DECKS[s.deck];
+          var deck = Dom.cards() && Dom.cards().DECKS[s.deck];
           body.appendChild(para('Draw the top ' + (deck ? deck.name : 'card') + ' card. ' + (s.deck === 'rain' ? 'Mostly moves around the board.' : 'Mostly money.')));
         } else if (s.kind === 'start') {
           body.appendChild(para('Payday! Get ' + money(Bd.RULES.salary) + ' each time you pass or land here.'));
         } else if (s.kind === 'traffic') {
           body.appendChild(para(s.note || ''));
-          body.appendChild(para('To leave: pay ' + money(Bd.RULES.trafficFee) + ', use a Carpool Pass, or roll doubles (' + Bd.RULES.trafficMaxTries + ' tries; after the last one you pay ' + money(Bd.RULES.trafficFee) + ' and move).', 'ui-small'));
+          body.appendChild(para('To leave: pay ' + money(Bd.RULES.trafficFee) + ', use a ' + W('carpool', 'Carpool Pass') + ', or roll doubles (' + Bd.RULES.trafficMaxTries + ' tries; after the last one you pay ' + money(Bd.RULES.trafficFee) + ' and move).', 'ui-small'));
         } else if (s.kind === 'rest') {
           body.appendChild(para(s.note || ''));
-          if (st && st.rules && st.rules.rainFund) body.appendChild(row('Rain Fund now', money(st.rainFund || 0)));
+          if (st && st.rules && st.rules.rainFund) body.appendChild(row(W('rainFund', 'Rain Fund') + ' now', money(st.rainFund || 0)));
         } else if (s.note) {
           body.appendChild(para(s.note));
         }
@@ -10907,7 +14429,7 @@
         }
         hd.spec.live = !ctx.demo;
         var leader = pend.leader;
-        hd.body.appendChild(row('Current bid', (pend.bid | 0) > 0 ? money(pend.bid) + ' by ' + who(ctx, leader) : 'No bids yet', 'ui-big'));
+        hd.body.appendChild(row('Current bid', (pend.bid | 0) > 0 ? money(pend.bid) + ' by ' + wholeName(who(ctx, leader)) : 'No bids yet', 'ui-big'));
         var order = pend.order || [];
         var actor = order[pend.idx | 0];
         var me = pl(st, ctx.you) || { cash: 0 };
@@ -10938,7 +14460,7 @@
         });
         if (inIt) {
           hd.foot.appendChild(grid);
-          if (!document.documentElement.classList.contains('phone')) hd.foot.appendChild(para('Tab to a bid or Pass.', 'ui-small ui-keys-hint'));
+          if (!document.documentElement.classList.contains('phone')) hd.foot.appendChild(para(Dom.tabKey() + ' to a bid or Pass.', 'ui-small ui-keys-hint'));
           hd.foot.appendChild(once(key(Dom.btn('Pass', function () { ctx.act({ t: 'pass' }); }, { disabled: !mine, aria: 'Pass and leave the auction' }), 'pass')));
         }
       },
@@ -10947,7 +14469,7 @@
   };
 
   D.card = function (ctx, info) {
-    var C = ECE.CardData;
+    var C = Dom.cards();
     var card = C ? C.card(info.deck, info.id) : null;
     var deck = C ? C.DECKS[info.deck] : null;
     return D.open({
@@ -10994,8 +14516,8 @@
       list.forEach(function (j) { var dd = ((j - (me.pos | 0)) + n) % n || n; if (dd < bd) { bd = dd; best = j; } });
       if (best !== null) { dest = best; label = 'Go to ' + Dom.spaceName(best); }
     }
-    else if (e.traffic) label = 'Go to ' + ((Bd.SPACES[Bd.TRAFFIC] || {}).name || 'Stuck in Traffic');
-    else if (e.carpool) label = 'Keep the Carpool Pass';
+    else if (e.traffic) label = 'Go to ' + W('trafficThe', (Bd.SPACES[Bd.TRAFFIC] || {}).name || 'Stuck in Traffic');
+    else if (e.carpool) label = 'Keep the ' + W('carpool', 'Carpool Pass');
     else if (e.cash) label = (e.cash > 0 ? 'Collect ' : 'Pay ') + money(Math.abs(e.cash));
     else if (e.each) label = (e.each > 0 ? 'Collect ' : 'Pay ') + money(Math.abs(e.each) * others);
     else if (e.repairs) {
@@ -11028,7 +14550,8 @@
 
   function deckGlyph(deck) {
     var svg = Dom.s('svg', { viewBox: '0 0 24 24', width: 44, height: 44, focusable: 'false' });
-    if (ECE.Art && typeof ECE.Art.icon === 'function') { try { ECE.Art.icon(svg, deck === 'rain' ? 'rain' : 'buzz', 12, 12, 24); } catch (e) { Dom.report(e, 'art.icon'); } }
+    var A = Dom.art();
+    if (A && typeof A.icon === 'function') { try { A.icon(svg, deck === 'rain' ? 'rain' : 'buzz', 12, 12, 24); } catch (e) { Dom.report(e, 'art.icon'); } }
     return svg;
   }
   D.deckGlyph = deckGlyph;
@@ -11046,7 +14569,7 @@
     });
     return { groups: groups, other: other };
   }
-  D.holdings = holdings;
+  D.holdingsOf = holdings;
 
   D.manage = function (ctx) {
     var opened = false;
@@ -11075,7 +14598,7 @@
         }
         hd.body.appendChild(top);
         if (!all.length) {
-          hd.body.appendChild(para('You own no spaces yet. Buy streets, transit stops and utilities when you land on them.'));
+          hd.body.appendChild(para(Dom.say('You own no spaces yet. Buy streets, transit stops and utilities when you land on them.')));
         }
         var inDebt = st.phase === 'debt' && pend.debts && pend.debts[0] && pend.debts[0].player === ctx.you;
         if (inDebt && all.length) {
@@ -11099,7 +14622,7 @@
           d.spaces.forEach(function (j) {
             var pp = prop(st, j);
             if (!pp || pp.owner !== ctx.you) {
-              var orow = h('div', { cls: 'ui-mrow ui-mrow-other' }, [h('div', { cls: 'ui-mleft' }, [h('span', { cls: 'ui-mname' }, Dom.spaceName(j)), h('span', { cls: 'ui-mstate' }, pp ? 'owned by ' + who(ctx, pp.owner) : 'for sale')])]);
+              var orow = h('div', { cls: 'ui-mrow ui-mrow-other' }, [h('div', { cls: 'ui-mleft' }, [h('span', { cls: 'ui-mname' }, Dom.spaceNameNodes(j)), h('span', { cls: 'ui-mstate' }, pp ? 'owned by ' + who(ctx, pp.owner) : 'for sale')])]);
               var asker = askOwner(ctx, j);
               if (asker !== null) orow.appendChild(h('div', { cls: 'ui-mbtns' }, [key(Dom.btn([h('span', null, 'Ask'), h('small', null, 'trade')], function () { openAsk(ctx, hd, asker, j); }, { small: true, aria: 'Ask ' + Who(ctx, asker) + ' for ' + Dom.spaceName(j) }), 'ask' + j)]));
               sec.appendChild(orow);
@@ -11110,11 +14633,11 @@
           hd.body.appendChild(sec);
         });
         if (hold.other.length) {
-          var sec2 = h('section', { cls: 'ui-manage-group' }, [h('div', { cls: 'ui-group-head' }, [h('b', null, 'Transit and utilities')])]);
+          var sec2 = h('section', { cls: 'ui-manage-group' }, [h('div', { cls: 'ui-group-head' }, [h('b', null, Dom.say('Transit and utilities'))])]);
           hold.other.forEach(function (j) { sec2.appendChild(manageRow(ctx, hd, st, j, prop(st, j), legal, false)); });
           hd.body.appendChild(sec2);
         }
-        if (all.length) hd.body.appendChild(para('Build evenly: a street gets its next home only when no street of its district has fewer. ' + homesForTower() + ' homes on all three, then a tower. Buildings sell back for ' + Dom.share(B().RULES.sellShare) + '.', 'ui-small ui-rulenote'));
+        if (all.length) hd.body.appendChild(para(Dom.say('Build evenly: a street gets its next home only when no street of its district has fewer. ' + homesForTower() + ' homes on all three, then a tower. Buildings sell back for ' + Dom.share(B().RULES.sellShare) + '.'), 'ui-small ui-rulenote'));
         hd.foot.appendChild(key(Dom.btn('Done', function () { hd.close('done'); }, { primary: true }), 'done'));
       },
       onClose: function () { if (ctx.view && ctx.view.highlight) { try { ctx.view.highlight([]); } catch (e) { Dom.report(e, 'view.highlight'); } } }
@@ -11165,7 +14688,7 @@
       if (ok) { ctx.act({ t: t, space: j }); return; }
       var why = ruleCall('whyNot', [ctx.state, { t: t, p: ctx.you, space: j }], null);
       if (!why || ruleCall('actor', [ctx.state], null) !== ctx.you) why = 'You can build, sell and mortgage on your own turn.';
-      if (ECE.App && ECE.App.toast) ECE.App.toast(why);
+      if (ECE.App && ECE.App.toast) ECE.App.toast(Dom.say(why));
     }, { small: true, cls: (extraCls || '') + (ok ? '' : ' ui-off'), aria: aria });
     if (!ok) b.setAttribute('aria-disabled', 'true');
     return once(b);
@@ -11177,7 +14700,7 @@
     var lv = pp.level | 0;
     var r = h('div', { cls: 'ui-mrow' + (pp.mortgaged ? ' ui-mortgaged' : '') + (raiseOnly ? ' ui-mrow-raise' : '') });
     var rent = rentText(st, ctx.you, j, !!raiseOnly);
-    r.appendChild(h('div', { cls: 'ui-mleft' }, [h('span', { cls: 'ui-mname' }, s.name), h('span', { cls: 'ui-mstate' }, [Dom.levelGlyphs(lv, pp.mortgaged), ' ', rent])]));
+    r.appendChild(h('div', { cls: 'ui-mleft' }, [h('span', { cls: 'ui-mname' }, Dom.spaceNameNodes(j)), h('span', { cls: 'ui-mstate' }, [Dom.levelGlyphs(lv, pp.mortgaged), ' ', rent])]));
     var btns = h('div', { cls: 'ui-mbtns' });
     var cost = Bd.buildCost(j);
     var back = ruleCall('sellValue', [j], Math.round(cost * (Bd.RULES.sellShare || 0.5)));
@@ -11204,6 +14727,140 @@
     return r;
   }
   D.manageRow = manageRow;
+
+  function holdRank(st, id) {
+    var list = ruleCall('standings', [st], []) || [], me = null, i;
+    for (i = 0; i < list.length; i++) if (list[i] && list[i].id === id) { me = list[i]; if (!me.rank) me = { id: me.id, net: me.net, out: me.out, rank: i + 1 }; }
+    if (!me) return null;
+    var r = { rank: me.rank, of: list.length, out: !!me.out, tied: false };
+    if (!r.out && st && st.phase !== 'over') {
+      var above = 0;
+      for (i = 0; i < list.length; i++) {
+        var q = list[i];
+        if (!q || q.out || q.id === id) continue;
+        if (q.net > me.net) above++; else if (q.net === me.net) r.tied = true;
+      }
+      r.rank = above + 1;
+    }
+    return r;
+  }
+  D.holdRank = holdRank;
+  function buildWords(lv) {
+    lv = lv | 0;
+    var top = (B().RULES && B().RULES.maxLevel) || 5;
+    return lv >= top ? 'Tower' : lv > 0 ? lv + (lv === 1 ? ' home' : ' homes') : '';
+  }
+  D.buildWords = buildWords;
+  function holdRow(st, j, owner) {
+    var pp = prop(st, j) || {}, s = Dom.space(j) || { name: '' };
+    var m = !!pp.mortgaged, lv = pp.level | 0;
+    var what = h('span', { cls: 'ui-hold-what' });
+    if (m) what.appendChild(h('span', { cls: 'ui-badge ui-badge-m' }, 'Mortgaged'));
+    else if (lv > 0) { what.appendChild(Dom.levelGlyphs(lv, false)); what.appendChild(h('span', { cls: 'ui-hold-build' }, buildWords(lv))); }
+    var rent = rentText(st, owner, j, true);
+    what.appendChild(h('span', { cls: 'ui-hold-rent' + (m ? ' ui-muted' : '') }, rent));
+    var row = h('div', { cls: 'ui-hold-row' + (m ? ' ui-mortgaged' : ''), role: 'listitem', 'data-space': String(j) }, [
+      h('span', { cls: 'ui-hold-name' }, [s.kind === 'street' ? null : Dom.spaceBadge(j), h('span', null, s.name)]), what]);
+    row.setAttribute('aria-label', s.name + (m ? ', mortgaged, no rent' : (lv > 0 ? ', ' + buildWords(lv).toLowerCase() : '') + ', ' + rent));
+    return row;
+  }
+  function holdGroup(head, rows, cls) {
+    var sec = h('section', { cls: 'ui-hold-group' + (cls ? ' ' + cls : '') }, [head]);
+    var list = h('div', { cls: 'ui-hold-list', role: 'list' });
+    rows.forEach(function (r) { list.appendChild(r); });
+    sec.appendChild(list);
+    return sec;
+  }
+  function canTradeWith(ctx, id) {
+    var st = ctx.state, p = pl(st, id);
+    if (!p || p.out || p.kind === 'human' || id === ctx.you) return false;
+    if (ruleCall('actor', [st], null) !== ctx.you || (st.phase !== 'roll' && st.phase !== 'end')) return false;
+    return (st.offersThisTurn | 0) < ((R() && R().MAX_OFFERS) || 3);
+  }
+  D.canTradeWith = canTradeWith;
+  D.holdings = function (ctx, id) {
+    if (ctx && !ctx.state && Array.isArray(ctx.players)) return holdings(ctx, id);
+    if (!ctx || !ctx.state || !pl(ctx.state, id)) return null;
+    var shown = id, lit = false;
+    function light(who) {
+      var spaces = [];
+      var hold = holdings(ctx.state, who);
+      hold.groups.forEach(function (g) { spaces = spaces.concat(g.mine); });
+      spaces = spaces.concat(hold.other);
+      if (typeof ctx.pickPlayer === 'function') { try { ctx.pickPlayer(who); } catch (e) { Dom.report(e, 'pickPlayer'); } return; }
+      if (ctx.view && ctx.view.highlight) { try { ctx.view.highlight(spaces); lit = true; } catch (e2) { Dom.report(e2, 'view.highlight'); } }
+    }
+    if (typeof ctx.pickPlayer !== 'function') light(shown);
+    return D.open({
+      id: 'holdings', title: '', cls: 'ui-dlg-holdings', place: 'side', closable: true, lightBackdrop: true,
+      render: function (hd) {
+        var st = ctx.state, Bd = B();
+        var p = pl(st, shown);
+        if (!p) { hd.close('gone'); return; }
+        var mine = shown === ctx.you;
+        hd.title(mine ? (youName(ctx, p) === 'You' ? 'You' : youName(ctx, p)) : p.name);
+        hd.box.setAttribute('data-player', String(shown));
+        var old = hd.head.querySelector && hd.head.querySelector('.ui-hold-token');
+        if (old) old.parentNode.removeChild(old);
+        var tk = Dom.token(p.token, p.color, 32); tk.classList.add('ui-hold-token'); hd.head.insertBefore(tk, hd.head.firstChild);
+        var rk = holdRank(st, shown);
+        var lead = ECE.Panel && typeof ECE.Panel.leader === 'function' ? ECE.Panel.leader(st) : null;
+        var first = !!rk && (st.phase === 'over' ? rk.rank === 1 : lead === shown);
+        var worth = p.out ? 0 : ruleCall('netWorth', [st, shown], p.cash);
+        var stat = function (k, v, cls) { return h('div', { cls: 'ui-hold-stat' + (cls ? ' ' + cls : '') }, [h('span', { cls: 'ui-hold-k' }, k), h('span', { cls: 'ui-hold-v' }, v)]); };
+        hd.body.appendChild(h('div', { cls: 'ui-hold-stats' }, p.out ? [stat('Status', 'Out of the game')] : [
+          stat('Cash', money(p.cash)), stat('Net worth', money(worth)),
+          rk ? stat('Rank', (rk.tied ? 'Tied ' : '') + Dom.ordinal(rk.rank) + ' of ' + rk.of, first ? 'ui-hold-first' : '') : null]));
+        var others = (st.players || []).filter(function (q) { return !q.out || q.id === shown; });
+        if (others.length > 1) {
+          var row = h('div', { cls: 'ui-hold-switch', role: 'group', 'aria-label': 'Show another player' });
+          others.forEach(function (q) {
+            var on = q.id === shown;
+            var b = Dom.btn([Dom.token(q.token, q.color, 22), h('span', { cls: 'ui-hold-pname' }, q.id === ctx.you ? 'You' : ECE.Panel && ECE.Panel.shortName ? ECE.Panel.shortName(q.name, false) : q.name)], function () {
+              if (shown === q.id) return;
+              shown = q.id;
+              light(shown);
+              hd.update();
+            }, { cls: 'ui-hold-pick' + (on ? ' ui-on' : ''), pressed: on, aria: (q.id === ctx.you ? 'Your' : q.name + '’s') + ' holdings' });
+            b.style.setProperty('--seat', q.color);
+            row.appendChild(key(b, 'who' + q.id));
+          });
+          hd.body.appendChild(row);
+        }
+        var hold = holdings(st, shown), any = false;
+        hold.groups.forEach(function (g) {
+          any = true;
+          var d = g.d, whole = g.mine.length === d.spaces.length;
+          var head = h('div', { cls: 'ui-group-head ui-hold-head' }, [Dom.tag(d.id), h('b', null, d.name), h('span', { cls: 'ui-group-note' + (whole ? ' ui-hold-all' : '') }, whole ? 'all ' + d.spaces.length : g.mine.length + ' of ' + d.spaces.length)]);
+          hd.body.appendChild(holdGroup(head, g.mine.map(function (j) { return holdRow(st, j, shown); })));
+        });
+        var stops = hold.other.filter(function (j) { return (Dom.space(j) || {}).kind === 'transit'; });
+        var utils = hold.other.filter(function (j) { return (Dom.space(j) || {}).kind === 'utility'; });
+        if (stops.length) {
+          any = true;
+          hd.body.appendChild(holdGroup(h('div', { cls: 'ui-group-head ui-hold-head' }, [h('b', null, 'Transit stops'), h('span', { cls: 'ui-group-note' }, stops.length + ' of ' + (Bd.TRANSIT || []).length)]), stops.map(function (j) { return holdRow(st, j, shown); })));
+        }
+        if (utils.length) {
+          any = true;
+          hd.body.appendChild(holdGroup(h('div', { cls: 'ui-group-head ui-hold-head' }, [h('b', null, Dom.say('Utilities')), h('span', { cls: 'ui-group-note' }, utils.length + ' of ' + (Bd.UTILITIES || []).length)]), utils.map(function (j) { return holdRow(st, j, shown); })));
+        }
+        if (!any) hd.body.appendChild(para(p.out ? 'Out of the game: nothing left.' : (mine ? 'You own' : p.name + ' owns') + ' no spaces yet.', 'ui-small ui-hold-none'));
+        var passes = (p.passes || []).length;
+        var stuckAt = W('trafficThe', W('traffic', 'Stuck in Traffic'));
+        hd.body.appendChild(h('p', { cls: 'ui-small ui-hold-passes' }, passes ? (passes === 1 ? '1 ' + W('carpool', 'Carpool Pass') : passes + ' ' + W('carpools', 'Carpool Passes')) + ': ' + (passes === 1 ? 'it leaves' : 'each leaves') + ' ' + stuckAt + ' for free.' : 'No ' + W('carpool', 'Carpool Pass') + '.'));
+        if (canTradeWith(ctx, shown)) {
+          var to = shown;
+          hd.foot.appendChild(key(Dom.btn('Trade with ' + p.name, function () { hd.close('trade'); D.trade(ctx, { to: to }); }, { aria: 'Trade with ' + p.name }), 'trade'));
+        }
+        if (document.documentElement.classList.contains('phone') && typeof ctx.seeOnBoard === 'function') {
+          var seen = shown;
+          hd.foot.appendChild(key(Dom.btn('See on board', function () { if (ctx.seeOnBoard(seen)) hd.close('board'); }, { cls: 'ui-hold-see', aria: 'See ' + (mine ? 'your' : p.name + '’s') + ' spaces on the board' }), 'board'));
+        }
+        hd.foot.appendChild(key(Dom.btn('Close', function () { hd.close('ok'); }, { primary: true }), 'close'));
+      },
+      onClose: function () { if (lit && ctx.view && ctx.view.highlight) { try { ctx.view.highlight([]); } catch (e) { Dom.report(e, 'view.highlight'); } } }
+    });
+  };
 
   function blankSide() { return { cash: 0, spaces: [], passes: 0 }; }
   function cpuIds(ctx) {
@@ -11358,7 +15015,7 @@
   function plusWords(side) {
     var out = [];
     (side.spaces || []).forEach(function (j) { out.push(Dom.spaceName(j)); });
-    if ((side.passes | 0) > 0) out.push(side.passes === 1 ? 'a Carpool Pass' : side.passes + ' Carpool Passes');
+    if ((side.passes | 0) > 0) out.push(passWords(side.passes));
     if ((side.cash | 0) > 0) out.push(money(side.cash));
     return out;
   }
@@ -11369,7 +15026,7 @@
     if (!side) return out;
     if ((side.cash | 0) > 0) out.push(money(side.cash));
     (side.spaces || []).forEach(function (j) { out.push(Dom.spaceName(j)); });
-    if ((side.passes | 0) > 0) out.push(side.passes === 1 ? 'a Carpool Pass' : side.passes + ' Carpool Passes');
+    if ((side.passes | 0) > 0) out.push(passWords(side.passes));
     return out;
   }
   function joinWords(a) { return a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
@@ -11389,6 +15046,7 @@
     var s = String(e || '');
     if (!s) return 'Pick at least one thing to give or get.';
     if (/empty|nothing|at least/i.test(s)) return 'Pick at least one thing to give or get.';
+    s = Dom.say(s);
     return s.charAt(0).toUpperCase() + s.slice(1) + (/[.!?]$/.test(s) ? '' : '.');
   }
 
@@ -11418,7 +15076,7 @@
       col.appendChild(key(b, 'it' + owner + '-' + j));
     });
     if (avail.passes > 0) {
-      col.appendChild(stepper(hd, 'Carpool Pass', side.passes, 0, avail.passes, 1, function (v) { side.passes = v; }, 'ps' + owner, function (v) { return v + ' of ' + avail.passes; }));
+      col.appendChild(stepper(hd, W('carpool', 'Carpool Pass'), side.passes, 0, avail.passes, 1, function (v) { side.passes = v; }, 'ps' + owner, function (v) { return v + ' of ' + avail.passes; }));
     }
     var held = 0;
     for (var k in (st.props || {})) {
@@ -11426,7 +15084,7 @@
       var pp = st.props[k], sp = Dom.space(+k);
       if (pp && pp.owner === owner && sp && sp.kind === 'street' && spaces.indexOf(+k) < 0) held++;
     }
-    if (held) col.appendChild(para('Streets in a district with buildings can’t be traded.', 'ui-small ui-muted ui-trade-why'));
+    if (held) col.appendChild(para(Dom.say('Streets in a district with buildings can’t be traded.'), 'ui-small ui-muted ui-trade-why'));
     var cash = Math.max(0, avail.cash | 0);
     col.appendChild(stepper(hd, 'Cash', side.cash, 0, cash, 10, function (v) { side.cash = v; }, 'cs' + owner, money, true));
     return col;
@@ -11459,7 +15117,7 @@
       any = true;
       col.appendChild(h('div', { cls: 'ui-item ui-item-static' }, itemParts(ctx.state, j).els));
     });
-    if (side.passes > 0) { any = true; col.appendChild(h('div', { cls: 'ui-item ui-item-static' }, [h('span', { cls: 'ui-item-name' }, side.passes > 1 ? side.passes + ' Carpool Passes' : 'Carpool Pass')])); }
+    if (side.passes > 0) { any = true; col.appendChild(h('div', { cls: 'ui-item ui-item-static' }, [h('span', { cls: 'ui-item-name' }, side.passes > 1 ? side.passes + ' ' + W('carpools', 'Carpool Passes') : W('carpool', 'Carpool Pass'))])); }
     if (side.cash > 0) { any = true; col.appendChild(h('div', { cls: 'ui-item ui-item-static ui-cash' }, [h('span', { cls: 'ui-tag ui-tag-cash' }, '$'), h('span', { cls: 'ui-item-name' }, money(side.cash))])); }
     if (!any) col.appendChild(para('Nothing', 'ui-small ui-muted'));
     return col;
@@ -11485,7 +15143,7 @@
       [offer.from, offer.to].forEach(function (who2) {
         var now = d.spaces.filter(function (j) { return after(j) === who2; }).length;
         var was = d.spaces.filter(function (j) { return before(j) === who2; }).length;
-        if (now === 2 && was < 2) out.push({ text: (who2 === ctx.you ? 'You would own' : Who(ctx, who2) + ' would own') + ' 2 of 3 ' + d.name + ' streets.', warn: false, d: d, all: false });
+        if (now === 2 && was < 2) out.push({ text: (who2 === ctx.you ? 'You would own' : Who(ctx, who2) + ' would own') + ' 2 of 3 ' + d.name + Dom.say(' streets.'), warn: false, d: d, all: false });
       });
     });
     return out;
@@ -11547,18 +15205,18 @@
         var w = ruleCall('whyText', [d.why], '') || '';
         return sp ? 'Rent for ' + sp + (w ? ' (' + w + ')' : '') + '.' : 'Rent.';
       }
-      case 'tax': return sp ? sp + '.' : 'A tax.';
+      case 'tax': return sp ? sp + '.' : Dom.say('A tax.');
       case 'card': { var c = lastCardOf(ctx.state, d.player); return c ? 'Your card: "' + c.text + '"' : 'A card you drew.'; }
       case 'repairs': return 'Repairs on your homes and towers (a card).';
       case 'each': {
         var dr = lastCardDraw(ctx.state);
-        var card = dr && ECE.CardData ? ECE.CardData.card(dr.deck, dr.id) : null;
+        var card = dr && Dom.cards() ? Dom.cards().card(dr.deck, dr.id) : null;
         var owed = (d.to || []).filter(function (x) { return x && x.id !== null && x.id !== undefined; });
         if (card && dr.p === d.player) return 'Your card: "' + card.text + '"';
         if (card && owed.length === 1 && owed[0].id === dr.p) return Who(ctx, dr.p) + '’s card: "' + card.text + '"';
         return owed.length === 1 ? 'A card: you pay ' + who(ctx, owed[0].id) + '.' : 'A card: you pay each player.';
       }
-      case 'traffic': return 'The fee to leave Stuck in Traffic.';
+      case 'traffic': return 'The fee to leave ' + W('trafficThe', W('traffic', 'Stuck in Traffic')) + '.';
       default: return typeof r === 'string' && r ? r.charAt(0).toUpperCase() + r.slice(1) + '.' : '';
     }
   }
@@ -11575,7 +15233,7 @@
     var log = (state && state.log) || [];
     for (var i = log.length - 1; i >= 0; i--) {
       var e = log[i];
-      if (e && e.t === 'card' && e.p === p) return ECE.CardData ? ECE.CardData.card(e.deck, e.id) : null;
+      if (e && e.t === 'card' && e.p === p) return Dom.cards() ? Dom.cards().card(e.deck, e.id) : null;
       if (e && e.t === 'turn') break;
     }
     return null;
@@ -11623,7 +15281,7 @@
         hd.body.appendChild(row('You owe', money(amount), 'ui-big'));
         var to = d.to || [];
         to.forEach(function (t) {
-          hd.body.appendChild(row(t.fund ? 'To the Rain Fund' : t.id === null || t.id === undefined ? 'To the bank' : 'To ' + who(ctx, t.id), money(t.amount)));
+          hd.body.appendChild(row(t.fund ? 'To the ' + W('rainFund', 'Rain Fund') : t.id === null || t.id === undefined ? 'To the bank' : 'To ' + who(ctx, t.id), money(t.amount)));
         });
         var why = reasonText(ctx, d);
         if (why) hd.body.appendChild(para(why, 'ui-small'));
@@ -11632,7 +15290,7 @@
         var liquid = ruleCall('liquid', [st, ctx.you], me.cash);
         var canPay = !!legalHas(legal, 'pay') && me.cash >= amount;
         if (me.cash < amount) {
-          if (liquid >= amount) hd.body.appendChild(para('Raise ' + money(amount - me.cash) + ' more: sell buildings (half back) or mortgage spaces in Manage.', 'ui-warn'));
+          if (liquid >= amount) hd.body.appendChild(para(Dom.say('Raise ' + money(amount - me.cash) + ' more: sell buildings (half back) or mortgage spaces in Manage.'), 'ui-warn'));
           else hd.body.appendChild(para('Everything you own is worth ' + money(liquid) + ' in cash. It cannot cover this.', 'ui-warn'));
           var quick = quickRaise(st, ctx.you, legal, amount);
           if (quick.length) {
@@ -11733,7 +15391,7 @@
           ]));
         });
         hd.body.appendChild(tbl);
-        hd.body.appendChild(para('Net worth = cash + each space’s price (its mortgage value if mortgaged) + what was paid for its buildings.', 'ui-small ui-muted'));
+        hd.body.appendChild(para(Dom.say('Net worth = cash + each space’s price (its mortgage value if mortgaged) + what was paid for its buildings.'), 'ui-small ui-muted'));
         hd.foot.appendChild(key(Dom.btn('Home', function () { hd.close('home'); ctx.home(); }), 'home'));
         hd.foot.appendChild(key(Dom.btn('New game', function () { hd.close('new'); ctx.newGame(); }, { primary: true }), 'new'));
       }
@@ -11754,7 +15412,7 @@
             ol.appendChild(h('li', { cls: p.id === ctx.you ? 'ui-mine' : '' }, [Dom.token(p.token, p.color, 26), who2]));
           });
           hd.body.appendChild(ol);
-          hd.body.appendChild(para('Everyone starts with ' + money(B().RULES.startCash) + '. Pass START for ' + money(B().RULES.salary) + '.', 'ui-small'));
+          hd.body.appendChild(para('Everyone starts with ' + money(B().RULES.startCash) + '. Pass ' + W('start', 'START') + ' for ' + money(B().RULES.salary) + '.', 'ui-small'));
           hd.foot.appendChild(key(Dom.btn('Let’s go', function () { hd.close('ok'); }, { primary: true }), 'go'));
         },
         onClose: function () { resolve(); }
@@ -11763,7 +15421,7 @@
   };
 
   function blurbOf(p) {
-    var list = (ECE.Glossary && ECE.Glossary.computers) || [];
+    var G = Dom.gloss(), list = (G && G.computers) || [];
     for (var i = 0; i < list.length; i++) if ((p.persona && list[i].persona === p.persona) || list[i].name === p.name) return list[i].blurb || '';
     return '';
   }
@@ -11775,6 +15433,8 @@
       render: function (hd) {
         var list = h('div', { cls: 'ui-menu-list' });
         list.appendChild(key(Dom.btn('Resume', function () { hd.close('resume'); }, { primary: true }), 'resume'));
+        var T = ECE.Tutorial, inLesson = !!(T && typeof T.running === 'function' && T.running());
+        if (inLesson) list.appendChild(key(Dom.btn('Skip tutorial', function () { hd.close('skip'); T.skip(); }), 'skip'));
         list.appendChild(key(Dom.btn('Full log', function () { hd.close('log'); ctx.openLog(); }), 'log'));
         list.appendChild(key(Dom.btn('How to play', function () { hd.close('howto'); ctx.go('howto'); }), 'howto'));
         list.appendChild(key(Dom.btn('Settings', function () { hd.close('settings'); ctx.go('settings'); }), 'settings'));
@@ -11791,7 +15451,7 @@
           });
           hd.body.appendChild(h('div', { cls: 'ui-menu-row' }, [h('div', { cls: 'ui-sub' }, 'Computer speed'), seg]));
         }
-        hd.body.appendChild(para('Your game is saved as you play.', 'ui-small ui-muted'));
+        hd.body.appendChild(para(inLesson ? 'The tutorial is not saved, and it never changes your own saved game.' : 'Your game is saved as you play.', 'ui-small ui-muted'));
       }
     });
   };
@@ -11840,8 +15500,23 @@
   ECE.Screens = S;
 
   function money(n) { return Dom.money(n); }
-  function G() { return ECE.Glossary; }
-  function B() { return ECE.BoardData; }
+  function G() { return Dom.gloss(); }
+  function B() { return Dom.board(); }
+  function W(key, dflt) { return Dom.word(key, dflt); }
+  function TD(path, dflt) {
+    var d = ECE.Theme && typeof ECE.Theme.data === 'function' ? ECE.Theme.data() : null;
+    var parts = path.split('.');
+    for (var i = 0; i < parts.length && d; i++) d = d[parts[i]];
+    return typeof d === 'string' && d ? d : dflt;
+  }
+
+  function themeShownName() {
+    var T = ECE.Theme;
+    if (!T || typeof T.current !== 'function' || T.current() === 'emerald' || typeof T.data !== 'function') return '';
+    var n = T.data().name;
+    return typeof n === 'string' ? n : '';
+  }
+  S.themeShownName = themeShownName;
 
   function header(ctx, title) {
     var back = Dom.btn([Dom.icon('back', 20), h('span', null, 'Back')], function () { ctx.back(); }, { ghost: true, cls: 'ui-back', aria: 'Back' });
@@ -11888,7 +15563,7 @@
     try { return document.documentElement.classList.contains('phone') && window.innerHeight >= 800 && window.innerHeight / Math.max(1, window.innerWidth) >= 1.9; } catch (e) { return false; }
   }
   function titleArt(wide, tipFirst) {
-    var A = ECE.Art;
+    var A = Dom.art();
     var wrap = h('div', { cls: 'ui-title-art', 'aria-hidden': 'true' });
     if (A && typeof A.centre === 'function') {
       try {
@@ -12052,15 +15727,18 @@
     var hero = h('div', { cls: 'ui-home-hero' });
     hero.appendChild(titleArt(wide, tipFirst));
     hero.appendChild(h('h1', { cls: 'ui-home-title', tabindex: '-1', 'data-autofocus': '' }, G().game.name));
-    hero.appendChild(h('p', { cls: 'ui-home-place', 'aria-hidden': 'true' }, 'Greater Seattle'));
-    hero.appendChild(h('p', { cls: 'ui-home-tag' }, G().game.tagline));
-    hero.appendChild(h('p', { cls: 'ui-home-coords', 'aria-hidden': 'true' }, '47.61° N · 122.33° W'));
+    var shownTheme = themeShownName();
+    if (shownTheme) hero.appendChild(h('p', { cls: 'ui-home-theme' }, shownTheme));
+    hero.appendChild(h('p', { cls: 'ui-home-place', 'aria-hidden': 'true' }, TD('home.place', 'Greater Seattle')));
+    hero.appendChild(h('p', { cls: 'ui-home-tag' }, TD('home.tagline', G().game.tagline)));
+    hero.appendChild(h('p', { cls: 'ui-home-coords', 'aria-hidden': 'true' }, TD('home.coords', '47.61° N · 122.33° W')));
     wrap.appendChild(hero);
 
     var actions = h('div', { cls: 'ui-home-actions' });
     if (game) {
       var me = Dom.player(game, ctx.you) || { cash: 0 };
-      var big = Dom.btn([h('span', { cls: 'ui-big-label' }, 'Continue'), h('span', { cls: 'ui-big-sub' }, 'Round ' + (game.round || 1) + ' · you have ' + money(me.cash))], function () { ctx.continueGame(); }, { primary: true, cls: 'ui-big-btn', aria: 'Continue: round ' + (game.round || 1) + ', you have ' + money(me.cash) });
+      var gTheme = ECE.Theme && ECE.Theme.of ? ECE.Theme.of(game) : 'emerald', gName = gTheme !== 'emerald' && ECE.Theme.data ? String(ECE.Theme.data(gTheme).name || '') : '';
+      var big = Dom.btn([h('span', { cls: 'ui-big-label' }, 'Continue'), h('span', { cls: 'ui-big-sub' }, (gName ? gName + ' · ' : '') + 'Round ' + (game.round || 1) + ' · you have ' + money(me.cash))], function () { ctx.continueGame(); }, { primary: true, cls: 'ui-big-btn', aria: 'Continue' + (gName ? ' your ' + gName + ' game' : '') + ': round ' + (game.round || 1) + ', you have ' + money(me.cash) });
       actions.appendChild(big);
     } else {
       actions.appendChild(Dom.btn([h('span', { cls: 'ui-big-label' }, 'New game')], function () { ctx.go('setup'); }, { primary: true, cls: 'ui-big-btn' }));
@@ -12068,7 +15746,14 @@
     var small = h('div', { cls: 'ui-home-small' });
     if (game) small.appendChild(Dom.btn('New game', function () { ctx.go('setup'); }, { cls: 'ui-home-btn' }));
     small.appendChild(Dom.btn('How to play', function () { ctx.go('howto'); }, { cls: 'ui-home-btn' }));
+    var Tu = ECE.Tutorial, learn = null;
+    if (Tu && typeof Tu.start === 'function') learn = Dom.btn([h('span', null, 'Tutorial'), h('small', { cls: 'ui-home-learn-sub' }, '3 min')], function () { Tu.start('home'); }, { cls: 'ui-home-btn ui-home-learn', aria: 'Tutorial: learn to play in a 3-minute guided game' });
+    var learnRow = !!learn && !!game && onPhone();
+    if (learn && !learnRow) small.appendChild(learn);
     small.appendChild(Dom.btn('Settings', function () { ctx.go('settings'); }, { cls: 'ui-home-btn' }));
+    if (learnRow) small.appendChild(learn);
+    Dom.toggle(small, 'ui-home-four', small.children.length > 3);
+    Dom.toggle(small, 'ui-home-learnrow', learnRow);
     actions.appendChild(small);
     wrap.appendChild(actions);
     var tip = ctx.keepTip, tipCard = null;
@@ -12096,14 +15781,54 @@
     wrap.appendChild(h('p', { cls: 'ui-version' }, 'Version ' + ctx.version));
     el.appendChild(wrap);
     S.fitHome(el);
+    if (Tu && typeof Tu.offerDue === 'function' && Tu.offerDue(save)) {
+      setTimeout(function () {
+        try {
+          var App = ECE.App;
+          if (App && App.screen === 'home' && !App.lesson && !ECE.Dialogs.isOpen() && Tu.offerDue(App.save)) Tu.offer();
+        } catch (e) { Dom.report(e, 'lesson offer'); }
+      }, 0);
+    }
   };
 
-  S.setup = function (el, ctx) {
+  var PREVIEW = { w: 218, h: 100 };
+  function themeField(el, ctx, setup) {
+    var T = ECE.Theme, list = T && typeof T.list === 'function' ? T.list() : [];
+    if (list.length < 2) return null;
+    var grp = h('div', { cls: 'ui-themes', role: 'radiogroup', 'aria-label': 'Theme' });
+    list.forEach(function (th) {
+      var on = th.id === setup.theme;
+      var pic = Dom.s('svg', { cls: 'ui-theme-pic', viewBox: '0 0 ' + PREVIEW.w + ' ' + PREVIEW.h, preserveAspectRatio: 'xMidYMid slice', focusable: 'false', 'aria-hidden': 'true' });
+      pic.style.aspectRatio = PREVIEW.w + ' / ' + PREVIEW.h;
+      T.preview(pic, PREVIEW.w, PREVIEW.h, th.id);
+      var b = Dom.btn([h('span', { cls: 'ui-theme-frame' }, pic), h('span', { cls: 'ui-theme-text' }, [h('b', { cls: 'ui-theme-name' }, th.name), th.blurb ? h('small', { cls: 'ui-theme-blurb' }, th.blurb) : null])], function () {
+        if (setup.theme === th.id) return;
+        setup.theme = th.id;
+        if (ctx.showTheme) ctx.showTheme(th.id);
+        var y = 0;
+        try { y = window.scrollY || 0; } catch (e0) { y = 0; }
+        S.setup(el, ctx, setup);
+        try { window.scrollTo(0, y); } catch (e1) { }
+        var again = el.querySelector('.ui-theme-card[data-theme="' + th.id + '"]');
+        if (again) Dom.focus(again);
+      }, { cls: 'ui-theme-card' + (on ? ' ui-on' : ''), aria: th.name + (th.blurb ? ': ' + th.blurb : '') });
+      b.dataset.theme = th.id;
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', on ? 'true' : 'false');
+      grp.appendChild(b);
+    });
+    return field('Theme', grp);
+  }
+
+  S.setup = function (el, ctx, draft) {
     Dom.clear(el);
     S.grain();
-    var setup = Object.assign({}, ctx.save.setup);
+    var setup = Object.assign({}, ctx.save.setup, draft || {});
+    if (!(ECE.Theme && ECE.Theme.has && ECE.Theme.has(setup.theme))) setup.theme = 'emerald';
     var wrap = h('div', { cls: 'ui-form ui-setup' });
     wrap.appendChild(header(ctx, 'New game'));
+    var tf = themeField(el, ctx, setup);
+    if (tf) wrap.appendChild(tf);
 
     var name = h('input', { type: 'text', cls: 'ui-input', maxlength: '20', autocomplete: 'off', autocapitalize: 'words', spellcheck: 'false', 'aria-label': 'Your name', value: setup.name || 'You' });
     Dom.on(name, 'input', function () { setup.name = name.value.slice(0, 20); });
@@ -12134,7 +15859,7 @@
     wrap.lastChild.appendChild(cpuNames);
     drawNames();
 
-    var levelNotes = { easy: 'They sell you the streets you need. You’ll win most games.', normal: 'An even game if you trade: you win about 1 in 3 with 3 players.', hard: 'They charge 2.5x for the street you need: you win about 1 in 7.' };
+    var levelNotes = { easy: Dom.say('They sell you the streets you need. You’ll win most games.'), normal: 'An even game if you trade: you win about 1 in 3 with 3 players.', hard: Dom.say('They charge 2.5x for the street you need: you win about 1 in 7.') };
     var levelNote = h('p', { cls: 'ui-field-note' }, levelNotes[setup.level] || '');
     wrap.appendChild(field('Difficulty', segmented('Difficulty', G().levels.map(function (l) { return { id: l.id, label: l.name }; }), setup.level || 'normal', function (id) { setup.level = id; Dom.text(levelNote, levelNotes[id] || ''); })));
     wrap.lastChild.appendChild(levelNote);
@@ -12147,7 +15872,7 @@
 
     var rules = h('div', { cls: 'ui-switches' });
     rules.appendChild(toggle('Auctions', 'A space nobody buys goes to the highest bidder.', setup.auctions !== false, function (v) { setup.auctions = v; }));
-    rules.appendChild(toggle('Rain Fund', 'Taxes and card payments go into a fund; Coffee Break collects it.', !!setup.rainFund, function (v) { setup.rainFund = v; }));
+    rules.appendChild(toggle(W('rainFund', 'Rain Fund'), Dom.say('Taxes and card payments go into a fund; ' + ((B().SPACES[B().REST] || {}).name || 'Coffee Break') + ' collects it.'), !!setup.rainFund, function (v) { setup.rainFund = v; }));
     wrap.appendChild(field('House rules', rules));
 
     var start = Dom.btn('Start game', function () {
@@ -12250,7 +15975,7 @@
     if (ctx.updateReady) wrap.appendChild(h('div', { cls: 'ui-card' }, [h('p', null, 'A new version is ready.'), Dom.btn('Update now', function () { ctx.applyUpdate(); }, { primary: true, small: true })]));
     wrap.appendChild(h('div', { cls: 'ui-about' }, [
       h('p', null, G().game.name + ' · version ' + ctx.version + (ctx.build ? ' (' + ctx.build + ')' : '')),
-      h('p', null, 'An original game. Street names are real places; no brands.')
+      h('p', null, TD('credits', 'An original game. Street names are real places; no brands.'))
     ]));
     if (ctx.fromGame) wrap.appendChild(h('div', { cls: 'ui-form-foot' }, [Dom.btn('Back to the game', function () { ctx.back(); }, { primary: true, cls: 'ui-wide-btn', data: { k: 'back-game' } })]));
     el.appendChild(wrap);
@@ -12264,9 +15989,15 @@
 
   S.howto = function (el, ctx) {
     Dom.clear(el);
-    var Bd = B(), R = Bd.RULES, A = ECE.Art;
+    var Bd = B(), R = Bd.RULES, A = Dom.art();
     var wrap = h('div', { cls: 'ui-form ui-howto' });
     wrap.appendChild(header(ctx, 'How to play'));
+    var Tu = ECE.Tutorial, inLesson = !!(Tu && typeof Tu.running === 'function' && Tu.running());
+    if (Tu && typeof Tu.start === 'function' && !inLesson) {
+      wrap.appendChild(h('div', { cls: 'ui-howto-learn' }, [
+        Dom.btn('Play the 3-minute tutorial', function () { Tu.start('howto'); }, { primary: true, cls: 'ui-wide-btn ui-howto-learn-btn', aria: 'Play the 3-minute tutorial: a guided game' }),
+        h('p', { cls: 'ui-small ui-muted' }, 'A short guided game against Guide Gwen. It never changes your saved game.')]));
+    }
     var legendAt = h('div', { cls: 'ui-legend-slot' });
     wrap.appendChild(legendAt);
     function section(title, lines) {
@@ -12276,7 +16007,7 @@
       sec.appendChild(ul);
       wrap.appendChild(sec);
     }
-    var C = ECE.CardData || { DECKS: {} };
+    var C = Dom.cards() || { DECKS: {} };
     var Rl = ECE.Rules || {};
     var house = ctx.game && ctx.game.rules ? ctx.game.rules : { auctions: !(ctx.save && ctx.save.setup && ctx.save.setup.auctions === false), rainFund: !!(ctx.save && ctx.save.setup && ctx.save.setup.rainFund) };
     var inGame = !!(ctx.game && ctx.game.rules);
@@ -12297,58 +16028,64 @@
     var rounds = lim.filter(function (l) { return l.kind === 'rounds'; }).map(function (l) { return l.value; });
     var limits = [mins.length ? mins.join(' / ') + ' minutes of play' : '', rounds.length ? rounds.join(' / ') + ' rounds' : ''].filter(Boolean).join(', or ');
     var stuckName = (Bd.SPACES[Bd.TRAFFIC] || {}).name || 'Stuck in Traffic';
+    var stuckThe = W('trafficThe', stuckName);
+    var say = function (l) { return Dom.say(l); };
     var restName = (Bd.SPACES[Bd.REST] || {}).name || 'Coffee Break';
     var bridgeName = (Bd.SPACES[Bd.BRIDGE] || {}).name || 'Bridge Up!';
     var startName = (Bd.SPACES[Bd.START] || {}).name || 'START';
     var payStep = Dom.payOffStep();
 
     section('The goal', [
-      'Buy real Seattle-area streets, collect rent, build homes and towers, and outlast the computer players.',
+      TD('howto.goal', 'Buy real Seattle-area streets, collect rent, build homes and towers, and outlast the computer players.'),
       'With a time or round limit, the richest player wins when it ends.'
     ]);
     section('Your turn', [
       'Everyone starts with ' + money(R.startCash) + '.',
       'Before and after you roll you may build, sell, mortgage and trade (Manage and Trade).',
       'Roll two dice and move clockwise. Pass or land on ' + startName + ': payday, ' + money(R.salary) + '.',
-      'Doubles: roll again after your move. The ' + Dom.ordinal(R.doublesToTraffic) + ' doubles in a row sends you to ' + stuckName + '.'
+      'Doubles: roll again after your move. The ' + Dom.ordinal(R.doublesToTraffic) + ' doubles in a row sends you to ' + stuckThe + '.'
+    ]);
+    section('Who owns what', [
+      'Every space someone owns wears a frame in that player’s colour, with their token’s pin; a dashed frame is mortgaged.',
+      (onPhone() || document.documentElement.classList.contains('touch') ? 'Tap' : 'Click') + ' a player’s chip (yours too) to see all of their spaces by district, with homes, towers, rent and mortgages, and their ' + W('carpools', 'Carpool Passes') + '. On your turn it also offers a trade with them.'
     ]);
     section('The spaces', [
       house.auctions !== false
         ? 'Nobody owns it: buy it at its price, or say no and it goes to auction (the first bid is at least ' + money(R.auctionOpen) + ').'
         : 'Nobody owns it: buy it at its price, or say no and it stays for sale (Auctions are off' + (inGame ? ' in this game' : '') + ').',
-      'Someone else owns it: pay rent. Own all three streets of a district and its streets with no buildings pay double.',
+      say('Someone else owns it: pay rent. Own all three streets of a district and its streets with no buildings pay double.'),
       'Transit stops: ' + tr + ' for ' + counts + ' stops owned.',
-      'Utilities: dice total × ' + R.utilityTimes[0] + ', or × ' + R.utilityTimes[1] + ' when the owner has both.',
-      tax + (house.rainFund ? ': into the Rain Fund.' : '.'),
+      say('Utilities: dice total × ' + R.utilityTimes[0] + ', or × ' + R.utilityTimes[1] + ' when the owner has both.'),
+      tax + (house.rainFund ? ': into the ' + W('rainFund', 'Rain Fund') + '.' : '.'),
       deckLine('rain', 'mostly moves') + ' and ' + deckLine('buzz', 'mostly money') + ': draw the top card. Yours stays until you ' + (onPhone() || document.documentElement.classList.contains('touch') ? 'tap' : 'click') + ' its button; a computer player’s shows for a moment.',
-      house.rainFund ? restName + ': collect the whole Rain Fund.' : restName + ': a rest.',
-      bridgeName + ': go straight to ' + stuckName + ', no salary; your turn ends, even after doubles.'
+      house.rainFund ? restName + ': collect the whole ' + W('rainFund', 'Rain Fund') + '.' : restName + ': a rest.',
+      bridgeName + ': go straight to ' + stuckThe + ', no salary; your turn ends, even after doubles.'
     ]);
     section(stuckName, [
-      'Pay ' + money(R.trafficFee) + ', use a Carpool Pass, or roll for doubles.',
+      'Pay ' + money(R.trafficFee) + ', use a ' + W('carpool', 'Carpool Pass') + ', or roll for doubles.',
       'Doubles: leave and move by that roll (no extra roll). After the ' + Dom.ordinal(R.trafficMaxTries) + ' miss: pay ' + money(R.trafficFee) + ' and move.',
-      'There ' + (passes === 1 ? 'is 1 Carpool Pass' : 'are ' + passes + ' Carpool Passes') + ' in the decks: keep yours until you use it, or trade it.',
+      'There ' + (passes === 1 ? 'is 1 ' + W('carpool', 'Carpool Pass') : 'are ' + passes + ' ' + W('carpools', 'Carpool Passes')) + ' in the decks: keep yours until you use it, or trade it.',
       'While stuck you still collect rent, build and trade.'
     ]);
     section('Homes and towers', [
-      'Own all three streets of a district, none mortgaged, to build.',
+      say('Own all three streets of a district, none mortgaged, to build.'),
       'A home or a tower costs: ' + costs + '.',
-      'Build evenly: a street gets its next building only when no street of its district has fewer. 1-' + homes + ' homes, then a tower (' + homes + ' homes on every street of the district first).',
-      'Buildings sell back for ' + share(R.sellShare) + '.'
+      say('Build evenly: a street gets its next building only when no street of its district has fewer. 1-' + homes + ' homes, then a tower (' + homes + ' homes on every street of the district first).'),
+      say('Buildings sell back for ' + share(R.sellShare) + '.')
     ]);
     section('Money', [
-      'Mortgage a space with no buildings in its district for about ' + share(R.mortgageShare) + ' its price; pay it off for that plus ' + Math.round(R.unmortgageExtra * 100) + '%, rounded up' + (payStep > 1 ? ' to the next ' + money(payStep) : '') + ' (' +
+      say('Mortgage a space with no buildings in its district for about ' + share(R.mortgageShare) + ' its price; pay it off for that plus ') + Math.round(R.unmortgageExtra * 100) + '%, rounded up' + (payStep > 1 ? ' to the next ' + money(payStep) : '') + ' (' +
         Bd.SPACES[firstStreet].name + ': ' + money(Bd.mortgageValue(firstStreet)) + ' now, ' + money(Bd.unmortgageCost(firstStreet)) + ' to pay off). No rent while mortgaged.',
-      'Trade on your turn: cash, streets with no buildings in their district, transit stops, utilities and Carpool Passes. Up to ' + maxOffers + ' offers a turn.',
+      say('Trade on your turn: cash, streets with no buildings in their district, transit stops, utilities and ') + W('carpools', 'Carpool Passes') + '. Up to ' + maxOffers + ' offers a turn.',
       'A computer player’s offer: Accept, Reject, or Counter once (change it in Trade; they answer at once).',
-      'Owe more than your cash? Sell buildings and mortgage to pay. If everything you own cannot cover it, you are out: a player you owe gets your cash and spaces; if you owe the bank or several players, your cash is shared and your spaces go back to the bank.'
+      say('Owe more than your cash? Sell buildings and mortgage to pay.') + ' If everything you own cannot cover it, you are out: a player you owe gets your cash and spaces; if you owe the bank or several players, your cash is shared and your spaces go back to the bank.'
     ]);
     section('House rules (chosen at New game)', inGame ? [
       house.auctions !== false ? 'Auctions (on in this game): a space nobody buys goes to the highest bidder.' : 'Auctions (off in this game): a space nobody buys stays for sale.',
-      house.rainFund ? 'Rain Fund (on in this game): taxes and card payments to the bank go into the Rain Fund in the board’s centre; landing on ' + restName + ' collects all of it.' : 'Rain Fund (off in this game): taxes and card payments go to the bank.'
+      say(house.rainFund ? W('rainFund', 'Rain Fund') + ' (on in this game): taxes and card payments to the bank go into the ' + W('rainFund', 'Rain Fund') + ' in the board’s centre; landing on ' + restName + ' collects all of it.' : W('rainFund', 'Rain Fund') + ' (off in this game): taxes and card payments go to the bank.')
     ] : [
       'Auctions (on unless you turn them off): a space nobody buys goes to the highest bidder. With Auctions off it stays for sale.',
-      'Rain Fund (off unless you turn it on): taxes and card payments to the bank go into the Rain Fund in the board’s centre; landing on ' + restName + ' collects all of it.'
+      say(W('rainFund', 'Rain Fund') + ' (off unless you turn it on): taxes and card payments to the bank go into the ' + W('rainFund', 'Rain Fund') + ' in the board’s centre; landing on ' + restName + ' collects all of it.')
     ]);
     var gameLim = inGame && ctx.game.rules.limit && ctx.game.rules.limit.kind !== 'none' ? ctx.game.rules.limit : null;
     var finishAt = Rl.FINISH_PERCENT || R.finishPercent, noLimit = Rl.LAST_ROUND || R.lastRound;
@@ -12358,9 +16095,9 @@
       gameLim ? 'This game: ' + Dom.limitName(gameLim) + ', then the richest wins.' : '',
       'Hold ' + finishAt + '% or more of all net worth at the start of your turn: Finish ends the game with you as the winner, or Play on.',
       'If you go bankrupt, the game ends for you; the others are ranked by net worth.',
-      'Net worth = cash + each space’s price (its mortgage value if mortgaged) + what was paid for its buildings.'
+      say('Net worth = cash + each space’s price (its mortgage value if mortgaged) + what was paid for its buildings.')
     ].filter(Boolean));
-    if (!document.documentElement.classList.contains('phone')) section('Keys', ['Space or Enter = the big gold button, Esc = close, Tab = move between buttons.', 'On the board: the arrow keys go from space to space; Enter or Space opens that space’s card.']);
+    if (!document.documentElement.classList.contains('phone')) section('Keys', ['Space or Enter = ' + W('bigButton', 'the big gold button') + ', Esc = close, ' + Dom.tabKey() + ' = move between buttons.', 'On the board: the arrow keys go from space to space; Enter or Space opens that space’s card.']);
 
     var leg = h('ul', { cls: 'ui-legend' });
     var tagD = Bd.DISTRICTS[3];
@@ -12389,8 +16126,19 @@
       svg.appendChild(g);
       if (A && A.disc) A.disc(g, 'ferry', (G().playerColors || [])[1] || '#E0453A', 1, { rim: 0.12, glyph: 0.66 });
       else g.appendChild(Dom.s('circle', { cx: 0, cy: 0, r: 1, fill: '#E0453A' }));
-    }, 'Owner (their colour and token)'));
-    [['rain', 'Rain Check card'], ['buzz', 'Local Buzz card'], ['train', 'Transit stop'], ['dam', 'Utility'], ['tax', 'Tax or toll']].forEach(function (x) {
+    }, 'Owner’s pin (their token)'));
+    leg.appendChild(legendItem(function (svg) {
+      var col = (G().playerColors || [])[1] || '#E0453A';
+      svg.appendChild(Dom.s('rect', { x: 3, y: 2.5, width: 18, height: 19, rx: 2.6, fill: (A && A.COLORS && A.COLORS.legendTile) || '#F2EEE4' }));
+      svg.appendChild(Dom.s('rect', { x: 4.4, y: 3.9, width: 15.2, height: 16.2, rx: 1.8, fill: 'none', stroke: col, 'stroke-width': 2.4 }));
+    }, 'Owner’s frame (their colour)'));
+    leg.appendChild(legendItem(function (svg) {
+      var col = (G().playerColors || [])[1] || '#E0453A';
+      svg.appendChild(Dom.s('rect', { x: 3, y: 2.5, width: 18, height: 19, rx: 2.6, fill: (A && A.COLORS && A.COLORS.legendTileMort) || '#D3D7D6' }));
+      svg.appendChild(Dom.s('rect', { x: 4.4, y: 3.9, width: 15.2, height: 16.2, rx: 1.8, fill: 'none', stroke: col, 'stroke-width': 2.4, 'stroke-dasharray': '3.2 2.2' }));
+    }, 'Dashed frame: mortgaged'));
+    var deckOf = function (id, dflt) { var d = C.DECKS && C.DECKS[id]; return (d && d.name ? d.name : dflt) + ' card'; };
+    [['rain', deckOf('rain', 'Rain Check')], ['buzz', deckOf('buzz', 'Local Buzz')], ['train', 'Transit stop'], ['dam', say('Utility')], ['tax', say('Tax or toll')]].forEach(function (x) {
       leg.appendChild(legendItem(function (svg) {
         if (A && A.icon) A.icon(svg, x[0], 12, 12, 22);
         else svg.appendChild(Dom.s('circle', { cx: 12, cy: 12, r: 8, fill: '#2E6F95' }));
@@ -12671,6 +16419,771 @@
 (function (ECE) {
   'use strict';
 
+  var T = {};
+  ECE.Tutorial = T;
+
+  var GUIDE = { name: 'Guide Gwen', tokens: ['umbrella', 'bicycle', 'seaplane'], cash: 1000, level: 'easy', persona: 'trader' };
+  var DISTRICT = 'westseattle';
+  var FIRST = 7;
+  var CARDS = { buzz: 'lb11', rain: 'rc3' };
+  var SEED = 20261118;
+  var LAST_ROUND = 9;
+  var READ_MS = 600;
+  T.GUIDE = GUIDE; T.DISTRICT = DISTRICT; T.FIRST = FIRST; T.CARDS = CARDS; T.SEED = SEED;
+
+  var L = null;
+  var cur = null;
+  var layer = null;
+  var watchers = false;
+  var timer = 0, posTimer = 0, checkQueued = false;
+
+  function A() { return ECE.App; }
+  function D() { return ECE.Dialogs; }
+  function R() { return ECE.Rules; }
+  function B() { var d = ECE.Dom; return d && typeof d.board === 'function' ? d.board() || ECE.BoardData : ECE.BoardData; }
+  function C() { var d = ECE.Dom; return d && typeof d.cards === 'function' ? d.cards() || ECE.CardData : ECE.CardData; }
+  function W(key, dflt) { var d = ECE.Dom; return d && typeof d.word === 'function' ? d.word(key, dflt) : dflt; }
+  function say(line) { var d = ECE.Dom; return d && typeof d.say === 'function' ? d.say(line) : line; }
+  function themeNow() { var Th = ECE.Theme; return Th && typeof Th.current === 'function' ? Th.current() : undefined; }
+  function Dom() { return ECE.Dom; }
+  function report(e, where) { try { if (ECE.Dom && ECE.Dom.report) ECE.Dom.report(e, 'tutorial:' + where); } catch (x) { } }
+  function money(n) { return Dom() ? Dom().money(n) : '$' + n; }
+  function arr(x) { return Array.isArray(x) ? x : []; }
+  function player(st, id) { var ps = (st && st.players) || []; for (var i = 0; i < ps.length; i++) if (ps[i].id === id) return ps[i]; return null; }
+  function prop(st, i) { return st && st.props ? st.props[i] || st.props[String(i)] || null : null; }
+  function space(i) { var b = B(); return b && b.SPACES ? b.SPACES[i] || null : null; }
+  function name(i) { var s = space(i); return s ? s.name : ''; }
+  function district(id) { return B() && B().district ? B().district(id) : null; }
+  function cls() { try { return document.documentElement.classList; } catch (e) { return { contains: function () { return false; } }; } }
+  function tapW(lower) { var c = cls(); var w = c.contains('phone') || c.contains('touch') ? 'Tap' : 'Click'; return lower ? w.toLowerCase() : w; }
+  T.tapWord = tapW;
+  function q(sel) { try { return document.querySelector(sel); } catch (e) { return null; } }
+  function shown(el) { return !!el && el.isConnected && !!el.getClientRects && el.getClientRects().length > 0; }
+  function on(el, type, fn, opts) { if (el && el.addEventListener) el.addEventListener(type, function (ev) { try { fn(ev); } catch (e) { report(e, type); } }, opts || false); }
+
+  function create(setup) {
+    try {
+      var Rl = R();
+      if (!Rl || typeof Rl.newGame !== 'function') return null;
+      setup = setup || {};
+      var tokens = ((ECE.Glossary && ECE.Glossary.tokens) || []).map(function (t) { return t.id; });
+      var mine = tokens.indexOf(setup.token) >= 0 ? setup.token : 'orca';
+      var theirs = GUIDE.tokens.filter(function (t) { return t !== mine && tokens.indexOf(t) >= 0; })[0] || tokens.filter(function (t) { return t !== mine; })[0];
+      var st = Rl.newGame({
+        seed: SEED, keepOrder: true, now: Date.now ? Date.now() : 0, theme: themeNow(),
+        players: [
+          { name: String(setup.name || 'You').slice(0, 20), token: mine, kind: 'human', level: GUIDE.level },
+          { name: GUIDE.name, token: theirs, kind: 'cpu', level: GUIDE.level, persona: GUIDE.persona }
+        ],
+        rules: { auctions: true, rainFund: false, limit: { kind: 'none', value: 0 } }
+      });
+      if (!st || !st.players || st.players.length !== 2) return null;
+      st.players[1].cash = GUIDE.cash;
+      Object.keys(CARDS).forEach(function (dk) {
+        var d = st.decks && st.decks[dk];
+        if (!d || !Array.isArray(d.order)) return;
+        var o = d.order.filter(function (id) { return id !== CARDS[dk]; });
+        if (o.length === d.order.length) return;
+        d.order = [CARDS[dk]].concat(o);
+        d.next = 0;
+      });
+      var out = { state: st, you: st.players[0].id, guide: st.players[1].id };
+      st.setDice = [diceFor(st, out.you, out)];
+      return out;
+    } catch (e) { report(e, 'create'); return null; }
+  }
+  T.create = create;
+
+  function pairFor(d) {
+    if (!(d >= 3 && d <= 11)) return null;
+    var a = Math.floor(d / 2), b = d - a;
+    if (a === b) { a--; b++; }
+    return a >= 1 && b <= 6 ? [a, b] : null;
+  }
+  T.pairFor = pairFor;
+  function ownerOf(st, i) { var pp = prop(st, i); return pp ? pp.owner : null; }
+  function owned(st, id, list) { return arr(list).filter(function (j) { return ownerOf(st, j) === id; }); }
+  function distSpaces() { var d = district(DISTRICT); return d ? d.spaces.slice() : []; }
+  function targetFor(st, pid, who) {
+    var you = who.you, guide = who.guide, p = player(st, pid);
+    if (!p) return null;
+    var ws = distSpaces();
+    var free = ws.filter(function (j) { return ownerOf(st, j) === null; });
+    if (pid === you) {
+      if (!Object.keys(st.props || {}).some(function (k) { return st.props[k] && st.props[k].owner === you; }) && ownerOf(st, FIRST) === null) return FIRST;
+      if (!(L && L.cardDrawn) && (p.pos | 0) < 11) return 11;
+      if (free.length) {
+        for (var k = 0; k < ws.length; k++) if (ownerOf(st, ws[k]) === null && pairFor((ws[k] - p.pos + 40) % 40)) return ws[k];
+      }
+      return null;
+    }
+    if (pid === guide) {
+      var gMine = owned(st, guide, ws);
+      if ((p.pos | 0) < FIRST && ownerOf(st, FIRST) === you && !(L && L.rentPaid)) return FIRST;
+      if (!gMine.length && free.length) {
+        var mid = free.filter(function (j) { return j !== targetFor(st, you, who); });
+        var pick = (mid.length ? mid : free).filter(function (j) { return pairFor((j - p.pos + 40) % 40); })[0];
+        if (pick !== undefined) return pick;
+      }
+      if (gMine.length && !(L && L.guideCard)) return 22;
+      var best = null, top = -1;
+      owned(st, you, ws).forEach(function (j) {
+        if (!pairFor((j - p.pos + 40) % 40)) return;
+        var r = 0;
+        try { r = R().rent(st, j, 7) || 0; } catch (e) { r = 0; }
+        if (prop(st, j).mortgaged) r = 0;
+        if (r > top) { top = r; best = j; }
+      });
+      return best;
+    }
+    return null;
+  }
+  function safeRoll(st, pid) {
+    var p = player(st, pid), pos = p ? p.pos | 0 : 0, best = null, score = -99;
+    [5, 7, 9, 4, 6, 8, 3, 10, 11].forEach(function (d) {
+      var j = (pos + d) % 40, s = space(j) || {}, o = ownerOf(st, j), v;
+      if (s.kind === 'rest') v = 10;
+      else if (s.kind === 'traffic') v = 9;
+      else if (o === pid) v = 8;
+      else if (s.kind === 'start') v = 6;
+      else if (o === null && B().isOwnable(j)) v = pid === (L && L.you) ? 3 : 1;
+      else if (s.kind === 'card') v = 0;
+      else if (s.kind === 'tax') v = -2;
+      else if (s.kind === 'bridge') v = -5;
+      else v = -3;
+      if (v > score) { score = v; best = d; }
+    });
+    return pairFor(best) || [2, 3];
+  }
+  function diceFor(st, pid, who) {
+    try {
+      who = who || L || {};
+      var p = player(st, pid);
+      if (!p) return [2, 3];
+      if (p.stuck) return pid === who.you ? [2, 2] : [1, 2];
+      var to = targetFor(st, pid, who);
+      var pair = to === null || to === undefined ? null : pairFor((to - (p.pos | 0) + 40) % 40);
+      return pair || safeRoll(st, pid);
+    } catch (e) { report(e, 'diceFor'); return [2, 3]; }
+  }
+  T.diceFor = diceFor;
+
+  function offerNow(st, who) {
+    try {
+      who = who || L || {};
+      if (L && L.offered) return null;
+      var ws = distSpaces(), mine = owned(st, who.you, ws), hers = owned(st, who.guide, ws);
+      if (!mine.length || !hers.length || mine.length + hers.length !== ws.length) return null;
+      if (ws.some(function (j) { var pp = prop(st, j); return pp && (pp.level | 0) > 0; })) return null;
+      var list = hers.reduce(function (s, j) { return s + ((space(j) || {}).price || 0); }, 0);
+      var me = player(st, who.you) || { cash: 0 };
+      var price = Math.max(10, Math.round(list * 0.85 / 10) * 10);
+      if (me.cash < price) price = Math.floor(me.cash / 10) * 10;
+      if (!(price > 0)) return null;
+      var offer = { from: who.guide, to: who.you, give: { cash: 0, spaces: hers.slice(), passes: 0 }, get: { cash: price, spaces: [], passes: 0 } };
+      var chk = R().checkOffer(st, offer);
+      return chk && chk.ok ? offer : null;
+    } catch (e) { report(e, 'offerNow'); return null; }
+  }
+  T.offerNow = offerNow;
+  function cpu(st, p, who) {
+    try {
+      who = who || L || {};
+      if (p !== who.guide) return null;
+      var g = player(st, p), pend = st.pending || {}, Rl = R(), fee = B().RULES.trafficFee;
+      if (!g) return null;
+      switch (st.phase) {
+        case 'roll':
+          if (g.stuck && (g.stuckTries | 0) >= 1 && g.cash >= fee) return { t: 'payFee', p: p };
+          st.setDice = [diceFor(st, p, who)];
+          return { t: 'roll', p: p };
+        case 'buy': return { t: g.cash >= ((space(pend.space) || {}).price || 0) ? 'buy' : 'decline', p: p };
+        case 'auction': {
+          var order = arr(pend.order);
+          if (order[pend.idx | 0] !== p) return null;
+          if ((pend.bid | 0) === 0 && order.indexOf(who.you) >= 0) return { t: 'bid', p: p, amount: Rl.minBid(st) || B().RULES.auctionOpen };
+          return { t: 'pass', p: p };
+        }
+        case 'card': return { t: 'ack', p: p };
+        case 'debt': return null;
+        case 'end': {
+          var o = offerNow(st, who);
+          if (o && (st.offersThisTurn | 0) < (Rl.MAX_OFFERS || 3)) { if (L) L.offered = true; return { t: 'offer', p: p, offer: o }; }
+          return { t: 'endTurn', p: p };
+        }
+        default: return null;
+      }
+    } catch (e) { report(e, 'cpu'); return null; }
+  }
+  T.cpu = cpu;
+
+  function inDialog(id, sel) { var top = D() && D().get ? D().get(id) : null; if (!top || !top.box) return null; var e = top.box.querySelector(sel); return shown(e) && !e.disabled ? e : null; }
+  function nameOf(st, id) { var p = player(st, id); return p ? p.name : ''; }
+  function shortGuide() { return GUIDE.name.split(' ').pop(); }
+  var PLAN = [
+    { id: 'welcome', title: function () { return 'Hi, I’m ' + GUIDE.name; }, tap: true,
+      text: function () { return 'Let’s play a short game: you learn by playing, about 3 minutes. ' + tapW() + ' ROLL to roll the dice and move.'; },
+      when: function (c) { return c.mine && c.st.phase === 'roll' && !c.st.rolled && !c.me.stuck && !c.open && c.st.round === 1; },
+      target: function () { return A().target('primary'); } },
+    { id: 'buy', title: function () { return say('Buy a street'); }, tap: true,
+      text: function (c) { return name(FIRST) + ' is for sale for ' + money((space(FIRST) || {}).price) + '. Buy it: whoever lands on it pays you rent. Then ' + tapW(true) + ' END TURN.'; },
+      when: function (c) { return c.mine && c.st.phase === 'buy' && c.top === 'buy' && (c.st.pending || {}).space === FIRST; },
+      target: function () { return inDialog('buy', '[data-k="buy"]'); } },
+    { id: 'rent', title: function () { return 'Rent'; }, tap: false,
+      text: function (c) { return 'I landed on your ' + name(L.rentSpace) + ' and paid you ' + money(L.rentAmount) + ' rent; land on someone else’s space and you pay them. Each owned space wears a frame in its owner’s colour.'; },
+      when: function () { return L.rentSpace !== null && L.rentSpace !== undefined; },
+      space: function () { return L.rentSpace; } },
+    { id: 'card', title: function (c) { var Cd = C(); return Cd && Cd.DECKS[(c.st.pending || {}).deck] ? Cd.DECKS[c.st.pending.deck].name + ' card' : 'A card'; }, tap: true,
+      text: function (c) { var e = cardEffect(c.st); return 'Card spaces draw a ' + deckName('rain', 'Rain Check') + ' or a ' + deckName('buzz', 'Local Buzz') + ' card: they move you or change your cash. ' + (e && e.traffic ? 'This one sends you to ' + trafficThe() + '.' : 'Read it, then ' + tapW(true) + ' its button.'); },
+      when: function (c) { return c.mine && c.st.phase === 'card' && c.top === 'card'; },
+      target: function () { return inDialog('card', '[data-k="ok"]'); } },
+    { id: 'traffic', title: function () { return name(B().TRAFFIC) || W('traffic', 'Stuck in Traffic'); }, tap: true,
+      text: function () { var R0 = B().RULES; return 'To get going, pay ' + money(R0.trafficFee) + ', use a ' + W('carpool', 'Carpool Pass') + ', or roll for doubles (' + R0.trafficMaxTries + ' tries). ' + tapW() + ' PAY ' + money(R0.trafficFee) + ', then ROLL.'; },
+      when: function (c) { return c.mine && c.st.phase === 'roll' && c.me.stuck && !c.st.rolled && !c.open && !!payBtn(); },
+      target: function () { return payBtn(); } },
+    { id: 'district', title: function () { return 'Districts'; }, tap: true,
+      text: function (c) { var s = space(c.st.pending.space) || {}; return say(s.name + ' is one of ' + c.d.name + '’s ' + c.ws.length + ' streets. Own all ' + c.ws.length + ' and their rent doubles, and you can build homes. Buy it.'); },
+      when: function (c) { var s = space((c.st.pending || {}).space) || {}; return c.mine && c.st.phase === 'buy' && c.top === 'buy' && s.district === DISTRICT && !owned(c.st, c.you, c.ws).length; },
+      target: function () { return inDialog('buy', '[data-k="buy"]'); },
+      keep: function () { return [inDialog('buy', '.ui-district-owners')]; } },
+    { id: 'holdings', title: function () { return 'Who owns what'; }, tap: true,
+      text: function () { return 'A frame in a player’s colour marks each space they own. Every chip (yours too) opens that player’s spaces: districts, homes, rent and mortgages. ' + tapW() + ' my chip.'; },
+      when: function (c) { return c.mine && c.st.phase === 'roll' && !c.st.rolled && !c.open && !!L.seen.district && owned(c.st, c.guide, Object.keys(c.st.props || {}).map(Number)).length > 0 && !!A().target('chip:' + c.guide); },
+      target: function (c) { return A().target('chip:' + c.guide); } },
+    { id: 'auction', title: function () { return 'Auctions'; }, tap: true,
+      text: function (c) { var s = space(c.st.pending.space) || {}; return s.name + ' costs ' + money(s.price) + '. Say no and everyone bids on it, you too: it may go for less. ' + tapW() + ' “No, auction it”.'; },
+      when: function (c) { var s = space((c.st.pending || {}).space) || {}; return c.mine && c.st.phase === 'buy' && c.top === 'buy' && s.district === DISTRICT && owned(c.st, c.you, c.ws).length > 0 && !L.auctioned && !!inDialog('buy', '[data-k="decline"]'); },
+      target: function () { return inDialog('buy', '[data-k="decline"]'); } },
+    { id: 'bid', title: function () { return 'Bid'; }, tap: true,
+      text: function (c) { var pd = c.st.pending || {}; return (pd.bid > 0 ? (pd.leader === c.guide ? 'I bid ' : 'The bid is ') + money(pd.bid) + '. ' : '') + 'Bid more, or Pass to drop out: the last bidder standing buys it. ' + tapW() + ' +$50.'; },
+      when: function (c) { return c.mine && c.st.phase === 'auction' && c.top === 'auction' && !!inDialog('auction', '[data-k="bid50"]'); },
+      target: function () { return inDialog('auction', '[data-k="bid50"]'); } },
+    { id: 'accept', title: function () { return 'A trade'; }, tap: true,
+      text: function (c) { var o = (c.st.pending || {}).offer || {}; var g = arr((o.give || {}).spaces).map(name).join(' and '); return 'I’ll sell you ' + g + ' for ' + money((o.get || {}).cash || 0) + ': it finishes your ' + c.d.name + say('. In a real game players ask more for the last street of a district. ') + tapW() + ' Accept.'; },
+      when: function (c) { var o = (c.st.pending || {}).offer; return c.st.phase === 'trade' && !!o && o.to === c.you && o.from === c.guide && c.top === 'offer' && !!inDialog('offer', '[data-k="accept"]'); },
+      target: function () { return inDialog('offer', '[data-k="accept"]'); },
+      keep: function () { return [inDialog('offer', '.ui-trade-cols')]; } },
+    { id: 'manage', title: function () { return 'Build homes'; }, tap: true,
+      text: function (c) { return 'You own all of ' + c.d.name + ': its rent doubles and you can build. ' + tapW() + ' Manage.'; },
+      when: function (c) { return c.mine && (c.st.phase === 'roll' || c.st.phase === 'end') && !c.open && fullDistrict(c) && !built(c) && c.me.cash >= c.d.build && !!A().target('manage'); },
+      target: function () { return A().target('manage'); } },
+    { id: 'home', title: function () { return 'Homes'; }, tap: true,
+      text: function (c) { return 'A home here costs ' + money(c.d.build) + say('. Build evenly: one on each street before a second. 3 homes is the big jump in rent. ') + tapW() + ' Home.'; },
+      when: function (c) { return c.top === 'manage' && !!L.seen.manage && !!homeBtn(c); },
+      target: function (c) { return homeBtn(c); },
+      keep: function (c) { return distRows(c).concat([inDialog('manage', '[data-k="done"]')]); } },
+    { id: 'mortgage', title: function () { return 'Mortgage'; }, tap: true,
+      text: function (c) { var j = mortSpace(c); return 'Short of cash one day? Mortgage a space: ' + money(B().mortgageValue(j)) + ' now for ' + name(j) + ', no rent from it until you pay it off (' + money(B().unmortgageCost(j)) + '). ' + tapW() + ' Mortgage. Then Done, ROLL and END TURN.'; },
+      when: function (c) { return c.top === 'manage' && !!L.seen.home && built(c) && !!mortBtn(c); },
+      target: function (c) { return mortBtn(c); },
+      keep: function (c) { return distRows(c).concat([inDialog('manage', '[data-k="done"]')]); } },
+    { id: 'finish', title: function () { return 'The Finish line'; }, tap: true,
+      text: function (c) { return 'You hold ' + share(c) + '% of everything now (I started with less, so you got here fast). With 70% at the start of your turn you may finish as the winner. ' + tapW() + ' Finish.'; },
+      when: function () { return !!A().target('finish'); },
+      target: function () { return A().target('finish'); } },
+    { id: 'finishInfo', title: function () { return 'The Finish line'; }, tap: false, extra: true, late: true,
+      text: function (c) { return 'Hold ' + B().RULES.finishPercent + '% of all net worth at the start of your turn and a Finish line offers you the win (you hold ' + share(c) + '% now). That’s the whole game: the lesson ends here.'; },
+      when: function (c) {
+        if (!(c.mine && c.st.phase === 'roll' && !c.st.rolled && !c.open && !A().target('finish'))) return false;
+        if (!((L.obj.finish === true && c.st.round > L.finishRound) || c.st.round >= LAST_ROUND)) return false;
+        var can = false;
+        try { can = !!R().canFinish(c.st, c.you); } catch (e) { can = false; }
+        if (can && L.obj.finish === true) { if (!L.finishWait) L.finishWait = Date.now(); if (Date.now() - L.finishWait < 3000) return false; }
+        return true;
+      },
+      target: function () { return A().target('chips'); } }
+  ];
+  T.PLAN = PLAN;
+  T.TIPS = PLAN.filter(function (t) { return !t.extra; }).map(function (t) { return t.id; });
+  function cardEffect(st) { var pd = st.pending || {}, Cd = C(); var c = Cd ? Cd.card(pd.deck, pd.id) : null; return c ? c.effect : null; }
+  function deckName(dk, dflt) { var Cd = C(), d = Cd && Cd.DECKS ? Cd.DECKS[dk] : null; return d && d.name ? d.name : dflt; }
+  function trafficThe() { return W('trafficThe', name(B().TRAFFIC) || 'Stuck in Traffic'); }
+  function payBtn() {
+    var box = A().target('alts');
+    if (!box) return null;
+    var list = box.querySelectorAll('button');
+    for (var i = 0; i < list.length; i++) if (/^PAY /.test(list[i].textContent || '') && !list[i].disabled && shown(list[i])) return list[i];
+    return null;
+  }
+  function fullDistrict(c) { try { return !!R().ownsDistrict(c.st, c.you, DISTRICT); } catch (e) { return false; } }
+  function built(c) { return c.ws.some(function (j) { var pp = prop(c.st, j); return pp && pp.owner === c.you && (pp.level | 0) > 0; }); }
+  function works(b) { return !!b && !b.classList.contains('ui-off') && (b.getAttribute('aria-disabled') !== 'true' || b.hasAttribute('data-quiet')); }
+  function homeBtn(c) { for (var k = 0; k < c.ws.length; k++) { var b = inDialog('manage', '[data-k="build' + c.ws[k] + '"]'); if (works(b)) return b; } return null; }
+  function mortSpace(c) {
+    var list = [FIRST].concat(Object.keys(c.st.props || {}).map(Number));
+    for (var k = 0; k < list.length; k++) {
+      var j = list[k], pp = prop(c.st, j);
+      if (!pp || pp.owner !== c.you || pp.mortgaged || c.ws.indexOf(j) >= 0) continue;
+      var ok = false;
+      try { ok = R().canMortgage(c.st, c.you, j); } catch (e) { ok = false; }
+      if (ok) return j;
+    }
+    return null;
+  }
+  function mortBtn(c) { var j = mortSpace(c); if (j === null) return null; var b = inDialog('manage', '[data-k="mort' + j + '"]'); return works(b) ? b : null; }
+  function distRows(c) {
+    return c.ws.map(function (j) {
+      var b = inDialog('manage', ['build', 'sell', 'mort', 'unm', 'ask'].map(function (k) { return '[data-k="' + k + j + '"]'; }).join(', '));
+      return b && b.closest ? b.closest('.ui-mrow') : null;
+    });
+  }
+  function share(c) { try { return Math.floor(R().finishShare(c.st, c.you) * 100); } catch (e) { return 0; } }
+
+  function context() {
+    var st = A().game, Rl = R();
+    var actor = null;
+    try { actor = Rl.actor(st); } catch (e) { actor = null; }
+    var Dl = D();
+    return {
+      st: st, you: L.you, guide: L.guide, me: player(st, L.you) || {}, gw: player(st, L.guide) || {}, actor: actor,
+      mine: actor === L.you, top: Dl.top(), open: Dl.isOpen(), ws: distSpaces(), d: district(DISTRICT) || { name: '', build: 0 }
+    };
+  }
+  function nextTip(early) {
+    var c = context();
+    if (!c.st) return null;
+    for (var i = 0; i < PLAN.length; i++) {
+      var t = PLAN[i];
+      if (L.seen[t.id] || (early && t.late)) continue;
+      var ok = false;
+      try { ok = !!t.when(c); } catch (e) { report(e, 'when ' + t.id); ok = false; }
+      if (ok) return { t: t, c: c };
+    }
+    return null;
+  }
+
+  function lessonObject(made) {
+    var obj = {
+      state: made.state, you: made.you, finish: false,
+      cpu: function (st, p) { return cpu(st, p); },
+      answer: function () { return null; },
+      after: function (st, events, action) { after(st, events, action); },
+      prompt: function () { return promptNow(); },
+      prompted: function () { soon(); return false; },
+      end: function (reason) { ended(reason); }
+    };
+    return obj;
+  }
+  function after(st, events, action) {
+    try {
+      if (!L || st !== L.state) return;
+      arr(events).forEach(function (ev) {
+        if (!ev) return;
+        if (ev.t === 'rent' && ev.owner === L.you && ev.p === L.guide && !L.rentPaid) { L.rentPaid = true; L.rentSpace = ev.space; L.rentAmount = ev.amount | 0; }
+        else if (ev.t === 'card' && ev.p === L.you) L.cardDrawn = true;
+        else if (ev.t === 'card' && ev.p === L.guide) L.guideCard = true;
+        else if (ev.t === 'auctionEnd') L.auctioned = true;
+      });
+      if (st.phase === 'roll') {
+        var tp = st.players[st.turn];
+        if (tp && tp.id === L.you) st.setDice = [diceFor(st, L.you)];
+      }
+      finishGate();
+      soon();
+    } catch (e) { report(e, 'after'); }
+  }
+  function finishGate() {
+    try {
+      if (!L || !L.obj || L.obj.finish || cur) return;
+      var st = L.state;
+      if (!st || st.phase === 'over') return;
+      var top = D() && D().top ? D().top() : null;
+      if (L.seen.mortgage || (L.seen.manage && top !== 'manage')) { L.obj.finish = true; L.finishRound = st.round; }
+    } catch (e) { report(e, 'finishGate'); }
+  }
+  function promptNow() {
+    if (!L) return false;
+    if (cur) return true;
+    check(true, true);
+    return !!cur;
+  }
+
+  function soon() {
+    if (checkQueued) return;
+    checkQueued = true;
+    setTimeout(function () { checkQueued = false; check(false); }, 30);
+  }
+  function check(force, early) {
+    try {
+      if (!L || cur || L.showing) return;
+      finishGate();
+      var App = A();
+      if (!App || App.lesson !== L.obj || App.game !== L.state || App.screen !== 'game') return;
+      if (!force && App.busy && !L.played) return;
+      L.played = false;
+      if (App.view && typeof App.view.busy === 'function' && App.view.busy() && !force) return;
+      var n = nextTip(!!early);
+      if (!n) return;
+      show(n.t, n.c);
+    } catch (e) { report(e, 'check'); }
+  }
+  T.check = check;
+
+  function el(tag, cls2, text) {
+    var e = document.createElement(tag);
+    if (cls2) e.className = cls2;
+    if (text !== undefined && text !== null) e.textContent = text;
+    return e;
+  }
+  function ensureLayer() {
+    if (layer && layer.isConnected) return layer;
+    layer = document.getElementById('ui-lesson');
+    if (!layer) { layer = el('div', 'ui-lesson'); layer.id = 'ui-lesson'; document.body.appendChild(layer); }
+    layer.hidden = true;
+    return layer;
+  }
+  function show(t, c) {
+    var App = A();
+    L.seen[t.id] = true;
+    var idx = T.TIPS.indexOf(t.id);
+    var tip = { t: t, at: Date.now(), target: null, space: null, nudge: 0 };
+    cur = tip;
+    if (App.hold) App.hold('tip', true);
+    var lay = ensureLayer();
+    while (lay.firstChild) lay.removeChild(lay.firstChild);
+    var dims = [0, 1, 2, 3].map(function () { return el('div', 'ui-lesson-dim'); });
+    var ring = el('div', 'ui-lesson-ring');
+    var bubble = el('div', 'ui-lesson-bubble');
+    bubble.setAttribute('role', 'dialog');
+    bubble.setAttribute('aria-modal', 'true');
+    bubble.setAttribute('tabindex', '-1');
+    var tid = 'ui-lesson-title-' + t.id;
+    bubble.setAttribute('aria-labelledby', tid);
+    var arrow = el('div', 'ui-lesson-arrow');
+    arrow.setAttribute('aria-hidden', 'true');
+    var step = el('div', 'ui-lesson-step', idx >= 0 ? 'Tutorial · ' + (idx + 1) + ' of ' + T.TIPS.length : 'Tutorial');
+    var title = el('h2', 'ui-lesson-title', safeText(t.title, c));
+    title.id = tid;
+    var text = el('p', 'ui-lesson-text', safeText(t.text, c));
+    text.id = 'ui-lesson-text-' + t.id;
+    bubble.setAttribute('aria-describedby', text.id);
+    var foot = el('div', 'ui-lesson-foot');
+    var skip = Dom().btn('Skip tutorial', function () { T.skip(); }, { small: true, ghost: true, cls: 'ui-lesson-skip' });
+    foot.appendChild(skip);
+    var okBtn = null;
+    tip.space = typeof t.space === 'function' ? t.space(c) : null;
+    tip.target = t.target ? resolve(t, c) : null;
+    var tap = !!t.tap && !!tip.target;
+    if (!tap) {
+      okBtn = Dom().btn(t.id === 'finishInfo' ? 'Finish the lesson' : 'Got it', function () { done(tip, 'ok'); }, { small: true, primary: true, cls: 'ui-lesson-ok' });
+      foot.appendChild(okBtn);
+    } else {
+      foot.appendChild(el('span', 'ui-lesson-hint', tapW() + ' the ringed button'));
+    }
+    bubble.appendChild(step); bubble.appendChild(title); bubble.appendChild(text); bubble.appendChild(foot);
+    dims.forEach(function (d) { lay.appendChild(d); });
+    lay.appendChild(ring); lay.appendChild(arrow); lay.appendChild(bubble);
+    lay.classList.toggle('ui-lesson-tapping', tap);
+    lay.setAttribute('data-tip', t.id);
+    lay.hidden = false;
+    tip.el = { lay: lay, ring: ring, dims: dims, bubble: bubble, arrow: arrow, ok: okBtn, skip: skip, tap: tap };
+    on(ring, 'click', function (ev) { ev.preventDefault(); ev.stopPropagation(); if (tip.el.tap) press(tip); else if (Date.now() - tip.at > READ_MS) done(tip, 'ok'); });
+    var miss = function (ev) {
+      ev.preventDefault(); ev.stopPropagation();
+      if (tip.el.tap) { nudge(tip); return; }
+      if (Date.now() - tip.at > READ_MS) done(tip, 'ok');
+    };
+    dims.forEach(function (d) { on(d, 'click', miss); });
+    on(bubble, 'click', function (ev) { ev.stopPropagation(); });
+    place(tip);
+    var follow = function () { if (cur !== tip) return; place(tip); if (Date.now() - tip.at < 900 && typeof requestAnimationFrame === 'function') requestAnimationFrame(follow); };
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(follow);
+    if (posTimer) clearInterval(posTimer);
+    posTimer = setInterval(function () { if (cur === tip) place(tip); }, 250);
+    try { bubble.focus({ preventScroll: true }); } catch (e) { try { bubble.focus(); } catch (e2) { } }
+  }
+  function safeText(f, c) { try { return typeof f === 'function' ? String(f(c) || '') : String(f || ''); } catch (e) { report(e, 'text'); return ''; } }
+  function resolve(t, c) { try { var e = t.target(c || context()); return shown(e) ? e : null; } catch (e) { report(e, 'target ' + t.id); return null; } }
+  function boxOf(tip) {
+    if (tip.space !== null && tip.space !== undefined) {
+      var r = A().spaceRect ? A().spaceRect(tip.space) : null;
+      if (!r) { var g = q('#board [data-space="' + tip.space + '"]'); if (g) r = g.getBoundingClientRect(); }
+      return r && r.width > 0 ? { left: r.left, top: r.top, width: r.width, height: r.height } : null;
+    }
+    var e = tip.target;
+    if (!shown(e)) { e = tip.t.target ? resolve(tip.t) : null; tip.target = e; }
+    if (!e) return null;
+    var b = e.getBoundingClientRect();
+    return b.width > 0 ? { left: b.left, top: b.top, width: b.width, height: b.height } : null;
+  }
+  function keepRects(tip) {
+    var out = [], list = [];
+    if (!tip || !tip.t || typeof tip.t.keep !== 'function') return out;
+    try { list = arr(tip.t.keep(context())); } catch (e) { report(e, 'keep ' + tip.t.id); list = []; }
+    for (var i = 0; i < list.length; i++) {
+      if (!shown(list[i])) continue;
+      var b = list[i].getBoundingClientRect(), k = { left: b.left, top: b.top, right: b.right, bottom: b.bottom };
+      var body = list[i].closest ? list[i].closest('.ui-dlg-body') : null;
+      if (body) { var c = body.getBoundingClientRect(); k.left = Math.max(k.left, c.left); k.top = Math.max(k.top, c.top); k.right = Math.min(k.right, c.right); k.bottom = Math.min(k.bottom, c.bottom); }
+      if (k.right - k.left > 0 && k.bottom - k.top > 0) out.push(k);
+    }
+    return out;
+  }
+  function insets() { try { return ECE.Mobile && ECE.Mobile.insets ? ECE.Mobile.insets() : { top: 0, bottom: 0, left: 0, right: 0 }; } catch (e) { return { top: 0, bottom: 0, left: 0, right: 0 }; } }
+  function place(tip) {
+    try {
+      var E = tip.el, vw = window.innerWidth || 800, vh = window.innerHeight || 600, ins = insets();
+      if (tip.target && tip.target.scrollIntoView && !tip.scrolled) { tip.scrolled = true; try { tip.target.scrollIntoView({ block: 'nearest' }); } catch (e0) { } }
+      var r = boxOf(tip);
+      if (!r && tip.el.tap && Date.now() - tip.at > 2500) { done(tip, 'lost'); return; }
+      var pad = 6;
+      var box = function (d, x0, y0, w0, h0) { d.style.left = Math.round(x0) + 'px'; d.style.top = Math.round(y0) + 'px'; d.style.width = Math.max(0, Math.round(w0)) + 'px'; d.style.height = Math.max(0, Math.round(h0)) + 'px'; };
+      if (r) {
+        var L0 = Math.round(r.left - pad), T0 = Math.round(r.top - pad), W0 = Math.round(r.width + pad * 2), H0 = Math.round(r.height + pad * 2);
+        E.ring.hidden = false;
+        box(E.ring, L0, T0, W0, H0);
+        box(E.dims[0], 0, 0, vw, Math.max(0, T0));
+        box(E.dims[1], 0, T0 + H0, vw, vh - (T0 + H0));
+        box(E.dims[2], 0, T0, Math.max(0, L0), H0);
+        box(E.dims[3], L0 + W0, T0, vw - (L0 + W0), H0);
+        E.lay.classList.remove('ui-lesson-free');
+      } else {
+        E.ring.hidden = true;
+        box(E.dims[0], 0, 0, vw, vh);
+        for (var di = 1; di < 4; di++) box(E.dims[di], 0, 0, 0, 0);
+        E.lay.classList.add('ui-lesson-free');
+      }
+      var bw = Math.min(360, vw - 24);
+      E.bubble.style.width = bw + 'px';
+      var bh = E.bubble.offsetHeight || 160;
+      var topSafe = (ins.top || 0) + 8, botSafe = vh - (ins.bottom || 0) - 8;
+      var x, y, side = 'none';
+      var sheet = tip.target && tip.target.closest ? tip.target.closest('.ui-dlg') : null;
+      var sr = sheet ? sheet.getBoundingClientRect() : null;
+      if (r && sr && sr.top - 14 - bh >= topSafe) { y = sr.top - 14 - bh; x = (vw - bw) / 2; side = 'sheet'; }
+      else if (r && sr && sr.left - 14 - bw >= 12) { x = sr.left - 14 - bw; y = r.top + r.height / 2 - bh / 2; side = 'sheet'; }
+      else if (r && sr && vw - sr.right - 14 - bw >= 12) { x = sr.right + 14; y = r.top + r.height / 2 - bh / 2; side = 'sheet'; }
+      else if (r) {
+        var below = botSafe - (r.top + r.height + pad + 14), above = (r.top - pad - 14) - topSafe;
+        if (below >= bh) { y = r.top + r.height + pad + 14; side = 'below'; }
+        else if (above >= bh) { y = r.top - pad - 14 - bh; side = 'above'; }
+        else {
+          y = r.top + r.height / 2 > vh / 2 ? topSafe : Math.max(topSafe, botSafe - bh);
+          side = 'none';
+        }
+        x = r.left + r.width / 2 - bw / 2;
+      } else if (!r) {
+        x = (vw - bw) / 2; y = Math.max(topSafe, (vh - bh) / 2);
+      }
+      x = Math.max(12, Math.min(vw - 12 - bw, x));
+      y = Math.max(topSafe, Math.min(Math.max(topSafe, botSafe - bh), y));
+      var keep = r ? keepRects(tip) : [];
+      if (keep.length) {
+        var cover = function (bx, by) {
+          var a = 0;
+          for (var ki = 0; ki < keep.length; ki++) {
+            var k = keep[ki], ow = Math.min(bx + bw, k.right) - Math.max(bx, k.left), oh = Math.min(by + bh, k.bottom) - Math.max(by, k.top);
+            if (ow > 0 && oh > 0) a += ow * oh;
+          }
+          return a;
+        };
+        var rg = { left: r.left - pad - 4, top: r.top - pad - 4, right: r.left + r.width + pad + 4, bottom: r.top + r.height + pad + 4 };
+        var onRing = function (bx, by) { return bx < rg.right && bx + bw > rg.left && by < rg.bottom && by + bh > rg.top; };
+        var best = { x: x, y: y, side: side, a: cover(x, y) };
+        if (best.a > 0) {
+          var cx = Math.max(12, Math.min(vw - 12 - bw, r.left + r.width / 2 - bw / 2));
+          [{ y: r.top + r.height + pad + 14, side: 'below' }, { y: r.top - pad - 14 - bh, side: 'above' }, { y: topSafe, side: 'none' }, { y: botSafe - bh, side: 'none' }].forEach(function (o) {
+            if (o.y < topSafe - 0.5 || o.y + bh > botSafe + 0.5 || onRing(cx, o.y)) return;
+            var a = cover(cx, o.y);
+            if (a < best.a - 0.5) best = { x: cx, y: o.y, side: o.side, a: a };
+          });
+          x = best.x; y = best.y; side = best.side;
+        }
+      }
+      E.bubble.style.left = Math.round(x) + 'px';
+      E.bubble.style.top = Math.round(y) + 'px';
+      E.lay.setAttribute('data-side', side);
+      if (r && (side === 'below' || side === 'above')) {
+        E.arrow.hidden = false;
+        var ax = Math.max(x + 18, Math.min(x + bw - 18, r.left + r.width / 2));
+        E.arrow.style.left = Math.round(ax - 7) + 'px';
+        E.arrow.style.top = Math.round(side === 'below' ? y - 7 : y + bh - 7) + 'px';
+      } else E.arrow.hidden = true;
+    } catch (e) { report(e, 'place'); }
+  }
+  function nudge(tip) {
+    var ring = tip.el && tip.el.ring;
+    if (!ring) return;
+    ring.classList.remove('ui-lesson-nudge');
+    void ring.offsetWidth;
+    ring.classList.add('ui-lesson-nudge');
+  }
+  function press(tip) {
+    if (cur !== tip) return;
+    var e = tip.target;
+    if (!shown(e)) e = resolve(tip.t);
+    if (e && e.classList && e.classList.contains('ui-chip')) e = e.querySelector('.ui-chip-hit') || e;
+    done(tip, 'tap');
+    if (e && typeof e.click === 'function' && !e.disabled) { try { e.click(); } catch (x) { report(x, 'press'); } }
+  }
+  T.press = function () { if (cur) { if (cur.el.tap) press(cur); else done(cur, 'ok'); return true; } return false; };
+  T.ok = function () { if (cur && !cur.el.tap) { done(cur, 'ok'); return true; } return false; };
+  function hideLayer() {
+    if (posTimer) { clearInterval(posTimer); posTimer = 0; }
+    if (layer) { layer.hidden = true; while (layer.firstChild) layer.removeChild(layer.firstChild); layer.removeAttribute('data-tip'); }
+  }
+  function done(tip, how) {
+    if (cur !== tip) return;
+    cur = null;
+    hideLayer();
+    var id = tip.t.id;
+    if (id === 'rent') { L.rentSpace = null; }
+    if (A() && A().hold) A().hold('tip', false);
+    if (id === 'finishInfo') { finale(false); return; }
+    if (how === 'lost' && tip.t.tap) L.seen[id] = true;
+    soon();
+  }
+
+  function onKey(ev) {
+    if (!cur || !cur.el) return;
+    var k = ev.key, E = cur.el, inBubble = E.bubble.contains(document.activeElement);
+    var onBtn = inBubble && document.activeElement && document.activeElement.tagName === 'BUTTON';
+    if (k === 'Tab') {
+      var list = [E.skip].concat(E.ok ? [E.ok] : []);
+      var i = list.indexOf(document.activeElement);
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      var n = ev.shiftKey ? (i <= 0 ? list.length - 1 : i - 1) : (i < 0 || i >= list.length - 1 ? 0 : i + 1);
+      try { list[n].focus(); } catch (e) { }
+      return;
+    }
+    if (k === 'Enter' || k === ' ' || k === 'Spacebar') {
+      if (onBtn) return;
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      if (E.tap) press(cur); else done(cur, 'ok');
+      return;
+    }
+    if (k === 'Escape' || k === 'Esc') {
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      if (!E.tap) done(cur, 'ok');
+    }
+  }
+
+  function watch() {
+    if (watchers) return;
+    watchers = true;
+    try { if (D() && D().onChange) D().onChange(function () { if (L) soon(); }); } catch (e) { report(e, 'watch'); }
+    on(document, 'keydown', onKey, true);
+    on(window, 'resize', function () { if (cur) place(cur); });
+  }
+  function onPlayed(st) { if (L && st === L.state) { L.played = true; soon(); } }
+  T.start = function (from) {
+    try {
+      var App = A();
+      if (!App || typeof App.startLesson !== 'function' || !App.save) return false;
+      watch();
+      remember(App);
+      if (L) stop();
+      var made = create(App.save.setup || {});
+      if (!made) return false;
+      L = { state: made.state, you: made.you, guide: made.guide, seen: {}, from: from || 'home', obj: null, rentSpace: null, finishRound: 0, startedAt: Date.now() };
+      L.obj = lessonObject(made);
+      if (App.onPlay) App.onPlay(onPlayed);
+      if (!App.startLesson(L.obj)) { stop(); return false; }
+      if (timer) clearInterval(timer);
+      timer = setInterval(function () { if (L) check(false); }, 400);
+      soon();
+      return true;
+    } catch (e) { report(e, 'start'); stop(); return false; }
+  };
+  T.running = function () { return !!L && !!A() && A().lesson === (L && L.obj); };
+  T.skip = function () {
+    var App = A();
+    var was = !!L;
+    if (App && App.lesson && L && App.lesson === L.obj) App.endLesson('skip');
+    else stop();
+    if (was && App && App.toast) App.toast('Tutorial skipped. It is on Home (Tutorial) and in How to play any time.');
+  };
+  function stop() {
+    cur = null;
+    hideLayer();
+    if (timer) { clearInterval(timer); timer = 0; }
+    var App = A();
+    if (App && App.offPlay) App.offPlay(onPlayed);
+    if (App && App.hold) { try { App.hold('tip', false); } catch (e) { } }
+    L = null;
+  }
+  function ended(reason) {
+    if (!L) return;
+    if (reason === 'over') { cur = null; hideLayer(); finale(true); return; }
+    stop();
+  }
+  function finale(won) {
+    try {
+      var Dl = D(), App = A();
+      if (A().hold) A().hold('tip', false);
+      var st = L ? L.state : null;
+      var mins = L ? Math.max(1, Math.round((Date.now() - L.startedAt) / 60000)) : 3;
+      Dl.open({
+        id: 'lessonDone', title: 'You’re ready!', cls: 'ui-dlg-lesson-done', place: 'center',
+        onEscape: function (hd) { hd.close('home'); },
+        render: function (hd) {
+          var p = function (t) { return Dom().h('p', { cls: 'ui-p' }, t); };
+          hd.body.appendChild(p(won ? 'You won the tutorial game in ' + mins + (mins === 1 ? ' minute' : ' minutes') + '.' : 'That was the tutorial game.'));
+          hd.body.appendChild(p(say('In your own games: buy streets, finish a district (trade for the last street), build homes, and watch the frames in each player’s colour. ') + tapW() + ' a chip to see what anyone owns.'));
+          hd.body.appendChild(Dom().h('p', { cls: 'ui-p ui-small ui-muted' }, 'The tutorial is on Home (Tutorial) and in How to play any time. It changed nothing in your saved game.'));
+          hd.foot.appendChild(Dom().btn('Home', function () { hd.close('home'); }, { cls: 'ui-lesson-home' }));
+          hd.foot.appendChild(Dom().btn('New game', function () { hd.close('new'); }, { primary: true, cls: 'ui-lesson-new' }));
+        },
+        onClose: function (reason) {
+          var App2 = A();
+          stop();
+          if (App2 && App2.lesson) App2.endLesson('done');
+          if (reason === 'new' && App2 && App2.go) App2.go('setup');
+        }
+      });
+      if (st && st.phase !== 'over' && App && App.hold) App.hold('tip', true);
+    } catch (e) { report(e, 'finale'); stop(); if (A() && A().lesson) A().endLesson('done'); }
+  }
+
+  T.offerDue = function (save) {
+    try {
+      var App = A();
+      if (!save || !save.tips || save.tips.lesson) return false;
+      if (save.settings && save.settings.tips === false) return false;
+      if (App && App.test && !(App.query && App.query.offer === '1')) return false;
+      return true;
+    } catch (e) { return false; }
+  };
+  function remember(App) {
+    try { if (App.save && App.save.tips && !App.save.tips.lesson) { App.save.tips.lesson = true; if (App.saveSoon) App.saveSoon(); } } catch (e) { report(e, 'remember'); }
+  }
+  T.offer = function () {
+    return new Promise(function (resolve) {
+      try {
+        var App = A(), Dl = D();
+        if (!App || !Dl || Dl.isOpen('lessonOffer')) { resolve(false); return; }
+        var answered = false;
+        Dl.open({
+          id: 'lessonOffer', title: 'New to Emerald City Estates?', cls: 'ui-dlg-lesson-offer', place: 'center', role: 'alertdialog',
+          onEscape: function (hd) { hd.close('skip'); },
+          render: function (hd) {
+            hd.body.appendChild(Dom().h('p', { cls: 'ui-p' }, 'Learn by playing a short guided game against ' + GUIDE.name + ': rolling, buying, rent, auctions, cards, traffic, a trade, homes and the Finish line.'));
+            hd.body.appendChild(Dom().h('p', { cls: 'ui-p ui-small ui-muted' }, 'About 3 minutes, and it never changes your saved game. It stays on Home (Tutorial) and in How to play.'));
+            hd.foot.appendChild(Dom().btn('Skip', function () { hd.close('skip'); }, { cls: 'ui-lesson-offer-skip' }));
+            hd.foot.appendChild(Dom().btn('Learn to play (3 min)', function () { answered = true; hd.close('learn'); }, { primary: true, cls: 'ui-lesson-offer-go' }));
+          },
+          onClose: function (reason) {
+            remember(App);
+            if (reason === 'learn' || answered) { setTimeout(function () { resolve(T.start('offer')); }, 0); return; }
+            resolve(false);
+          }
+        });
+      } catch (e) { report(e, 'offer'); resolve(false); }
+    });
+  };
+
+  T.debug = function () {
+    return { running: T.running(), tip: cur ? cur.t.id : null, tap: !!(cur && cur.el && cur.el.tap), seen: L ? Object.keys(L.seen) : [], round: L && L.state ? L.state.round : 0, finish: !!(L && L.obj && L.obj.finish) };
+  };
+  T._lesson = function () { return L; };
+  T._begin = function (made) { L = { state: made.state, you: made.you, guide: made.guide, seen: {}, obj: { finish: false }, rentSpace: null, finishRound: 0, startedAt: 0 }; return L; };
+  T._after = function (st, events, action) { after(st, events, action); };
+  T._stop = function () { L = null; cur = null; };
+})(window.ECE = window.ECE || {});
+;
+(function (ECE) {
+  'use strict';
+
   var Dom = ECE.Dom;
   var h = function (t, p, k) { return Dom.h(t, p, k); };
   var App = {};
@@ -12761,7 +17274,7 @@
   }
   App.saveSoon = function () {
     if (!App.save) return;
-    if (App.game) App.save.game = App.game.phase === 'over' ? null : App.game;
+    if (App.game && !App.lesson) App.save.game = App.game.phase === 'over' ? null : App.game;
     try { if (ECE.Save && !App.readOnly) ECE.Save.schedule(App.save); } catch (e) { App.report(e, 'save'); }
   };
   App.saveNow = function () {
@@ -12900,19 +17413,225 @@
       onLog: function () { openLog(); },
       onMenu: function () { openMenu(); },
       onCloseUp: function () { App.setCloseUp(!closeUpOn()); },
-      onPick: function (id, spaces) { viewCall('highlight', [id === null ? [] : spaces]); }
+      onPick: function (id, spaces) { viewCall('highlight', [id === null ? [] : spaces]); },
+      onChip: function (id) { App.holdings(id); }
     });
     App.el.panelApi = App.panel;
   }
 
+  App.holdings = function (id) {
+    var P = App.panel, D = ECE.Dialogs;
+    if (!App.game || !P || id === null || id === undefined || !Dom.player(App.game, id)) return false;
+    if (!D || typeof D.holdings !== 'function') {
+      if (P.picked && P.picked() === id) P.clearPick(); else if (P.setPick) P.setPick(id);
+      return false;
+    }
+    if (D.isOpen() && !D.isOpen('holdings')) return false;
+    var a = typeof document !== 'undefined' ? document.activeElement : null;
+    if (!D.isOpen('holdings')) App.holdingsBack = a && a.classList && a.classList.contains('ui-chip-hit') && D.keyboardFocus(a) ? id : null;
+    if (P.setPick) P.setPick(id);
+    App.holdingsKeep = null;
+    App.holdingsOpen = true;
+    try { D.holdings(App.gameCtx(), id); } catch (e) { App.report(e, 'holdings'); App.holdingsOpen = false; clearPick(); return false; }
+    if (!D.isOpen('holdings')) { App.holdingsOpen = false; return false; }
+    return true;
+  };
+  App.seeOnBoard = function (id) {
+    if (!App.game || id === null || id === undefined || !Dom.player(App.game, id) || !App.panel || !App.panel.setPick) return false;
+    if (App.holdingsOpen) App.holdingsKeep = id;
+    else { App.panel.setPick(id); liftOnNextTap(); }
+    return true;
+  };
+  var liftArmed = false;
+  function liftOnNextTap() {
+    if (liftArmed || typeof document === 'undefined') return;
+    liftArmed = true;
+    var lift = function () {
+      document.removeEventListener('click', lift, true);
+      document.removeEventListener('keydown', lift, true);
+      liftArmed = false;
+      if (!App.holdingsOpen) clearPick();
+    };
+    setTimeout(function () {
+      document.addEventListener('click', lift, true);
+      document.addEventListener('keydown', lift, true);
+    }, 0);
+  }
+  function holdingsClosed() {
+    if (!App.holdingsOpen || ECE.Dialogs.isOpen('holdings')) return;
+    App.holdingsOpen = false;
+    var keep = App.holdingsKeep;
+    App.holdingsKeep = null;
+    if (keep !== null && keep !== undefined && App.game && App.panel && App.panel.setPick) { App.panel.setPick(keep); liftOnNextTap(); return; }
+    clearPick();
+    var back = App.holdingsBack;
+    App.holdingsBack = null;
+    if (back !== null && back !== undefined && !ECE.Dialogs.isOpen() && App.panel && App.panel.chipsEl) {
+      var b = App.panel.chipsEl.querySelector('.ui-chip[data-player="' + back + '"] .ui-chip-hit');
+      if (b && b.getClientRects().length) Dom.focus(b);
+    }
+  }
+
+  App.lesson = null;
+  App.holds = {};
+  function held() { for (var k in App.holds) if (Object.prototype.hasOwnProperty.call(App.holds, k) && App.holds[k]) return true; return false; }
+  App.held = held;
+  App.hold = function (key, on) {
+    key = String(key || 'tip');
+    var was = held();
+    if (on) App.holds[key] = true; else delete App.holds[key];
+    if (was && !held()) { lastTick = Dom.now(); pump(); }
+    return held();
+  };
+  function lessonHook(name, st) {
+    var L = App.lesson;
+    if (!L || st !== App.game || typeof L[name] !== 'function') return false;
+    try { return !!L[name](st); } catch (e) { App.report(e, 'lesson.' + name); return false; }
+  }
+  function lessonAfter(st, events, action) {
+    var L = App.lesson;
+    if (!L || st !== App.game || typeof L.after !== 'function') return;
+    try { L.after(st, events || [], action || null); } catch (e) { App.report(e, 'lesson.after'); }
+  }
+  function lessonOver(st) {
+    var L = App.lesson;
+    if (!L || L.ended) return;
+    L.ended = true;
+    if (typeof L.end === 'function') { try { L.end('over'); } catch (e) { App.report(e, 'lesson.end'); } }
+  }
+  var playListeners = [];
+  function played(st, events) {
+    if (st !== App.game) return;
+    playListeners.slice().forEach(function (fn) { try { fn(st, events || []); } catch (e) { App.report(e, 'onPlay'); } });
+  }
+  App.onPlay = function (fn) { if (typeof fn === 'function' && playListeners.indexOf(fn) < 0) playListeners.push(fn); };
+  App.offPlay = function (fn) { var i = playListeners.indexOf(fn); if (i >= 0) playListeners.splice(i, 1); };
+  App.startLesson = function (lesson) {
+    if (!lesson || typeof lesson !== 'object' || !lesson.state || !Array.isArray(lesson.state.players)) return false;
+    if (App.lesson) quitLesson('restart');
+    stopTimers();
+    closeScreenDialogs();
+    hideNote();
+    clearPick();
+    App.saveNow();
+    App.lesson = lesson;
+    App.lessonPlayOn = null;
+    App.holds = {};
+    App.game = lesson.state;
+    App.you = lesson.you !== undefined && lesson.you !== null ? lesson.you : humanOf(lesson.state);
+    resetGameMemory();
+    App.go('game');
+    return true;
+  };
+  App.endLesson = function (reason) {
+    if (!App.lesson) return false;
+    quitLesson(reason || 'done');
+    App.go(reason === 'howto' ? 'howto' : 'home');
+    return true;
+  };
+  function quitLesson(reason) {
+    var L = App.lesson;
+    if (!L) return;
+    App.lesson = null;
+    App.holds = {};
+    App.lessonPlayOn = null;
+    stopTimers();
+    closeScreenDialogs();
+    hideNote();
+    clearPick();
+    var g = App.save && App.save.game;
+    App.game = g && g.phase && g.phase !== 'over' ? g : null;
+    App.you = App.game ? humanOf(App.game) : null;
+    resetGameMemory();
+    if (!L.ended) { L.ended = true; if (typeof L.end === 'function') { try { L.end(reason); } catch (e) { App.report(e, 'lesson.end'); } } }
+    if (App.view && App.game && App.screen === 'game') renderAll();
+  }
+  App.quitLesson = quitLesson;
+  function resetGameMemory() {
+    App.overShown = null;
+    App.recordedFor = null;
+    App.cardPending = !!App.game && App.game.phase === 'card';
+    App.lastAuctionEnd = null;
+    App.turnActions = 0;
+    App.waitedKey = null;
+    App.limitNotice = false;
+    App.intro = false;
+    App.finishShown = undefined;
+  }
+  App.target = function (name) {
+    var P = App.panel, seen = function (e) { return e && e.isConnected && e.getClientRects && e.getClientRects().length ? e : null; };
+    name = String(name || '');
+    if (!P) return null;
+    var m = /^chip:(\d+)$/.exec(name);
+    if (m) return seen(P.chipsEl.querySelector('.ui-chip[data-player="' + m[1] + '"]'));
+    var pickVisible = function (list) { for (var i = 0; i < list.length; i++) if (seen(list[i])) return list[i]; return null; };
+    switch (name) {
+      case 'primary': return seen(P.primaryEl);
+      case 'alts': return seen(P.altsEl);
+      case 'manage': return seen(P.manageEl);
+      case 'trade': return seen(P.tradeEl);
+      case 'turn': return seen(P.turnEl);
+      case 'chips': return seen(P.chipsEl);
+      case 'log': return pickVisible([P.recentEl, P.logEl]);
+      case 'menu': return pickVisible([App.el.top && App.el.top.querySelector('.ui-icon-btn:not(.ui-cam-btn)'), P.headEl.querySelector('.ui-icon-btn:not(.ui-cam-btn)')]);
+      case 'closeup': return pickVisible([App.el.cam, P.camEl]);
+      case 'board': return seen(App.el.boardHost);
+      case 'finish': return App.noteKind === 'finish' ? seen(App.el.note.querySelector('.ui-note-finish')) : null;
+      case 'playon': return App.noteKind === 'finish' ? seen(App.el.note.querySelector('.ui-note-playon')) : null;
+      default: return null;
+    }
+  };
+  App.spaceRect = function (i) {
+    i = i | 0;
+    var r = viewCall('spaceRect', [i]);
+    if (r && r.width > 0) return { left: r.left, top: r.top, width: r.width, height: r.height };
+    var host = App.el && App.el.boardHost, geo = boardGeo();
+    if (!host || !geo || !geo.spaces || !geo.spaces[i] || closeUpOn()) return null;
+    var hr = host.getBoundingClientRect(), s = geo.spaces[i];
+    return { left: hr.left + s.x, top: hr.top + s.y, width: s.w, height: s.h };
+  };
+  function showTheme(id) {
+    var T = ECE.Theme;
+    if (!T || typeof T.set !== 'function') return 'emerald';
+    try { return T.set(id); } catch (e) { App.report(e, 'theme'); return 'emerald'; }
+  }
+  App.showTheme = showTheme;
+  function themeOfGame(st) { return ECE.Theme && typeof ECE.Theme.of === 'function' ? ECE.Theme.of(st) : 'emerald'; }
+  function themeId(id) { return ECE.Theme && typeof ECE.Theme.has === 'function' && ECE.Theme.has(id) ? id : 'emerald'; }
+  App.themeOfGame = themeOfGame;
+
+  function dropView() {
+    var v = App.view;
+    App.view = null;
+    App.viewTheme = null;
+    App.hudSig = null; App.dockSent = 0; App.sheetPx = 0; App.sidePx = 0;
+    if (v && typeof v.destroy === 'function') { try { v.destroy(); } catch (e) { App.report(e, 'view.destroy'); } }
+  }
   function ensureView() {
+    var want = ECE.Theme && typeof ECE.Theme.current === 'function' ? ECE.Theme.current() : 'emerald';
+    if (App.view && App.viewTheme !== want) dropView();
     if (App.view) return App.view;
     if (!ECE.BoardView || typeof ECE.BoardView.mount !== 'function') return null;
     try {
-      App.view = ECE.BoardView.mount(App.el.boardHost, { onSpaceTap: function (i) { onSpaceTap(i); } });
+      var plan = willBeWide();
+      App.orientation = plan ? 'wide' : 'tall';
+      if (plan) { App.el.boardHost.style.width = plan.board.w + 'px'; App.el.boardHost.style.height = plan.board.h + 'px'; }
+      App.view = ECE.BoardView.mount(App.el.boardHost, { onSpaceTap: function (i) { onSpaceTap(i); }, orientation: App.orientation, theme: want });
+      App.viewTheme = want;
     } catch (e) { App.report(e, 'BoardView.mount'); App.view = null; }
     if (App.view && closeUpOn()) viewCall('setCloseUp', [true]);
     return App.view;
+  }
+  function willBeWide() {
+    if (onPhone()) return null;
+    var box = desktopBox();
+    try { return App.widePlan(box.W, box.H); } catch (e) { return null; }
+  }
+  function desktopBox() {
+    var W = window.innerWidth || 1280, H = window.innerHeight || 800;
+    var ins = ECE.Mobile && typeof ECE.Mobile.insets === 'function' ? ECE.Mobile.insets() : null;
+    if (ins) { W = Math.max(200, W - (ins.left || 0) - (ins.right || 0)); H = Math.max(200, H - (ins.top || 0) - (ins.bottom || 0)); }
+    return { W: W, H: H };
   }
   function viewCall(name, args) {
     var v = App.view;
@@ -12930,6 +17649,8 @@
     var e = App.el && App.el.boardHost;
     if (!e || !e.isConnected || App.screen !== 'game') return null;
     var r = e.getBoundingClientRect();
+    var geo = boardGeo();
+    if (geo && geo.board && geo.board.w > 0) return { left: r.left + geo.board.x, top: r.top + geo.board.y, width: geo.board.w, height: geo.board.h };
     var B = ECE.BoardData.LAYOUT;
     var k = Math.min(r.width / B.widthUnits, r.height / B.heightUnits);
     var w = k * B.widthUnits, hh = k * B.heightUnits;
@@ -12939,6 +17660,14 @@
     var e = App.el && App.el.panel;
     if (!e || App.screen !== 'game' || document.documentElement.classList.contains('phone')) return null;
     var g = App.el.screens.game;
+    if (g.classList.contains('ui-layout-wide') && App.wide) {
+      var hr = App.el.boardHost.getBoundingClientRect(), pl = App.wide, geo = boardGeo() || pl.geo;
+      var inner = geo && geo.inner ? geo.inner : pl.center;
+      var right = hr.left + pl.right.x + pl.right.w;
+      var w = Math.max(320, Math.min(440, right - (hr.left + inner.x + 8)));
+      var top = hr.top + inner.y + 6, bottom = hr.top + inner.y + inner.h - 6;
+      return { left: right - w, top: top, width: w, height: bottom - top, right: right, bottom: bottom };
+    }
     if (!g.classList.contains('ui-layout-side')) return null;
     var r = e.getBoundingClientRect();
     var bottom = Math.max(r.bottom, (window.innerHeight || 800) - 14);
@@ -12962,6 +17691,7 @@
   App.go = function (name, opts) {
     opts = opts || {};
     if (SCREENS.indexOf(name) < 0) name = 'home';
+    if (name === 'home' && App.lesson) quitLesson('home');
     if (name === 'game' && !App.game) name = 'home';
     var from = App.screen;
     if (name === 'settings' || name === 'howto' || name === 'setup') {
@@ -12971,6 +17701,9 @@
     if (from === 'game' && name !== 'game') { closeScreenDialogs(); hideNote(); App.waitedKey = null; }
     if (name !== 'game' && ECE.Dialogs.isOpen()) closeScreenDialogs();
     App.screen = name;
+    if (name === 'game') showTheme(themeOfGame(App.game));
+    else if (name === 'home') showTheme(ECE.Theme && ECE.Theme.forSave ? ECE.Theme.forSave({ game: App.game, setup: App.save && App.save.setup }) : 'emerald');
+    else if (name === 'setup') showTheme(App.save && App.save.setup ? App.save.setup.theme : 'emerald');
     SCREENS.forEach(function (n) { App.el.screens[n].hidden = n !== name; });
     document.documentElement.classList.toggle('on-game', name === 'game');
     document.documentElement.dataset.screen = name;
@@ -13029,7 +17762,8 @@
       importSave: App.importSave,
       exportSave: function () { try { return ECE.Save.exportCode(App.save); } catch (e) { App.report(e, 'export'); return ''; } },
       saveStatus: saveStatusLine(),
-      showTipsAgain: function () { App.save.tips = {}; App.saveSoon(); }
+      showTipsAgain: function () { App.save.tips = {}; App.saveSoon(); },
+      showTheme: showTheme
     };
   }
 
@@ -13050,7 +17784,7 @@
     return { kind: 'none', value: 0 };
   }
   function playersFor(setup) {
-    var G = ECE.Glossary;
+    var G = ECE.Theme && typeof ECE.Theme.glossary === 'function' ? ECE.Theme.glossary(themeId(setup && setup.theme)) : ECE.Glossary;
     var name = ECE.Save && typeof ECE.Save.cleanName === 'function' ? ECE.Save.cleanName(String(setup.name || ''), 'You') :
       String(setup.name || 'You').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 20) || 'You';
     var tokens = G.tokens.map(function (t) { return t.id; });
@@ -13088,17 +17822,19 @@
 
   App.newGame = function (setup, opts) {
     opts = opts || {};
+    if (App.lesson) quitLesson('home');
     var R = ECE.Rules;
     if (!R || typeof R.newGame !== 'function') { App.report(new Error('the rules are missing'), 'newGame'); return null; }
     setup = Object.assign({}, App.save.setup, setup || {});
     App.save.setup = {
       name: String(setup.name || 'You').slice(0, 20), token: setup.token, opponents: setup.opponents | 0 || 3,
-      level: setup.level || 'normal', limit: setup.limit || 'none', auctions: setup.auctions !== false, rainFund: !!setup.rainFund
+      level: setup.level || 'normal', limit: setup.limit || 'none', auctions: setup.auctions !== false, rainFund: !!setup.rainFund,
+      theme: themeId(setup.theme)
     };
     var seed = opts.seed !== undefined && opts.seed !== null ? (opts.seed >>> 0) : newSeed();
     var st;
     try {
-      st = R.newGame({ seed: seed, players: playersFor(App.save.setup), rules: { auctions: App.save.setup.auctions, rainFund: App.save.setup.rainFund, limit: limitOf(App.save.setup.limit) }, now: Date.now() });
+      st = R.newGame({ seed: seed, players: playersFor(App.save.setup), rules: { auctions: App.save.setup.auctions, rainFund: App.save.setup.rainFund, limit: limitOf(App.save.setup.limit) }, now: Date.now(), theme: App.save.setup.theme });
     } catch (e) { App.report(e, 'rules.newGame'); return null; }
     if (!st) return null;
     stopTimers();
@@ -13123,6 +17859,7 @@
   };
 
   App.startFromSetup = function (setup) {
+    if (App.lesson) quitLesson('home');
     var G = App.game && App.game.phase !== 'over';
     if (!G) { App.newGame(setup, {}); return Promise.resolve(true); }
     return ECE.Dialogs.confirm({ title: 'Start a new game?', text: 'Your current game ends.', yes: 'Start new game', no: 'Keep playing' }).then(function (yes) {
@@ -13147,6 +17884,12 @@
       checkCounter: function (o) { return checkCounter(st, o); },
       finishPct: function (p) { return finishPct(st, p === undefined ? you : p); },
       openManage: function () { ECE.Dialogs.manage(App.gameCtx(demo)); },
+      pickPlayer: function (id) {
+        if (demo) { viewCall('highlight', [id === null || id === undefined ? [] : ECE.Panel.ownedBy(st, id)]); return; }
+        if (App.panel && App.panel.setPick) App.panel.setPick(id);
+      },
+      holdings: function (id) { return demo ? false : App.holdings(id); },
+      seeOnBoard: function (id) { return demo ? false : App.seeOnBoard(id); },
       newGame: function () { App.go('setup'); },
       home: function () { App.home(); },
       go: function (n) { App.go(n); },
@@ -13167,6 +17910,14 @@
     ECE.Dialogs.refresh();
     return Promise.resolve(r || { ok: false });
   }
+  function reasonOf(st, line) {
+    if (!line || !ECE.Theme || typeof ECE.Theme.reason !== 'function') return line;
+    try { return ECE.Theme.reason(line, themeOfGame(st)); } catch (e) { App.report(e, 'theme.reason'); return line; }
+  }
+  function textOf(st, ev, you) {
+    return ECE.Theme && typeof ECE.Theme.text === 'function' ? ECE.Theme.text(st, ev, you) : ECE.Rules.text(st, ev, you);
+  }
+  App.textOf = textOf;
   function demoCounter(st, o) {
     var R = ECE.Rules, A = ECE.AI;
     var r1;
@@ -13176,7 +17927,7 @@
     try { if (A && A.answer) ans = A.answer(st, o.to, (st.pending && st.pending.offer) || o) || ans; } catch (e2) { App.report(e2, 'ai.answer'); }
     try { R.act(st, { t: ans.accept ? 'accept' : 'reject', p: o.to, reason: ans.reason || undefined }); } catch (e3) { App.report(e3, 'demo counter'); }
     ECE.Dialogs.refresh();
-    return Promise.resolve({ ok: true, accept: !!ans.accept, reason: ans.reason || (ans.accept ? 'Deal!' : 'No thanks.'), more: ans.more, short: !!ans.short });
+    return Promise.resolve({ ok: true, accept: !!ans.accept, reason: reasonOf(st, ans.reason || (ans.accept ? 'Deal!' : 'No thanks.')), more: ans.more, short: !!ans.short });
   }
   function demoPropose(st, o) {
     var R = ECE.Rules, A = ECE.AI;
@@ -13184,7 +17935,7 @@
     if (!chk || !chk.ok) return Promise.resolve({ ok: false, error: chk && chk.error });
     var ans = { accept: false, reason: '' };
     try { if (A && A.answer) ans = A.answer(st, o.to, o) || ans; } catch (e) { App.report(e, 'ai.answer'); }
-    return Promise.resolve({ ok: true, accept: !!ans.accept, reason: ans.reason });
+    return Promise.resolve({ ok: true, accept: !!ans.accept, reason: reasonOf(st, ans.reason) });
   }
 
   function safeAct(st, action) {
@@ -13256,22 +18007,23 @@
     }
     return 0;
   }
-  function commit(st, res, speed) {
+  function commit(st, res, speed, action) {
     App.turnActions = (App.turnActions || 0) + 1;
     noteEvents(st, res.events);
     App.saveSoon();
+    lessonAfter(st, res.events, action);
     ECE.Dialogs.refresh();
     var hold = diceHold(res.events, speed);
     var gen = App.gen, shown = false;
     var show = function () { if (!shown && gen === App.gen) { shown = true; renderPanel(); } };
     if (hold > 0) setTimeout(show, hold); else show();
-    return playEvents(res.events || [], speed).then(function () { show(); return res; });
+    return playEvents(res.events || [], speed).then(function () { show(); played(st, res.events); return res; });
   }
   function perform(action, speed) {
     var st = App.game;
     var res = safeAct(st, action);
     if (!res.ok) return Promise.resolve(res);
-    return commit(st, res, speed);
+    return commit(st, res, speed, action);
   }
 
   function humanAct(action) {
@@ -13296,7 +18048,7 @@
   App.act = humanAct;
 
   function niceError(e) {
-    var s = String(e || '');
+    var s = Dom.say(String(e || ''));
     return s ? s.charAt(0).toUpperCase() + s.slice(1) + (/[.!?]$/.test(s) ? '' : '.') : 'Not possible right now.';
   }
 
@@ -13344,7 +18096,10 @@
     var ans = { accept: false, reason: '' };
     var answered = false;
     if (R.actor(st) === to) {
-      try { if (A && typeof A.answer === 'function') { ans = A.answer(st, to, (st.pending && st.pending.offer) || offer) || ans; answered = true; } } catch (e) { App.report(e, 'ai.answer'); }
+      if (App.lesson && typeof App.lesson.answer === 'function') {
+        try { var la = App.lesson.answer(st, to, (st.pending && st.pending.offer) || offer); if (la && typeof la === 'object') { ans = { accept: !!la.accept, reason: la.reason || '' }; answered = true; } } catch (e0) { App.report(e0, 'lesson.answer'); }
+      }
+      try { if (!answered && A && typeof A.answer === 'function') { ans = A.answer(st, to, (st.pending && st.pending.offer) || offer) || ans; answered = true; } } catch (e) { App.report(e, 'ai.answer'); }
       if (!answered) { var d = decideFor(st, to); ans.accept = !!d && evType(d) === 'accept'; }
       var r2 = safeAct(st, { t: ans.accept ? 'accept' : 'reject', p: to, reason: ans.reason || undefined });
       if (!r2.ok) { ans.accept = !ans.accept; ans.reason = ''; r2 = safeAct(st, { t: ans.accept ? 'accept' : 'reject', p: to }); }
@@ -13352,16 +18107,22 @@
       else { App.busy = false; App.report(new Error('the trade could not be answered: ' + r2.error), 'propose'); after(); return Promise.resolve({ ok: false, error: r2.error }); }
     }
     App.saveSoon();
+    lessonAfter(st, r1.events, action);
     var gen = App.gen;
     return playEvents(r1.events || [], humanSpeed()).then(function () {
+      played(st, r1.events);
       if (gen === App.gen) { App.busy = false; after(); }
-      return { ok: true, accept: !!ans.accept, reason: ans.reason || (ans.accept ? 'Deal!' : 'No thanks.'), more: ans.more, short: !!ans.short, pay: ans.pay };
+      return { ok: true, accept: !!ans.accept, reason: reasonOf(st, ans.reason || (ans.accept ? 'Deal!' : 'No thanks.')), more: ans.more, short: !!ans.short, pay: ans.pay };
     });
   }
 
   function decideFor(st, p) {
     var A = ECE.AI;
     var a = null;
+    if (App.lesson && st === App.game && p !== App.you && typeof App.lesson.cpu === 'function') {
+      try { a = App.lesson.cpu(st, p) || null; } catch (e0) { App.report(e0, 'lesson.cpu'); a = null; }
+      if (a) return withP(a, p);
+    }
     if (A && typeof A.decide === 'function') {
       try { a = A.decide(st, p); } catch (e) { App.report(e, 'ai.decide'); a = null; }
     }
@@ -13400,6 +18161,7 @@
   function cpuPaused() {
     if (typeof document !== 'undefined' && document.hidden && !App.test) return true;
     if (App.intro) return true;
+    if (held()) return true;
     if (App.landscape || App.takenOver) return true;
     if (ECE.Dialogs.blocking()) return true;
     if (App.screen !== 'game') return true;
@@ -13425,7 +18187,9 @@
     if (!st || App.screen !== 'game' || App.busy || App.auto) return;
     renderPanel();
     renderTop();
+    if (st.phase === 'over' && App.lesson) { lessonOver(st); return; }
     if (st.phase === 'over') { onGameOver(st); if (App.overShown !== st && !ECE.Dialogs.isOpen()) { App.overShown = st; ECE.Dialogs.over(App.gameCtx()); } return; }
+    if (App.limitNotice && App.lesson) App.limitNotice = false;
     if (App.limitNotice && !ECE.Dialogs.isOpen()) {
       App.limitNotice = false;
       var lim = (st.rules && st.rules.limit) || {};
@@ -13503,7 +18267,7 @@
           App.report(new Error(why + (res.ok ? '; played a safe legal action instead' : '; no legal action worked in ' + st.phase)), 'ai');
           if (!res.ok) { App.busy = false; return; }
         }
-        commit(st, res, speed).then(function () { if (gen === App.gen) { App.busy = false; pump(); } }, function (e) { if (gen === App.gen) { App.busy = false; pump(); } App.report(e, 'cpu'); });
+        commit(st, res, speed, action).then(function () { if (gen === App.gen) { App.busy = false; pump(); } }, function (e) { if (gen === App.gen) { App.busy = false; pump(); } App.report(e, 'cpu'); });
       } catch (e) { App.busy = false; App.report(e, 'cpu turn'); }
     }, ms);
   }
@@ -13519,7 +18283,7 @@
     district: { title: 'A whole district!', lines: [] },
     offer: { title: 'A trade offer', lines: ['Computer players sometimes offer trades. Check what you give and get, then Accept, Reject, or Counter once (they answer at once).'] }
   };
-  function tipsOn() { return !!(App.save && App.save.settings.tips) && !App.test && !App.auto; }
+  function tipsOn() { return !!(App.save && App.save.settings.tips) && !App.test && !App.auto && !App.lesson; }
   function onPhone() { return document.documentElement.classList.contains('phone'); }
   function tapWord(cap) { var w = onPhone() ? 'tap' : 'click'; return cap ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
   function showTip(id, extra) {
@@ -13530,12 +18294,13 @@
     App.saveSoon();
     var lines = (!onPhone() && t.desk ? t.desk : t.lines).slice();
     if (extra) lines = lines.concat(extra);
-    ECE.Dialogs.tip({ title: t.title, lines: lines }).then(pump);
+    lines = lines.map(function (l) { return Dom.say(l); });
+    ECE.Dialogs.tip({ title: id === 'traffic' ? Dom.word('traffic', t.title) : Dom.say(t.title), lines: lines }).then(pump);
     return true;
   }
   App.tipText = function (id) { var t = TIP_TEXT[id]; return t ? (!onPhone() && t.desk ? t.desk : t.lines).slice() : []; };
   function finishable(st, you) {
-    var Ds = ECE.BoardData.DISTRICTS;
+    var Ds = Dom.board().DISTRICTS;
     for (var i = 0; i < Ds.length; i++) {
       var mine = 0, other = null, built = false;
       for (var k = 0; k < Ds[i].spaces.length; k++) {
@@ -13562,7 +18327,7 @@
   function districtTip(st) {
     if (!tipsOn() || App.save.tips.district) return false;
     var R = ECE.Rules;
-    var Ds = ECE.BoardData.DISTRICTS;
+    var Ds = Dom.board().DISTRICTS;
     for (var i = 0; i < Ds.length; i++) {
       var own = false;
       try { own = R.ownsDistrict(st, App.you, Ds[i].id); } catch (e) { own = false; }
@@ -13577,10 +18342,11 @@
     var pend = st.pending || {};
     var me = Dom.player(st, App.you) || {};
     if (st.phase === 'auction' && !D.blocking() && onlyPass(st)) { humanAct({ t: 'pass' }); return; }
-    if (D.isOpen()) return;
+    if (D.isOpen()) { lessonHook('prompted', st); return; }
+    if (held() || lessonHook('prompt', st)) return;
     var fee = Dom.money(ECE.BoardData.RULES.trafficFee);
     if (st.phase === 'roll' && !st.rolled && showTip('welcome')) return;
-    if (st.phase === 'roll' && me.stuck && showTip('traffic', ['Before you roll: pay ' + fee + ', use a Carpool Pass, or roll for doubles. After the ' + Dom.ordinal(ECE.BoardData.RULES.trafficMaxTries) + ' miss you pay ' + fee + ' and move.', 'Early on, paying ' + fee + ' gets you back to buying streets.'])) return;
+    if (st.phase === 'roll' && me.stuck && showTip('traffic', ['Before you roll: pay ' + fee + ', use a ' + Dom.word('carpool', 'Carpool Pass') + ', or roll for doubles. After the ' + Dom.ordinal(ECE.BoardData.RULES.trafficMaxTries) + ' miss you pay ' + fee + ' and move.', 'Early on, paying ' + fee + ' gets you back to buying streets.'])) return;
     if ((st.phase === 'roll' || st.phase === 'end') && districtTip(st)) return;
     if ((st.phase === 'roll' || st.phase === 'end') && finishTip(st)) return;
     if (st.phase === 'roll' && !st.rolled && !offerFinish(st)) showWaited(st);
@@ -13598,6 +18364,7 @@
       case 'trade': if (pend.offer && pend.offer.to === App.you && !D.isOpen('offer')) D.offer(ctx); break;
       default: break;
     }
+    lessonHook('prompted', st);
   }
 
   function onPrimary(pr) {
@@ -13627,6 +18394,7 @@
 
   function onGameOver(st) {
     if (App.recordedFor === st || !App.save) return;
+    if (App.lesson) { lessonOver(st); return; }
     App.recordedFor = st;
     var list = ECE.Dialogs.standingsOf(st);
     var mine = null;
@@ -13688,13 +18456,14 @@
     var hr = host.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
     if (!(hr.width > 40)) return;
     var cr = null;
-    try { cr = ECE.BoardView.geometry(hr.width, hr.height).center; } catch (e) { cr = null; }
+    var geo = boardGeo();
+    cr = wideMid() || (geo && geo.center) || null;
     if (!cr) cr = { x: hr.width * 0.206, y: hr.width * 0.206, w: hr.width * 0.588, h: hr.height * 0.706 };
     var x0 = hr.left - wr.left + cr.x, y0 = hr.top - wr.top + cr.y, w = cr.w, hh = cr.h;
     var close = closeUpOn(), atBottom = false, strip = close && App.noteKind === 'waited';
     if (close) {
       var tp = viewCall('focusScreen');
-      var seen = Math.max(80, hr.height - (App.sheetPx || 0));
+      var seen = Math.max(80, hr.height - (App.sheetPx || 0) - (App.wide ? App.dockPx || 0 : 0));
       atBottom = !!tp && tp.y < hr.top + seen / 2;
       x0 = hr.left - wr.left + hr.width * 0.05; w = hr.width * 0.9; hh = seen * 0.4;
       y0 = atBottom ? hr.top - wr.top + seen - hh : hr.top - wr.top;
@@ -13710,10 +18479,12 @@
       else besideActs = false;
     }
     var inset = 6;
-    var nw = Math.min(w - inset * 2, strip ? 440 : 330);
-    n.style.width = Math.floor(nw) + 'px';
+    var k = App.wide ? (close ? Math.min(App.wide.k, WIDE.dockK) : App.wide.k) : 1;
+    if (k !== 1) n.style.setProperty('--note-k', String(Math.round(k * 1000) / 1000)); else n.style.removeProperty('--note-k');
+    var nw = Math.min(w - inset * 2, (strip ? 440 : 330) * k);
+    n.style.width = Math.floor(nw / k) + 'px';
     n.style.left = Math.floor(x0 + (w - nw) / 2) + 'px';
-    n.style.maxHeight = Math.floor(Math.max(strip ? 44 : 60, hh - inset * 2)) + 'px';
+    n.style.maxHeight = Math.floor(Math.max(strip ? 44 : 60, (hh - inset * 2) / k)) + 'px';
     fitNoteTitle(n);
     if (!strip) fitNoteLines(n);
     fitNoteCard(n);
@@ -13728,21 +18499,22 @@
       if (cut()) n.classList.add('ui-note-tight');
       if ((cut() || (ca && !ca.hidden && !close && !besideActs)) && ca && !ca.hidden && !close) {
         over = true; y0 = y0All; hh = hhAll;
-        n.style.maxHeight = Math.floor(Math.max(60, hh - inset * 2)) + 'px';
+        n.style.maxHeight = Math.floor(Math.max(60, (hh - inset * 2) / k)) + 'px';
       }
       if (cut()) {
         var room = Math.max(60, hr.height - 12);
-        hh = Math.min(room, Math.max(hh, n.scrollHeight + inset * 2));
+        hh = Math.min(room, Math.max(hh, n.scrollHeight * k + inset * 2));
         y0 = Math.max(hr.top - wr.top + 6, Math.min(hr.bottom - wr.top - 6 - hh, y0All + (hhAll - hh) / 2));
-        n.style.maxHeight = Math.floor(hh - inset * 2) + 'px';
+        n.style.maxHeight = Math.floor((hh - inset * 2) / k) + 'px';
         over = true;
       }
     } else { n.classList.remove('ui-note-tight'); n.classList.remove('ui-note-col'); }
     Dom.toggle(n, 'ui-note-over', over);
-    var nh = n.offsetHeight || 0;
+    var nh = (n.offsetHeight || 0) * k;
     var top;
     if (close) top = atBottom ? y0 + hh - inset - nh : y0 + inset;
     else if (App.centerMode) top = y0 + inset;
+    else if (App.wide && App.noteKind === 'waited') top = y0 + Math.max(inset, hh - inset * 2 - nh);
     else top = y0 + inset + Math.max(0, (hh - inset * 2 - nh) / 2);
     n.style.top = Math.floor(top) + 'px';
     var tEl = host.querySelector && host.querySelector('.ece-title');
@@ -13817,11 +18589,12 @@
 
   function deckIcon(deck, px) {
     var svg = Dom.s('svg', { viewBox: '0 0 24 24', width: px, height: px, cls: 'ui-deck-icon', focusable: 'false', 'aria-hidden': 'true' });
-    if (ECE.Art && typeof ECE.Art.icon === 'function') { try { ECE.Art.icon(svg, deck === 'rain' ? 'rain' : 'buzz', 12, 12, 24); } catch (e) { App.report(e, 'art.icon'); } }
+    var A = Dom.art();
+    if (A && typeof A.icon === 'function') { try { A.icon(svg, deck === 'rain' ? 'rain' : 'buzz', 12, 12, 24); } catch (e) { App.report(e, 'art.icon'); } }
     return svg;
   }
   function showCardNote(p, deck, id, demo) {
-    var C = ECE.CardData;
+    var C = Dom.cards();
     var card = C ? C.card(deck, id) : null;
     var dk = C && C.DECKS ? C.DECKS[deck] : null;
     var pl = Dom.player(App.game, p);
@@ -13864,7 +18637,7 @@
       else if (t === 'auctionEnd') { keep = ev.winner !== null && ev.winner !== undefined; prio = involves(ev) ? 3 : 1; }
       else if (t === 'fund') { keep = true; prio = ev.p === you ? 3 : 1; }
       else if (t === 'build' || t === 'sell') {
-        var d = ECE.BoardData.districtOf(ev.space);
+        var d = Dom.board().districtOf(ev.space);
         var gk = t + ':' + ev.p + ':' + (d ? d.id : ev.space);
         var gr = groups[gk];
         if (!gr) { gr = groups[gk] = { t: t, p: ev.p, d: d, homes: 0, towers: 0, streets: {}, at: out.length, prio: 2 }; out.push({ group: gr, prio: 2 }); }
@@ -13899,7 +18672,7 @@
         if (!parts.length) return null;
         text = name + (g.t === 'build' ? ' built ' : ' sold ') + parts.join(' and ') + (g.d ? ' in ' + g.d.name : '') + '.';
       } else {
-        try { text = R.text(st, o.ev, you) || ''; } catch (e) { text = ''; }
+        try { text = textOf(st, o.ev, you) || ''; } catch (e) { text = ''; }
         p = ECE.Panel && ECE.Panel.linePlayer ? ECE.Panel.linePlayer(st, o.ev, text, you) : (o.ev.p !== undefined ? Dom.player(st, o.ev.p) : null);
       }
       return text ? { text: text, color: p ? p.color : null, you: !!(o.ev ? involves(o.ev) : o.group.p === you), prio: o.prio, k: k } : null;
@@ -13942,12 +18715,13 @@
   App.canFinish = canFinish;
   function gameKey(st) { return st ? String(st.seed) + '|' + String(st.createdAt) : ''; }
   function playOnMark(st) {
-    var po = App.save && App.save.playOn;
+    var po = App.lesson ? App.lessonPlayOn : App.save && App.save.playOn;
     return po && typeof po === 'object' && po.key === gameKey(st) && typeof po.pct === 'number' ? po : null;
   }
   App.playOnMark = playOnMark;
   function offerFinish(st) {
     if (App.noteDemo) return true;
+    if (App.lesson && App.lesson.finish !== true) { hideNote('finish'); return false; }
     if (!canFinish(st)) { hideNote('finish'); return false; }
     var pct = finishPct(st, App.you);
     var po = playOnMark(st);
@@ -13972,8 +18746,11 @@
     var st = App.game;
     if (App.noteDemo) { hideNote(); return; }
     if (!st) return;
-    App.save.playOn = { key: gameKey(st), pct: App.finishShown === undefined ? finishPct(st, App.you) : App.finishShown };
-    App.saveSoon();
+    if (App.lesson) App.lessonPlayOn = { key: gameKey(st), pct: App.finishShown === undefined ? finishPct(st, App.you) : App.finishShown };
+    else {
+      App.save.playOn = { key: gameKey(st), pct: App.finishShown === undefined ? finishPct(st, App.you) : App.finishShown };
+      App.saveSoon();
+    }
     hideNote('finish');
     if (st.phase === 'roll' && !st.rolled && ECE.Rules.actor(st) === App.you) showWaited(st);
   }
@@ -14000,6 +18777,7 @@
   App.limitWhy = limitWhy;
 
   function showWaited(st, demoRes) {
+    if (App.lesson && !demoRes) return;
     var key = (st.counters ? st.counters.turns : 0) + ':' + st.round + ':' + st.turn;
     if (App.waitedKey === key && !demoRes) return;
     App.waitedKey = key;
@@ -14060,6 +18838,8 @@
     if (!App.panel || !App.game) return;
     try {
       App.panel.render(App.game, { you: App.you, busy: App.busy && ECE.Rules.actor(App.game) === App.you, closeUp: closeUpOn(), centerHost: App.centerMode ? App.el.center : null, centerChips: !!(App.centerMode && App.centerChips), altsHost: !App.centerMode && App.altsCentre ? App.el.center : null });
+      if (App.wide) plateFit();
+      if (App.wide) redock();
     } catch (e) { App.report(e, 'panel'); }
   }
   function renderAll() {
@@ -14106,7 +18886,7 @@
     var M = ECE.Mobile;
     var res = null;
     try {
-      if (M && M.phone && typeof M.fitGame === 'function') res = M.fitGame(App.el, App.game);
+      if (M && M.phone && typeof M.fitGame === 'function') { leaveWide(g); res = M.fitGame(App.el, App.game); }
       else res = desktopFit(g);
     } catch (e) { App.report(e, 'layout'); }
     var center = !!(res && res.center);
@@ -14114,24 +18894,41 @@
     App.centerChips = !!(res && res.centerChips);
     App.altsCentre = !!(res && res.altsInCentre);
     App.fit = res || null;
+    App.orientation = res && res.wide ? 'wide' : 'tall';
     App.el.center.hidden = !(center || App.altsCentre);
     Dom.toggle(g, 'ui-center-mode', center);
     Dom.toggle(g, 'ui-alts-centre', App.altsCentre);
     renderPanel();
     if (App.panel && App.panel.fitChips) App.panel.fitChips();
     if (App.panel && App.panel.fitPrimary) App.panel.fitPrimary();
-    viewCall('resize');
+    viewCall('resize', [{ orientation: App.orientation }]);
+    hudToBoard(res);
     centreInset();
+    if (App.panel && App.panel.fitHits) App.panel.fitHits();
+    plateFit();
     placeNote();
     ECE.Dialogs.replace();
     sheetInset();
+    sideInset();
     bannerSpot(res);
   };
   function bannerSpot(res) {
     var root = document.documentElement, on = !!(res && res.stack) && !onPhone();
+    var wide = !!(res && res.wide) && !onPhone();
     root.classList.toggle('game-stacked', on);
-    if (!on || !App.el.boardHost) return;
+    root.classList.toggle('game-wide', wide);
+    if ((!on && !wide) || !App.el.boardHost) return;
     var r = App.el.boardHost.getBoundingClientRect();
+    if (wide) {
+      var mid = wideMid();
+      if (mid) {
+        root.style.setProperty('--ece-banner-top', Math.round(r.top + mid.y + 8) + 'px');
+        root.style.setProperty('--ece-banner-left', Math.round(r.left + mid.x + mid.w / 2) + 'px');
+        root.style.setProperty('--ece-banner-max', Math.max(220, Math.round(mid.w - 16)) + 'px');
+        root.style.setProperty('--ece-toast-bottom', Math.max(18, Math.round((window.innerHeight || 0) - (r.top + mid.y + mid.h) + 12)) + 'px');
+        return;
+      }
+    }
     root.style.setProperty('--ece-banner-top', Math.round(r.top + r.height * 0.15 + 6) + 'px');
     root.style.setProperty('--ece-banner-left', Math.round(r.left + r.width / 2) + 'px');
     root.style.setProperty('--ece-banner-max', Math.max(200, Math.round(r.width * 0.86)) + 'px');
@@ -14140,8 +18937,7 @@
     var u = null, ca = App.el.center;
     if (ca && !ca.hidden && !closeUpOn() && App.el.boardHost) {
       var hr = App.el.boardHost.getBoundingClientRect(), car = ca.getBoundingClientRect();
-      var geo = null;
-      try { geo = ECE.BoardView.geometry(hr.width, hr.height); } catch (e) { geo = null; }
+      var geo = boardGeo();
       if (geo && geo.unit > 0 && car.height > 0) u = (car.top - hr.top - geo.board.y) / geo.unit;
     }
     viewCall('setCentreInset', [u]);
@@ -14161,11 +18957,26 @@
     if (px !== (App.sheetPx || 0)) { App.sheetPx = px; viewCall('setBottomInset', [px]); placeNote(); }
   }
   App.sheetInset = sheetInset;
+  function sideInset() {
+    if (!App.view || !App.el || !App.el.boardHost) return;
+    var px = 0, top = ECE.Dialogs.top();
+    if (App.screen === 'game' && !onPhone() && App.wide && closeUpOn() && top) {
+      var hd = ECE.Dialogs.get(top);
+      if (hd && hd.spec && hd.spec.place === 'side' && hd.box && hd.box.isConnected && hd.layer.classList.contains('ui-placed')) {
+        var hr = App.el.boardHost.getBoundingClientRect(), br = hd.box.getBoundingClientRect();
+        if (br.width > 0 && br.left < hr.right) px = Math.max(0, Math.round(hr.right - br.left + 8));
+      }
+    }
+    if (px !== (App.sidePx || 0)) { App.sidePx = px; viewCall('setSideInset', [px]); }
+  }
+  App.sideInset = sideInset;
 
   function desktopFit(g) {
-    var W = window.innerWidth || 1280, H = window.innerHeight || 800;
-    var ins = ECE.Mobile && typeof ECE.Mobile.insets === 'function' ? ECE.Mobile.insets() : null;
-    if (ins) { W = Math.max(200, W - (ins.left || 0) - (ins.right || 0)); H = Math.max(200, H - (ins.top || 0) - (ins.bottom || 0)); }
+    var box = desktopBox(), W = box.W, H = box.H;
+    var wide = null;
+    try { wide = wideFit(g, W, H); } catch (e) { App.report(e, 'wide layout'); wide = null; }
+    if (wide) return wide;
+    leaveWide(g);
     var L = ECE.BoardData.LAYOUT, ratio = L.widthUnits / L.heightUnits;
     var m = 14, panelMin = 320, panelMax = 440;
     var host = App.el.boardHost;
@@ -14238,6 +19049,240 @@
     }
     return bw;
   }
+
+  var WIDE = {
+    margin: 10,
+    inset: 8,
+    share: 0.3,
+    gap: 12,
+    plateMin: 250,
+    hRef: 470,
+    kMax: 1.45,
+    dock: 12,
+    dockK: 1.25,
+    recentMin: 88,
+    kMin: 0.85,
+    kStep: 0.05,
+    minShape: 1.45
+  };
+  App.WIDE = WIDE;
+
+  function wideGeometry(w, h) {
+    var BV = ECE.BoardView;
+    if (!BV || typeof BV.geometry !== 'function') return null;
+    var geo = null;
+    try { geo = BV.geometry(w, h, { orientation: 'wide' }); } catch (e) { App.report(e, 'geometry wide'); return null; }
+    if (!geo || geo.orientation !== 'wide' || !geo.board || !geo.center || !(geo.board.w > 0) || !(geo.center.w > 0)) return null;
+    return geo;
+  }
+  function rectOk(r) { return !!r && r.w > 0 && r.h > 0 && isFinite(r.x) && isFinite(r.y); }
+  function rectOf(r) { return { x: r.x, y: r.y, w: r.w, h: r.h }; }
+  App.widePlan = function (W, H, geometry) {
+    var own = !geometry;
+    geometry = geometry || wideGeometry;
+    if (!(W > H)) return null;
+    var m = WIDE.margin, aw = Math.floor(W - m * 2), ah = Math.floor(H - m * 2);
+    if (!(aw > 200 && ah > 160)) return null;
+    var key = aw + 'x' + ah;
+    if (own && planMemo.key === key) return planMemo.plan;
+    var plan = planIn(aw, ah, geometry);
+    var tallUnit = Math.min((H - 28) / 14, (W - 362) / 10);
+    var BVW = ECE.BoardView && ECE.BoardView.WIDE ? ECE.BoardView.WIDE : { maxAspect: 2 };
+    if (plan && plan.geo && plan.geo.W > 0 && plan.geo.W < WIDE.minShape * 10 - 1e-6) {
+      var wider = planIn(aw, Math.floor(aw / WIDE.minShape), geometry);
+      if (wider && wider.unit >= tallUnit) plan = wider;
+    }
+    if (!plan) {
+      for (var h2 = Math.min(ah - 4, Math.floor(aw / WIDE.minShape)); h2 >= aw / (BVW.maxAspect || 2) - 0.5 && !plan; h2 -= 4) {
+        var q = planIn(aw, Math.floor(h2), geometry);
+        if (q && q.unit >= tallUnit) plan = q;
+        else if (q) break;
+      }
+    }
+    if (own && ECE.BoardView && typeof ECE.BoardView.geometry === 'function') planMemo = { key: key, plan: plan };
+    return plan;
+  };
+  var planMemo = { key: '', plan: null };
+  function planIn(aw, ah, geometry) {
+    var isWide = function (g) { return !!g && g.orientation === 'wide' && !!g.board && !!g.center && g.board.w > 0 && g.center.w > 0; };
+    var g0 = geometry(aw, ah);
+    if (!isWide(g0)) return null;
+    var bw = Math.floor(g0.board.w), bh = Math.floor(g0.board.h);
+    var geo = geometry(bw, bh);
+    if (!isWide(geo)) geo = g0;
+    var c = geo.center, i = WIDE.inset, hud = geo.hud || {};
+    var pw = c.w * WIDE.share - i;
+    var left = rectOk(hud.left) ? rectOf(hud.left) : { x: c.x + i, y: c.y + i, w: pw, h: c.h - i * 2 };
+    var right = rectOk(hud.right) ? rectOf(hud.right) : { x: c.x + c.w - i - pw, y: c.y + i, w: pw, h: c.h - i * 2 };
+    if (!(right.x > left.x + left.w)) return null;
+    var tall = Math.min(left.h, right.h), narrow = Math.min(left.w, right.w);
+    var k = Math.min(WIDE.kMax, Math.max(1, tall / WIDE.hRef));
+    k = Math.max(1, Math.min(k, narrow / WIDE.plateMin));
+    if (narrow / k < WIDE.plateMin - 0.5) return null;
+    var mx = left.x + left.w + WIDE.gap, mw = right.x - WIDE.gap - mx;
+    var mid = { x: mx, y: c.y, w: Math.max(0, mw), h: c.h };
+    var heart = rectOk(geo.heart) ? rectOf(geo.heart) : { x: c.x + c.w * WIDE.share, y: c.y, w: c.w * (1 - WIDE.share * 2), h: c.h };
+    return { board: { w: bw, h: bh }, geo: geo, center: rectOf(c), left: left, right: right, mid: mid, heart: heart, k: k,
+      lw: left.w / k, rw: right.w / k, h: tall / k, unit: geo.unit || 0 };
+  }
+  function wideMid() { return App.wide && App.wide.mid ? App.wide.mid : null; }
+  App.wideMid = wideMid;
+
+  function wideFit(g, W, H) {
+    if (!App.el || !App.panel || !(W > H)) return null;
+    if (App.view && typeof App.view.orientation !== 'function') return null;
+    var plan = App.widePlan(W, H);
+    if (!plan) return null;
+    var host = App.el.boardHost, root = document.documentElement;
+    g.classList.remove('ui-layout-side');
+    g.classList.remove('ui-layout-stack');
+    g.classList.remove('ui-stack-compact');
+    g.classList.add('ui-layout-wide');
+    root.classList.add('game-wide');
+    host.style.width = plan.board.w + 'px';
+    host.style.height = plan.board.h + 'px';
+    host.style.setProperty('--ece-board-r', Math.max(4, Math.round(0.125 * (plan.unit || plan.board.h / 10) * 10) / 10) + 'px');
+    var dock = closeUpOn();
+    Dom.toggle(g, 'ui-wide-dock', dock);
+    var fits = false, used = plan;
+    var modes = dock ? [['list', true]] : [['list', true], ['grid', true], ['list', false], ['grid', false], ['tight', false]];
+    for (var i = 0; i < modes.length && !fits; i++) {
+      setHudMode(g, modes[i][0], modes[i][1]);
+      placeHud(plan, dock);
+      fits = dock || hudFits(plan);
+    }
+    for (var k = Math.min(1, plan.k) - WIDE.kStep; !fits && k >= WIDE.kMin - 1e-9; k -= WIDE.kStep) {
+      used = scaledPlan(plan, k);
+      placeHud(used, dock);
+      fits = hudFits(used);
+    }
+    var key = shapeKey(W, H);
+    if (!fits && !dock && App.wideKey === key) fits = true;
+    if (!fits) { leaveWide(g); return null; }
+    if (!dock) App.wideKey = key;
+    App.wide = used;
+    plateFit();
+    return { center: false, wide: true, dock: dock, plan: used, boardW: used.board.w, boardH: used.board.h };
+  }
+  function shapeKey(W, H) {
+    var st = App.game;
+    return Math.round(W) + 'x' + Math.round(H) + ':' + (st && st.players ? st.players.length : 0);
+  }
+  function scaledPlan(plan, k) {
+    var out = {};
+    for (var n in plan) if (Object.prototype.hasOwnProperty.call(plan, n)) out[n] = plan[n];
+    var tall = plan.h * plan.k;
+    out.k = Math.round(k * 1000) / 1000;
+    out.lw = plan.left.w / out.k; out.rw = plan.right.w / out.k; out.h = tall / out.k;
+    return out;
+  }
+  function setHudMode(g, chips, recent) {
+    Dom.toggle(g, 'ui-hud-list', chips === 'list');
+    Dom.toggle(g, 'ui-hud-grid', chips === 'grid' || chips === 'tight');
+    Dom.toggle(g, 'ui-hud-tight', chips === 'tight');
+    Dom.toggle(g, 'ui-hud-norecent', !recent);
+    g.dataset.hud = chips + (recent ? '' : '-norecent');
+  }
+  function plateFit() {
+    var P = App.el && App.el.panel, api = App.panel, g = App.el && App.el.screens.game;
+    if (!P || !api || !g) return;
+    if (!g.classList.contains('ui-layout-wide') || g.classList.contains('ui-wide-dock') || !api.chipsEl.getClientRects().length) { P.style.removeProperty('--hud-lh'); return; }
+    var cs = getComputedStyle(P);
+    var lh = api.chipsEl.offsetTop + api.chipsEl.offsetHeight + (parseFloat(cs.paddingBottom) || 0);
+    var full = P.offsetHeight || 0;
+    if (lh > 0 && full > 0 && lh < full - 0.5) P.style.setProperty('--hud-lh', Math.ceil(lh) + 'px');
+    else P.style.removeProperty('--hud-lh');
+  }
+  App.plateFit = plateFit;
+  function placeHud(plan, dock) {
+    var P = App.el.panel, g = App.el.screens.game, host = App.el.boardHost, s = P.style;
+    var gr = g.getBoundingClientRect(), hr = host.getBoundingClientRect();
+    var ox = hr.left - gr.left, oy = hr.top - gr.top;
+    if (!dock) {
+      var k = plan.k;
+      s.left = (ox + plan.left.x).toFixed(1) + 'px';
+      s.top = (oy + plan.left.y).toFixed(1) + 'px';
+      s.width = ((plan.right.x + plan.right.w - plan.left.x) / k).toFixed(2) + 'px';
+      s.height = plan.h.toFixed(2) + 'px';
+      s.setProperty('--hud-l', plan.lw.toFixed(2) + 'px');
+      s.setProperty('--hud-r', plan.rw.toFixed(2) + 'px');
+      s.setProperty('--hud-k', String(Math.round(k * 1000) / 1000));
+      g.dataset.dock = '';
+      if (App.panel && App.panel.fitLines) App.panel.fitLines();
+      return;
+    }
+    var kd = Math.min(plan.k, WIDE.dockK), D = WIDE.dock;
+    s.left = (ox + D).toFixed(1) + 'px';
+    s.width = ((plan.board.w - D * 2) / kd).toFixed(2) + 'px';
+    s.height = '';
+    s.top = '0px';
+    s.setProperty('--hud-k', String(Math.round(kd * 1000) / 1000));
+    var C = App.panel.chipsEl, steps = ['full', 'tight', 'mini', 'rows'], k2;
+    var over = function () { return C.scrollWidth > C.clientWidth + 1 || P.scrollWidth > P.clientWidth + 1; };
+    for (k2 = 0; k2 < steps.length; k2++) {
+      g.dataset.dock = steps[k2];
+      if (!over()) break;
+    }
+    var hh = P.offsetHeight || 0;
+    s.top = (oy + plan.board.h - D - hh * kd).toFixed(1) + 'px';
+    App.dockPx = Math.round(hh * kd + D);
+  }
+  function redock() {
+    var g = App.el && App.el.screens && App.el.screens.game;
+    if (!App.wide || !g || !g.classList.contains('ui-wide-dock') || !App.panel || !App.panel.chipsEl) return;
+    var step = g.dataset.dock, px0 = App.dockPx || 0;
+    placeHud(App.wide, true);
+    if (g.dataset.dock === step && (App.dockPx || 0) === px0) return;
+    var px = App.dockPx || 0;
+    if (px !== (App.dockSent || 0)) { App.dockSent = px; viewCall('setBottomInset', [px]); }
+  }
+  App.redock = redock;
+  function hudFits(plan) {
+    var api = App.panel, P = App.el.panel;
+    var cs = getComputedStyle(P);
+    var pad = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0), gap = parseFloat(cs.rowGap) || 0;
+    var oh = function (e) { return e && !e.hidden && e.getClientRects && e.getClientRects().length ? e.offsetHeight : 0; };
+    var row1 = Math.max(oh(api.headEl), oh(api.turnEl));
+    var left = pad + row1 + gap + oh(api.chipsEl);
+    var rec = App.el.screens.game.classList.contains('ui-hud-norecent') ? 0 : WIDE.recentMin;
+    var right = pad + row1 + gap + oh(api.actionsEl) + (rec ? gap + rec : 0);
+    var cut = false, list = api.chipsEl.querySelectorAll('.ui-chip-cash, .ui-chip-meta');
+    for (var i = 0; i < list.length && !cut; i++) cut = list[i].getClientRects().length > 0 && list[i].scrollWidth > list[i].clientWidth + 1;
+    return left <= plan.h + 0.5 && right <= plan.h + 0.5 && !cut;
+  }
+  function leaveWide(g) {
+    if (!g) return;
+    var root = document.documentElement;
+    if (!App.wide && !g.classList.contains('ui-layout-wide')) return;
+    App.wide = null;
+    ['ui-layout-wide', 'ui-wide-dock', 'ui-hud-list', 'ui-hud-grid', 'ui-hud-tight', 'ui-hud-norecent'].forEach(function (c) { g.classList.remove(c); });
+    delete g.dataset.hud;
+    delete g.dataset.dock;
+    root.classList.remove('game-wide');
+    var s = App.el && App.el.panel && App.el.panel.style;
+    if (s) { s.left = ''; s.top = ''; s.height = ''; s.width = ''; s.removeProperty('--hud-l'); s.removeProperty('--hud-r'); s.removeProperty('--hud-k'); s.removeProperty('--hud-lh'); }
+    if (App.el && App.el.boardHost) App.el.boardHost.style.removeProperty('--ece-board-r');
+    App.dockPx = 0;
+  }
+  function hudToBoard(res) {
+    var plan = res && res.wide ? res.plan : null;
+    var sig = plan ? [plan.left.x, plan.left.y, plan.left.w, plan.left.h, plan.right.x, plan.right.w].map(Math.round).join(',') : '';
+    if (sig !== App.hudSig) {
+      App.hudSig = sig;
+      viewCall('setHud', [plan ? [rectOf(plan.left), rectOf(plan.right)] : null]);
+    }
+    var px = plan && res.dock ? (App.dockPx || 0) : 0;
+    if (px !== (App.dockSent || 0)) { App.dockSent = px; viewCall('setBottomInset', [px]); }
+  }
+  function boardGeo() {
+    var host = App.el && App.el.boardHost;
+    var v = viewCall('geometry');
+    if (v && v.center && v.board) return v;
+    if (!host) return null;
+    var r = host.getBoundingClientRect();
+    try { return App.orientation === 'wide' ? wideGeometry(r.width, r.height) : ECE.BoardView.geometry(r.width, r.height); } catch (e) { return null; }
+  }
+  App.boardGeo = boardGeo;
 
   var toastTimer = null;
   function toast(text) {
@@ -14353,6 +19398,7 @@
         try { var sst = S.status(); ro = !!(sst && sst.readOnly) || !!App.readOnly; } catch (e2) { ro = !!App.readOnly; }
         return { ok: false, error: ro ? READ_ONLY_LINE : 'This browser could not store the imported save, so nothing changed.' };
       }
+      if (App.lesson) quitLesson('home');
       stopTimers();
       ECE.Dialogs.closeAll();
       App.save = fillSave(r.save);
@@ -14370,6 +19416,7 @@
     document.addEventListener('keydown', Dom.safe(function (ev) {
       if (ev.defaultPrevented) return;
       if (ECE.Sound) ECE.Sound.unlock();
+      if (held() && (ev.key === 'Escape' || ev.key === 'Esc' || ev.key === ' ' || ev.key === 'Enter' || ev.key === 'Spacebar')) return;
       if (ev.key === 'Escape' || ev.key === 'Esc') {
         if (ECE.Dialogs.isOpen()) { ECE.Dialogs.escape(); ev.preventDefault(); return; }
         if (App.screen === 'game' && App.panel && App.panel.clearPick && App.panel.clearPick()) { ev.preventDefault(); return; }
@@ -14396,12 +19443,16 @@
       lastTick = now;
       var st = App.game;
       if (!st || st.phase === 'over' || App.screen !== 'game' || document.hidden || App.auto || App.landscape || App.takenOver) return;
+      if (held()) return;
       var r = safeAct(st, { t: 'tick', ms: Math.round(dt) });
       if (r.ok && r.events && r.events.length) { noteEvents(st, r.events); pump(); }
       App.tickCount = (App.tickCount || 0) + 1;
       if (App.tickCount % 5 === 0) App.saveSoon();
       renderTop();
-      if (App.panel) Dom.text(App.panel.headEl.querySelector('.ui-panel-round'), ECE.Panel.roundText(st));
+      if (App.panel) {
+        Dom.text(App.panel.headEl.querySelector('.ui-panel-round'), ECE.Panel.roundText(st));
+        if (App.panel.fitRound) App.panel.fitRound();
+      }
     }, 'tick'), 1000);
   }
 
@@ -14470,7 +19521,7 @@
     var R = ECE.Rules;
     var st = App.game ? (R.clone ? R.clone(App.game) : cloneJSON(App.game)) : null;
     if (!st) {
-      st = R.newGame({ seed: 7, players: playersFor(App.save.setup), rules: { auctions: true, rainFund: false, limit: { kind: 'none', value: 0 } }, now: Date.now() });
+      st = R.newGame({ seed: 7, players: playersFor(App.save.setup), rules: { auctions: true, rainFund: false, limit: { kind: 'none', value: 0 } }, now: Date.now(), theme: themeId(App.save.setup.theme) });
     }
     return st;
   }
@@ -14547,7 +19598,7 @@
       start: function (o) {
         o = o || {};
         var setup = Object.assign({}, App.save.setup);
-        ['opponents', 'level', 'limit', 'name', 'token', 'auctions', 'rainFund'].forEach(function (k) { if (o[k] !== undefined) setup[k] = o[k]; });
+        ['opponents', 'level', 'limit', 'name', 'token', 'auctions', 'rainFund', 'theme'].forEach(function (k) { if (o[k] !== undefined) setup[k] = o[k]; });
         App.newGame(setup, { seed: o.seed !== undefined ? o.seed : newSeed(), noIntro: true });
         return new Promise(function (res) { setTimeout(function () { res(cloneJSON(App.game)); }, 30); });
       },
@@ -14557,7 +19608,15 @@
       speed: function (s) { if (THINK[s] !== undefined) { App.testSpeed = s; App.save.settings.speed = s; } return cpuSpeed(); },
       closeUp: function (on) { App.setCloseUp(!!on); return closeUpOn(); },
       errors: function () { return App.errors.slice(); },
-      home: function () { ECE.Dialogs.closeAll(); App.go('home'); return App.screen; }
+      home: function () { ECE.Dialogs.closeAll(); App.go('home'); return App.screen; },
+      theme: function (id) {
+        if (id !== undefined && App.save && App.save.setup) {
+          App.save.setup.theme = themeId(id);
+          showTheme(App.save.setup.theme);
+          if (App.screen && App.screen !== 'game') App.go(App.screen);
+        }
+        return ECE.Theme && ECE.Theme.current ? ECE.Theme.current() : 'emerald';
+      }
     };
     window.ECE_TEST = T;
     return T;
@@ -14602,7 +19661,7 @@
       if (!wl.lines.length) {
         var keep = { rent: 1, buy: 1, auctionEnd: 1, trade: 1, build: 1, bankrupt: 1, fund: 1 };
         var picked = gst.log.filter(function (e) { return e && keep[e.t] && !(e.t === 'auctionEnd' && (e.winner === null || e.winner === undefined)); }).slice(-5);
-        wl = { lines: picked.map(function (e) { var p = Dom.player(gst, e.p !== undefined ? e.p : e.winner); return { text: ECE.Rules.text(gst, e, App.you), color: p ? p.color : null, you: e.p === App.you || e.owner === App.you }; }), more: 0 };
+        wl = { lines: picked.map(function (e) { var p = Dom.player(gst, e.p !== undefined ? e.p : e.winner); return { text: textOf(gst, e, App.you), color: p ? p.color : null, you: e.p === App.you || e.owner === App.you }; }), more: 0 };
       }
       showWaited(gst, wl);
       return !!wl.lines.length;
@@ -14644,7 +19703,7 @@
     App.query = Dom.query();
     App.test = App.query.test === '1';
     App.debug = App.query.debug === '1';
-    App.version = ECE.VERSION || '1.1.0';
+    App.version = ECE.VERSION || '1.2.0';
     installCatchers();
     if (App.test) installTestHooks();
     try {
@@ -14663,7 +19722,7 @@
       keyboard();
       visibility();
       ticker();
-      ECE.Dialogs.onChange(function () { sheetInset(); pump(); });
+      ECE.Dialogs.onChange(function () { sheetInset(); sideInset(); holdingsClosed(); pump(); });
       if (ECE.Pwa) {
         try {
           if (typeof ECE.Pwa.onUpdate === 'function') ECE.Pwa.onUpdate(onUpdateReady);
