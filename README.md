@@ -36,5 +36,5 @@ area except Diablo Dam, one of the Skagit River dams that help power Seattle. No
 Two themes, picked on New game: Emerald City (Puget Sound) and Day 1 (an office campus in South Lake Union and
 Bellevue; each building name has a typo on purpose).
 
-Version 1.2.0 (build 9ffe2896adf4a1ab). These files are the finished game for GitHub Pages; a new version
+Version 1.3.1 (build 8d826b264a144f1a). These files are the finished game for GitHub Pages; a new version
 replaces all of them.

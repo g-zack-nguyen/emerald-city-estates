@@ -1,7 +1,7 @@
-/*! Emerald City Estates 1.2.0 (build 9ffe2896adf4a1ab). An original game; no affiliation with any company. */
+/*! Emerald City Estates 1.3.1 (build 8d826b264a144f1a). An original game; no affiliation with any company. */
 (function (ECE) {
   'use strict';
-  ECE.BUILD = '9ffe2896adf4a1ab';
+  ECE.BUILD = '8d826b264a144f1a';
 })(window.ECE = window.ECE || {});
 ;
 (function (ECE) {
@@ -35,80 +35,80 @@
 
   var SPACES = [
     { i: 0, kind: 'start', name: 'START', label: ['START'], note: 'Payday! Get $250 each time you pass or land here.' },
-    street(1, 'Dock St', ['Dock', 'St'], 'Tacoma', 'tacoma', 75, [6, 25, 80, 195, 270, 370],
+    street(1, 'Dock St', ['Dock', 'St'], 'Tacoma', 'tacoma', 75, [6, 25, 80, 195, 270, 370, 480],
       'Downtown Tacoma\u2019s street along the Thea Foss Waterway.'),
     { i: 2, kind: 'card', deck: 'rain', name: 'Rain Check', label: ['Rain', 'Check'] },
-    street(3, 'Commerce St', ['Commerce', 'St'], 'Tacoma', 'tacoma', 80, [6, 25, 80, 200, 280, 370],
+    street(3, 'Commerce St', ['Commerce', 'St'], 'Tacoma', 'tacoma', 80, [6, 25, 80, 200, 280, 370, 480],
       'Runs from downtown Tacoma to the Dome District.'),
-    street(4, 'Ruston Way', ['Ruston', 'Way'], 'Tacoma', 'tacoma', 90, [7, 30, 85, 210, 290, 380],
+    street(4, 'Ruston Way', ['Ruston', 'Way'], 'Tacoma', 'tacoma', 90, [7, 30, 85, 210, 290, 380, 490],
       'Tacoma\u2019s waterfront walk on Commencement Bay.'),
     { i: 5, kind: 'transit', mode: 'train', name: 'Tacoma Dome Station', label: ['Tacoma', 'Dome'], area: 'Tacoma', price: 230,
       about: 'Trains stop here, a short walk from the Tacoma Dome.' },
     { i: 6, kind: 'tax', name: 'Sales Tax', label: ['Sales', 'Tax'], amount: 125, note: 'Pay $125.',
       about: 'Paid at the register, on top of the price tag.' },
-    street(7, 'Hewitt Ave', ['Hewitt', 'Ave'], 'Everett', 'everett', 95, [7, 30, 100, 250, 350, 460],
+    street(7, 'Hewitt Ave', ['Hewitt', 'Ave'], 'Everett', 'everett', 95, [7, 30, 100, 250, 350, 460, 600],
       'Crosses Everett from west to east, out to the Snohomish River.'),
     { i: 8, kind: 'traffic', name: 'Stuck in Traffic', label: ['Stuck in', 'Traffic'], area: 'I-5',
       note: 'Sent here? You are stuck in traffic. Just driving by? Nothing happens.' },
-    street(9, 'Colby Ave', ['Colby', 'Ave'], 'Everett', 'everett', 110, [8, 35, 105, 260, 360, 480],
+    street(9, 'Colby Ave', ['Colby', 'Ave'], 'Everett', 'everett', 110, [8, 35, 105, 260, 360, 480, 620],
       'A north-south street through the middle of Everett.'),
-    street(10, 'Grand Ave', ['Grand', 'Ave'], 'Everett', 'everett', 125, [9, 40, 115, 270, 380, 500],
+    street(10, 'Grand Ave', ['Grand', 'Ave'], 'Everett', 'everett', 125, [9, 40, 115, 270, 380, 500, 650],
       'Grand Avenue Park looks out over Port Gardner from this street.'),
     { i: 11, kind: 'card', deck: 'buzz', name: 'Local Buzz', label: ['Local', 'Buzz'] },
-    street(12, 'Delridge Way SW', ['Delridge', 'Way SW'], 'West Seattle', 'westseattle', 130, [10, 45, 140, 340, 480, 650],
+    street(12, 'Delridge Way SW', ['Delridge', 'Way SW'], 'West Seattle', 'westseattle', 130, [10, 45, 140, 340, 480, 650, 850],
       'Runs north-south through Delridge, in West Seattle.'),
-    street(13, 'California Ave SW', ['California', 'Ave SW'], 'West Seattle', 'westseattle', 140, [10, 45, 145, 350, 490, 660],
+    street(13, 'California Ave SW', ['California', 'Ave SW'], 'West Seattle', 'westseattle', 140, [10, 45, 145, 350, 490, 660, 860],
       'West Seattle\u2019s Alaska Junction is on this street.'),
     { i: 14, kind: 'utility', name: 'Diablo Dam Power', label: ['Diablo', 'Dam'], area: 'Skagit River', price: 175,
       about: 'One of the Skagit River dams that power Seattle.' },
-    street(15, 'Alki Ave SW', ['Alki', 'Ave SW'], 'West Seattle', 'westseattle', 155, [12, 50, 155, 370, 510, 680],
+    street(15, 'Alki Ave SW', ['Alki', 'Ave SW'], 'West Seattle', 'westseattle', 155, [12, 50, 155, 370, 510, 680, 880],
       'The beach road of Alki, across Elliott Bay from downtown.'),
     { i: 16, kind: 'transit', mode: 'ferry', name: 'Fauntleroy Ferry Dock', label: ['Fauntleroy', 'Ferry'], area: 'West Seattle', price: 230,
       about: 'Ferries to Vashon Island and Southworth.' },
-    street(17, 'Shilshole Ave NW', ['Shilshole', 'Ave NW'], 'Ballard', 'ballard', 165, [12, 65, 175, 430, 610, 810],
+    street(17, 'Shilshole Ave NW', ['Shilshole', 'Ave NW'], 'Ballard', 'ballard', 165, [12, 65, 175, 430, 610, 810, 1050],
       'Runs along the Ballard shore of Salmon Bay.'),
-    street(18, 'NW Market St', ['NW Market', 'St'], 'Ballard', 'ballard', 175, [13, 65, 180, 440, 620, 820],
+    street(18, 'NW Market St', ['NW Market', 'St'], 'Ballard', 'ballard', 175, [13, 65, 180, 440, 620, 820, 1075],
       'Ballard\u2019s main east-west street, west to the Locks.'),
-    street(19, 'Ballard Ave NW', ['Ballard', 'Ave NW'], 'Ballard', 'ballard', 190, [14, 65, 190, 460, 640, 840],
+    street(19, 'Ballard Ave NW', ['Ballard', 'Ave NW'], 'Ballard', 'ballard', 190, [14, 65, 190, 460, 640, 840, 1100],
       'The Ballard farmers market sets up on this street every Sunday.'),
     { i: 20, kind: 'rest', name: 'Coffee Break', label: ['Coffee', 'Break'],
       note: 'Take a break. With the Rain Fund house rule on, collect the Rain Fund.' },
-    street(21, 'E Pine St', ['E Pine', 'St'], 'Capitol Hill', 'capitolhill', 205, [15, 75, 220, 560, 780, 1050],
+    street(21, 'E Pine St', ['E Pine', 'St'], 'Capitol Hill', 'capitolhill', 205, [15, 75, 220, 560, 780, 1050, 1375],
       'Part of the Pike/Pine nightlife strip on Capitol Hill.'),
     { i: 22, kind: 'card', deck: 'rain', name: 'Rain Check', label: ['Rain', 'Check'] },
-    street(23, '15th Ave E', ['15th', 'Ave E'], 'Capitol Hill', 'capitolhill', 215, [16, 75, 230, 570, 790, 1050],
+    street(23, '15th Ave E', ['15th', 'Ave E'], 'Capitol Hill', 'capitolhill', 215, [16, 75, 230, 570, 790, 1050, 1375],
       'Runs along the east side of Volunteer Park.'),
-    street(24, 'Broadway E', ['Broadway', 'East'], 'Capitol Hill', 'capitolhill', 230, [17, 80, 240, 580, 810, 1075],
+    street(24, 'Broadway E', ['Broadway', 'East'], 'Capitol Hill', 'capitolhill', 230, [17, 80, 240, 580, 810, 1075, 1400],
       'Capitol Hill\u2019s main street of shops and cafes.'),
     { i: 25, kind: 'transit', mode: 'ferry', name: 'Colman Dock', label: ['Colman', 'Dock'], area: 'Downtown', price: 230,
       about: 'Ferries to Bainbridge Island and Bremerton.' },
     { i: 26, kind: 'utility', name: 'Cedar River Water', label: ['Cedar', 'River'], area: 'Cedar River', price: 175,
       about: 'Much of Seattle\u2019s tap water comes from this river.' },
-    street(27, '1st Ave', ['1st', 'Ave'], 'Downtown', 'downtown', 250, [19, 90, 280, 690, 970, 1300],
+    street(27, '1st Ave', ['1st', 'Ave'], 'Downtown', 'downtown', 250, [19, 90, 280, 690, 970, 1300, 1700],
       'Runs north from Pioneer Square through downtown to Belltown.'),
     { i: 28, kind: 'bridge', name: 'Bridge Up!', label: ['Bridge', 'Up!'], area: 'Fremont Bridge',
       note: 'The Fremont Bridge is up. Go to Stuck in Traffic; no salary.',
       about: 'The Fremont drawbridge goes up about 35 times a day for boats.' },
-    street(29, 'Alaskan Way', ['Alaskan', 'Way'], 'Downtown', 'downtown', 265, [20, 95, 290, 710, 990, 1325],
+    street(29, 'Alaskan Way', ['Alaskan', 'Way'], 'Downtown', 'downtown', 265, [20, 95, 290, 710, 990, 1325, 1725],
       'Seattle\u2019s waterfront street on Elliott Bay.'),
-    street(30, 'Pike Place', ['Pike', 'Place'], 'Downtown', 'downtown', 290, [20, 105, 310, 730, 1025, 1350],
+    street(30, 'Pike Place', ['Pike', 'Place'], 'Downtown', 'downtown', 290, [20, 105, 310, 730, 1025, 1350, 1750],
       'A brick street through the public market above the bay.'),
     { i: 31, kind: 'card', deck: 'buzz', name: 'Local Buzz', label: ['Local', 'Buzz'] },
-    street(32, 'Main St', ['Main', 'St'], 'Bellevue', 'bellevue', 310, [25, 115, 350, 860, 1200, 1625],
+    street(32, 'Main St', ['Main', 'St'], 'Bellevue', 'bellevue', 310, [25, 115, 350, 860, 1200, 1625, 2125],
       'The main street of Old Bellevue, near Meydenbauer Bay.'),
-    street(33, 'NE 8th St', ['NE 8th', 'St'], 'Bellevue', 'bellevue', 330, [25, 120, 370, 880, 1225, 1650],
+    street(33, 'NE 8th St', ['NE 8th', 'St'], 'Bellevue', 'bellevue', 330, [25, 120, 370, 880, 1225, 1650, 2150],
       'Runs through the high-rises of downtown Bellevue.'),
-    street(34, 'Bellevue Way NE', ['Bellevue', 'Way NE'], 'Bellevue', 'bellevue', 355, [25, 125, 370, 910, 1250, 1675],
+    street(34, 'Bellevue Way NE', ['Bellevue', 'Way NE'], 'Bellevue', 'bellevue', 355, [25, 125, 370, 910, 1250, 1675, 2175],
       'Downtown Bellevue\u2019s main north-south street, past Downtown Park.'),
     { i: 35, kind: 'transit', mode: 'bus', name: 'Bellevue Transit Center', label: ['Bellevue', 'Transit'], area: 'Bellevue', price: 230,
       about: 'Downtown Bellevue\u2019s bus hub, on NE 6th St.' },
-    street(36, '84th Ave NE', ['84th', 'Ave NE'], 'Medina', 'medina', 375, [30, 140, 420, 1050, 1450, 1950],
+    street(36, '84th Ave NE', ['84th', 'Ave NE'], 'Medina', 'medina', 375, [30, 140, 420, 1050, 1450, 1950, 2525],
       'A north-south street through Medina and Clyde Hill.'),
     { i: 37, kind: 'tax', name: '520 Bridge Toll', label: ['520', 'Toll'], amount: 85, note: 'Pay $85.',
       about: 'The toll for the floating bridge across Lake Washington.' },
-    street(38, 'Overlake Dr W', ['Overlake', 'Dr W'], 'Medina', 'medina', 405, [30, 145, 440, 1075, 1500, 2000],
+    street(38, 'Overlake Dr W', ['Overlake', 'Dr W'], 'Medina', 'medina', 405, [30, 145, 440, 1075, 1500, 2000, 2600],
       'In Medina, a small town on the shore of Lake Washington.'),
-    street(39, 'Evergreen Point Rd', ['Evergreen', 'Point Rd'], 'Medina', 'medina', 445, [35, 155, 460, 1125, 1550, 2050],
+    street(39, 'Evergreen Point Rd', ['Evergreen', 'Point Rd'], 'Medina', 'medina', 445, [35, 155, 460, 1125, 1550, 2050, 2675],
       'Leads to Evergreen Point, where the floating bridge lands.')
   ];
 
@@ -123,7 +123,9 @@
     mortgageShare: 0.5,
     unmortgageExtra: 0.1,
     sellShare: 0.5,
-    maxLevel: 5,
+    towerLevel: 5,
+    maxLevel: 6,
+    skyscraperCost: 2,
     auctionOpen: 10,
     maxOffers: 3,
     finishPercent: 70,
@@ -136,8 +138,25 @@
 
   function streetRent(space, level, ownsDistrict) {
     if (!space || space.kind !== 'street') return 0;
-    var r = space.rent[Math.max(0, Math.min(5, level | 0))];
+    var r = space.rent[Math.max(0, Math.min(RULES.maxLevel, level | 0))];
     return (level === 0 && ownsDistrict) ? r * 2 : r;
+  }
+
+  function levelCost(i, level) {
+    var s = SPACES[i], dd = s && s.kind === 'street' ? byId[s.district] : null;
+    if (!dd || typeof level !== 'number' || Math.floor(level) !== level || level < 1 || level > RULES.maxLevel) return 0;
+    return level > RULES.towerLevel ? dd.build * RULES.skyscraperCost : dd.build;
+  }
+  function levelSellValue(i, level) { return Math.round(levelCost(i, level) * RULES.sellShare); }
+  function paidFor(i, level) {
+    var v = 0, top = Math.min(RULES.maxLevel, level | 0);
+    for (var k = 1; k <= top; k++) v += levelCost(i, k);
+    return v;
+  }
+  function soldFor(i, level) {
+    var v = 0, top = Math.min(RULES.maxLevel, level | 0);
+    for (var k = 1; k <= top; k++) v += levelSellValue(i, k);
+    return v;
   }
 
   var byId = {};
@@ -161,6 +180,10 @@
     },
     buildCost: function (i) { var dd = ECE.BoardData.districtOf(i); return dd ? dd.build : 0; },
     streetRent: streetRent,
+    levelCost: levelCost,
+    levelSellValue: levelSellValue,
+    paidFor: paidFor,
+    soldFor: soldFor,
     TRANSIT: [5, 16, 25, 35],
     UTILITIES: [14, 26],
     TRAFFIC: 8,
@@ -184,7 +207,7 @@
     { id: 'rc8',  text: 'Payday! Advance to START.', effect: { to: 0 } },
     { id: 'rc9',  text: 'Sunday farmers market. Advance to Ballard Ave NW.', effect: { to: 19 } },
     { id: 'rc10', text: 'Night out on the Hill. Advance to Broadway E.', effect: { to: 24 } },
-    { id: 'rc11', text: 'Moss on every roof. Pay $35 per home and $90 per tower you own.', effect: { repairs: { home: 35, tower: 90 } } },
+    { id: 'rc11', text: 'Moss on every roof. Pay $35 per home and $90 per tower or skyscraper you own.', effect: { repairs: { home: 35, tower: 90 } } },
     { id: 'rc12', text: 'Your Lake Union houseboat rental is booked all summer. Collect $120.', effect: { cash: 120 } },
     { id: 'rc13', text: 'Parking ticket on Capitol Hill. Pay $30.', effect: { cash: -30 } },
     { id: 'rc14', text: 'The mountain is out! Everyone is cheerful: collect $20 from each player.', effect: { each: 20 } }
@@ -199,7 +222,7 @@
     { id: 'lb6',  text: 'You sell your old flannel shirts online. Collect $60.', effect: { cash: 60 } },
     { id: 'lb7',  text: 'You host the block party. Pay each player $15.', effect: { each: -15 } },
     { id: 'lb8',  text: 'Your food truck caters a street fair. Collect $140.', effect: { cash: 140 } },
-    { id: 'lb9',  text: 'Seismic retrofit check. Pay $30 per home and $80 per tower you own.', effect: { repairs: { home: 30, tower: 80 } } },
+    { id: 'lb9',  text: 'Seismic retrofit check. Pay $30 per home and $80 per tower or skyscraper you own.', effect: { repairs: { home: 30, tower: 80 } } },
     { id: 'lb10', text: 'You hit every green light on Aurora. Advance to START.', effect: { to: 0 } },
     { id: 'lb11', text: 'Two inches of snow and the whole city stops. Go to Stuck in Traffic. No salary.', effect: { traffic: true } },
     { id: 'lb12', text: 'Carpool Pass. Leave Stuck in Traffic for free. Keep this card until you use it.', effect: { carpool: true } },
@@ -232,8 +255,8 @@
     },
     money: { sign: '$' },
     buildings: {
-      home: 'home', homes: 'homes', tower: 'tower',
-      levelNames: ['No buildings', '1 home', '2 homes', '3 homes', '4 homes', 'Tower']
+      home: 'home', homes: 'homes', tower: 'tower', skyscraper: 'skyscraper',
+      levelNames: ['No buildings', '1 home', '2 homes', '3 homes', '4 homes', 'Tower', 'Skyscraper']
     },
     places: {
       start: 'START', traffic: 'Stuck in Traffic', drivingBy: 'Just driving by',
@@ -340,7 +363,8 @@
       start: B.SPACES[B.START].name, traffic: B.SPACES[B.TRAFFIC].name, rest: B.SPACES[B.REST].name, bridge: B.SPACES[B.BRIDGE].name,
       drivingBy: P.drivingBy || 'Just driving by', rainFund: P.rainFund || 'Rain Fund', carpool: P.carpool || 'Carpool Pass',
       carpools: (P.carpool || 'Carpool Pass') + 'es', stuck: 'stuck in traffic', leaveStuck: 'leave traffic', leftStuck: 'left traffic',
-      street: 'street', streets: 'streets'
+      street: 'street', streets: 'streets',
+      skyscraper: (G.buildings && G.buildings.levelNames && G.buildings.levelNames[B.RULES.maxLevel]) || 'Skyscraper'
     },
     kinds: { street: 'street', start: 'Payday', traffic: 'Traffic jam', rest: 'Rest stop', bridge: 'Drawbridge', ferry: 'Ferry dock',
       bus: 'Bus transit stop', train: 'Train station', utility: 'Utility', toll: 'Toll', tax: 'Tax', card: 'Card space' },
@@ -362,12 +386,12 @@
     title: 'Day 1 Estates',
     home: {
       place: 'South Lake Union · Bellevue',
-      tagline: 'Buy the campus, build homes and towers, and end the day on top.',
+      tagline: 'Buy the campus, build homes, towers and skyscrapers, and end the day on top.',
       coords: '47.62° N · 122.34° W'
     },
     credits: 'An original game. Real streets; each building name has a typo on purpose. No brands.',
     howto: {
-      goal: 'Buy campus buildings on real Seattle and Bellevue streets, collect rent, build homes and towers, and end the day on top.'
+      goal: 'Buy campus buildings on real Seattle and Bellevue streets, collect rent, build homes, towers and skyscrapers, and end the day on top.'
     },
 
     spaces: {
@@ -477,7 +501,7 @@
           rc8: 'Payday! Advance to Day 1.',
           rc9: 'Demo day! Your team shows its project. Advance to Fionza.',
           rc10: 'Team trivia night. Advance to LowFlyingHawz.',
-          rc11: 'New badge readers on every door. Pay $35 per home and $90 per tower you own.',
+          rc11: 'New badge readers on every door. Pay $35 per home and $90 per tower or skyscraper you own.',
           rc12: 'Your hackathon project wins first prize. Collect $120.',
           rc13: 'You left your badge at home. Pay $30 for a day pass.',
           rc14: 'It is your work anniversary! Collect $20 from each player.'
@@ -494,7 +518,7 @@
           lb6: 'You sell your old standing desk. Collect $60.',
           lb7: 'You bring donuts to the morning stand-up. Pay each player $15.',
           lb8: 'Your talk at a tech conference is a hit. Collect $140.',
-          lb9: 'Building safety check. Pay $30 per home and $80 per tower you own.',
+          lb9: 'Building safety check. Pay $30 per home and $80 per tower or skyscraper you own.',
           lb10: 'Fresh start on a new team. Advance to Day 1.',
           lb11: 'Two inches of snow and the whole city crawls. Go to the Mercer Mess. No salary.',
           lb12: 'Bike Pass. Leave the Mercer Mess for free. Keep this card until you use it.',
@@ -519,6 +543,7 @@
       drivingBy: 'Just driving by', rainFund: 'Snack Fund', carpool: 'Bike Pass', carpools: 'Bike Passes',
       stuck: 'stuck in traffic', leaveStuck: 'leave traffic', leftStuck: 'left traffic',
       street: 'building', streets: 'buildings',
+      skyscraper: 'Skyscraper',
       boardTitle: 'Day 1 Estates', homePlace: 'South Lake Union · Bellevue', homeCoords: '47.62° N · 122.34° W',
       bigButton: 'the big blue button'
     },
@@ -527,10 +552,10 @@
       bus: 'Bus transit stop', train: 'Streetcar stop', utility: 'Campus service', toll: 'Toll', tax: 'Fee',
       card: 'Card space', street: 'building' },
 
-    phrases: [['to Mercer Mess', 'to the Mercer Mess']],
+    phrases: [['to Mercer Mess', 'to the Mercer Mess'], ['Repairs on your homes and towers', 'Repairs on your homes, towers and skyscrapers']],
 
-    terms: [['no buildings', 'no homes or towers'], ['No buildings', 'No homes'], ['with buildings', 'with homes or towers'],
-      ['the buildings on', 'the homes on'], ['Buildings', 'Homes and towers'], ['buildings', 'homes and towers'], ['building', 'home'],
+    terms: [['no buildings', 'no homes, towers or skyscrapers'], ['No buildings', 'No homes'], ['with buildings', 'with homes, towers or skyscrapers'],
+      ['the buildings on', 'the homes on'], ['Buildings', 'Homes, towers and skyscrapers'], ['buildings', 'homes, towers and skyscrapers'], ['building', 'home'],
       ['utilities', 'campus services'], ['Utilities', 'Campus services'], ['utility', 'campus service'], ['Utility', 'Campus service'],
       ['taxes', 'fees'], ['Taxes', 'Fees'], ['tax', 'fee'], ['Tax', 'Fee']],
 
@@ -553,7 +578,7 @@
 
   var W = window;
 
-  ECE.VERSION = '1.2.0';
+  ECE.VERSION = '1.3.1';
 
   function money(n) {
     var v = Math.round(Number(n));
@@ -730,6 +755,7 @@
   var RULES = B.RULES, SPACES = B.SPACES, N = SPACES.length;
   var TRAFFIC = B.TRAFFIC, START = B.START;
   var MAX_OFFERS = RULES.maxOffers || 3;
+  var TOWER = RULES.towerLevel, MAXL = RULES.maxLevel;
   var DECLINED_MAX = 16;
   var FINISH_PERCENT = RULES.finishPercent;
   var LAST_ROUND = RULES.lastRound;
@@ -770,7 +796,12 @@
     return -1;
   }
   function turnPlayer(s) { return s.players[s.turn] || null; }
-  function sellValue(i) { return Math.round(B.buildCost(i) * RULES.sellShare); }
+  function sellValue(i, level) { return B.levelSellValue(i, isInt(level) && level >= 1 && level <= MAXL ? level : 1); }
+  function buildPrice(s, i) {
+    if (!s || !s.props || !isSpace(i) || KIND[i] !== 'street') return 0;
+    var e = s.props[i], lv = e && isInt(e.level) ? e.level : 0;
+    return lv >= MAXL ? 0 : B.levelCost(i, lv + 1);
+  }
   function money(n) {
     n = Math.round(+n || 0);
     var neg = n < 0, str = String(Math.abs(n));
@@ -934,7 +965,8 @@
     if (!e) return null;
     var k = KIND[i];
     if (k === 'street') {
-      if (e.level >= RULES.maxLevel) return { kind: 'tower' };
+      if (e.level >= MAXL) return { kind: 'skyscraper' };
+      if (e.level >= TOWER) return { kind: 'tower' };
       if (e.level > 0) return { kind: 'homes', n: e.level };
       return { kind: ownsDistrict(s, e.owner, SPACES[i].district) ? 'double' : 'base' };
     }
@@ -947,6 +979,7 @@
     switch (w.kind) {
       case 'homes': return isInt(w.n) && w.n > 0 ? w.n + (w.n === 1 ? ' home' : ' homes') : '';
       case 'tower': return 'tower';
+      case 'skyscraper': return 'skyscraper';
       case 'double': return 'whole district: double';
       case 'stops': return isInt(w.n) && w.n > 0 ? w.n + (w.n === 1 ? ' transit stop' : ' transit stops') : '';
       case 'dice': return isInt(w.total) && isInt(w.times) && w.total > 0 && w.times > 0 ? 'dice ' + w.total + ' \u00d7 ' + w.times : '';
@@ -955,13 +988,13 @@
   }
 
   function buildingsOf(s, pid) {
-    var homes = 0, towers = 0;
+    var homes = 0, towers = 0, skyscrapers = 0;
     for (var i = 0; i < N; i++) {
       var e = s.props[i];
       if (!e || e.owner !== pid || !e.level) continue;
-      if (e.level >= RULES.maxLevel) towers++; else homes += e.level;
+      if (e.level >= MAXL) skyscrapers++; else if (e.level >= TOWER) towers++; else homes += e.level;
     }
-    return { homes: homes, towers: towers };
+    return { homes: homes, towers: towers, skyscrapers: skyscrapers };
   }
 
   function netWorth(s, pid) {
@@ -972,7 +1005,7 @@
       var e = s.props[i];
       if (!e || e.owner !== pid) continue;
       v += e.mortgaged ? B.mortgageValue(i) : PRICE[i];
-      if (e.level) v += e.level * B.buildCost(i);
+      if (e.level) v += B.paidFor(i, e.level);
     }
     return v;
   }
@@ -984,7 +1017,7 @@
     for (var i = 0; i < N; i++) {
       var e = s.props[i];
       if (!e || e.owner !== pid) continue;
-      if (e.level) v += e.level * sellValue(i);
+      if (e.level) v += B.soldFor(i, e.level);
       if (!e.mortgaged) v += B.mortgageValue(i);
     }
     return v;
@@ -1001,7 +1034,7 @@
   function buildError(s, pid, i) {
     if (!isSpace(i)) return 'Pick a street.';
     if (mctx(s, pid) !== 2) return 'You can build only on your own turn, before rolling or before ending it.';
-    if (KIND[i] !== 'street') return 'Only streets get homes and towers.';
+    if (KIND[i] !== 'street') return 'Only streets get homes, towers and skyscrapers.';
     var e = s.props[i];
     if (!e || e.owner !== pid) return 'You do not own that street.';
     var sp = DIST[i].spaces, min = 99;
@@ -1011,11 +1044,12 @@
       if (q.mortgaged) return 'Pay off the mortgages in this district first.';
       if (q.level < min) min = q.level;
     }
-    if (e.level >= RULES.maxLevel) return 'That street already has a tower.';
+    if (e.level >= MAXL) return 'That street already has a skyscraper.';
+    if (e.level === TOWER && min < TOWER) return 'A skyscraper needs a tower on every street of the district.';
     if (e.level > min) return 'Build evenly: another street of the district needs a building first.';
-    if (e.level === RULES.maxLevel - 1 && min < RULES.maxLevel - 1) return 'A tower needs ' + (RULES.maxLevel - 1) + ' homes on every street of the district.';
+    if (e.level === TOWER - 1 && min < TOWER - 1) return 'A tower needs ' + (RULES.towerLevel - 1) + ' homes on every street of the district.';
     var p = P(s, pid);
-    if (!p || p.cash < B.buildCost(i)) return 'Not enough cash to build.';
+    if (!p || p.cash < B.levelCost(i, e.level + 1)) return 'Not enough cash to build.';
     return null;
   }
 
@@ -1448,7 +1482,7 @@
 
   function repairsCost(s, pid, r) {
     var b = buildingsOf(s, pid);
-    return b.homes * (r.home || 0) + b.towers * (r.tower || 0);
+    return b.homes * (r.home || 0) + (b.towers + b.skyscrapers) * (r.tower || 0);
   }
 
   function cardEach(s, p, n, ev) {
@@ -1595,7 +1629,7 @@
       e = s.props[i];
       if (!e || e.owner !== p.id) continue;
       if (e.level > 0) {
-        var count = e.level, amt = count * sellValue(i);
+        var count = e.level, amt = B.soldFor(i, count);
         e.level = 0;
         p.cash += amt;
         ev.push({ t: 'sell', p: p.id, space: i, level: 0, amount: amt, count: count });
@@ -1807,7 +1841,7 @@
   function doBuild(s, p, a, ev) {
     var i = a.space, why = buildError(s, p.id, i);
     if (why) return why;
-    var e = s.props[i], cost = B.buildCost(i);
+    var e = s.props[i], cost = B.levelCost(i, e.level + 1);
     e.level = e.level + 1;
     p.cash -= cost;
     ev.push({ t: 'build', p: p.id, space: i, level: e.level, amount: cost });
@@ -1817,7 +1851,7 @@
   function doSell(s, p, a, ev) {
     var i = a.space, why = sellError(s, p.id, i);
     if (why) return why;
-    var e = s.props[i], back = sellValue(i);
+    var e = s.props[i], back = B.levelSellValue(i, e.level);
     e.level = e.level - 1;
     p.cash += back;
     ev.push({ t: 'sell', p: p.id, space: i, level: e.level, amount: back, count: 1 });
@@ -2208,11 +2242,13 @@
         if (ev.how === 'doubles') return Name(p) + ' rolled doubles and left traffic.';
         return Name(p) + ' paid ' + money(ev.amount) + ' and left traffic after ' + RULES.trafficMaxTries + ' tries.';
       case 'build':
-        if (ev.level >= RULES.maxLevel) return Name(p) + ' built a tower on ' + sp(ev.space) + ' for ' + money(ev.amount) + '.';
+        if (ev.level >= MAXL) return Name(p) + ' built a skyscraper on ' + sp(ev.space) + ' for ' + money(ev.amount) + '.';
+        if (ev.level >= TOWER) return Name(p) + ' built a tower on ' + sp(ev.space) + ' for ' + money(ev.amount) + '.';
         return Name(p) + ' built a home on ' + sp(ev.space) + ' for ' + money(ev.amount) + ' (' + n(ev.level, 'home', 'homes') + ').';
       case 'sell':
         if (ev.count > 1) return Name(p) + ' sold the buildings on ' + sp(ev.space) + ' for ' + money(ev.amount) + '.';
-        if (ev.level === RULES.maxLevel - 1) return Name(p) + ' sold the tower on ' + sp(ev.space) + ' for ' + money(ev.amount) + ' (' + n(ev.level, 'home', 'homes') + ' left).';
+        if (ev.level === MAXL - 1) return Name(p) + ' sold the skyscraper on ' + sp(ev.space) + ' for ' + money(ev.amount) + ' (back to a tower).';
+        if (ev.level === TOWER - 1) return Name(p) + ' sold the tower on ' + sp(ev.space) + ' for ' + money(ev.amount) + ' (' + n(ev.level, 'home', 'homes') + ' left).';
         return Name(p) + ' sold a home on ' + sp(ev.space) + ' for ' + money(ev.amount) + (ev.level > 0 ? ' (' + n(ev.level, 'home', 'homes') + ' left).' : '.');
       case 'mortgage': return Name(p) + ' mortgaged ' + sp(ev.space) + ' for ' + money(ev.amount) + '.';
       case 'unmortgage': return Name(p) + ' paid off the mortgage on ' + sp(ev.space) + ' for ' + money(ev.amount) + '.';
@@ -2544,7 +2580,8 @@
     player: guard(function (s, id) { return s && s.players ? P(s, id) : null; }, null),
     minBid: guard(minBid, 0),
     sellValue: guard(sellValue, 0),
-    buildings: guard(buildingsOf, function () { return { homes: 0, towers: 0 }; }),
+    buildPrice: guard(buildPrice, 0),
+    buildings: guard(buildingsOf, function () { return { homes: 0, towers: 0, skyscrapers: 0 }; }),
     rentWhy: guard(rentWhy, null),
     whyText: guard(whyText, ''),
     worthShare: guard(worthShare, 0),
@@ -2579,13 +2616,13 @@
 
   var B = ECE.BoardData, CD = ECE.CardData, Rng = ECE.Rng, Ru = ECE.Rules;
   var SPACES = B.SPACES, N = SPACES.length, RULES = B.RULES, DISTRICTS = B.DISTRICTS, ND = DISTRICTS.length;
-  var MAXL = RULES.maxLevel, MAXP = RULES.maxPlayers, TRAFFIC = B.TRAFFIC;
+  var MAXL = RULES.maxLevel, TOWERL = RULES.towerLevel, MAXP = RULES.maxPlayers, TRAFFIC = B.TRAFFIC;
   var MANAGE = { build: 1, sell: 1, mortgage: 1, unmortgage: 1 };
   var TURN_MANAGE_CAP = 40;
   var RAISE_CAP = 10;
   var HUMAN_ROUNDS = 3;
 
-  var KIND = [], PRICE = [], OWNABLE = [], DI = [], MORTV = [], UNMORT = [], SELLV = [], BCOST = [];
+  var KIND = [], PRICE = [], OWNABLE = [], DI = [], MORTV = [], UNMORT = [], LCOST = [], LSELL = [], SOLD = [], PAID = [];
   var TRANSITS = [], UTILS = [], DSP = [], DNAME = [];
   var d0, i0;
   for (d0 = 0; d0 < ND; d0++) { DSP.push(DISTRICTS[d0].spaces.slice()); DNAME.push(DISTRICTS[d0].name); }
@@ -2597,8 +2634,13 @@
     for (d0 = 0; d0 < ND; d0++) if (DSP[d0].indexOf(i0) >= 0) DI[i0] = d0;
     MORTV[i0] = B.mortgageValue(i0);
     UNMORT[i0] = B.unmortgageCost(i0);
-    BCOST[i0] = B.buildCost(i0);
-    SELLV[i0] = Math.round(BCOST[i0] * RULES.sellShare);
+    LCOST.push([]); LSELL.push([]); SOLD.push([]); PAID.push([]);
+    for (var l0 = 0; l0 <= MAXL; l0++) {
+      LCOST[i0].push(l0 ? B.levelCost(i0, l0) : 0);
+      LSELL[i0].push(l0 ? B.levelSellValue(i0, l0) : 0);
+      SOLD[i0].push(B.soldFor(i0, l0));
+      PAID[i0].push(B.paidFor(i0, l0));
+    }
     if (KIND[i0] === 'transit') TRANSITS.push(i0);
     if (KIND[i0] === 'utility') UTILS.push(i0);
   }
@@ -2943,7 +2985,7 @@
     var v = V.cash[x];
     for (var i = 0; i < N; i++) {
       if (V.own[i] !== x) continue;
-      v += V.lvl[i] * SELLV[i];
+      v += SOLD[i][V.lvl[i]];
       if (!V.mort[i]) v += MORTV[i];
     }
     return v;
@@ -2974,7 +3016,7 @@
       if (V.own[i] !== x) continue;
       d = DI[i];
       var v = 0;
-      if (V.lvl[i] > 0) v = RAISE_SELL * V.lvl[i] * SELLV[i];
+      if (V.lvl[i] > 0) v = RAISE_SELL * SOLD[i][V.lvl[i]];
       else if (!V.mort[i]) {
         var ok = true;
         if (d >= 0) {
@@ -3004,7 +3046,7 @@
       for (j = 0; j < sp.length; j++) {
         i = sp[j];
         var li = V.lvl[i] > L ? V.lvl[i] : L;
-        cost += (li - V.lvl[i]) * BCOST[i];
+        cost += PAID[i][li] - PAID[i][V.lvl[i]];
         inc += RL[i][li];
       }
       var wait = cost > budget ? (cost - budget) / K.save : 0;
@@ -3027,7 +3069,7 @@
       for (j = 0; j < sp.length; j++) {
         i = sp[j];
         if (V.own[i] !== x) continue;
-        sub += PRICE[i] * m + V.lvl[i] * SELLV[i];
+        sub += PRICE[i] * m + SOLD[i][V.lvl[i]];
         if (V.mort[i]) sub -= UNMORT[i];
       }
       if (k >= sp.length - 1) {
@@ -3056,7 +3098,7 @@
     var s = V.cash[x], i, d, j;
     for (i = 0; i < N; i++) {
       if (V.own[i] !== x) continue;
-      s += PRICE[i] + V.lvl[i] * SELLV[i] - (V.mort[i] ? UNMORT[i] : 0);
+      s += PRICE[i] + SOLD[i][V.lvl[i]] - (V.mort[i] ? UNMORT[i] : 0);
     }
     for (d = 0; d < ND; d++) {
       if (!full(V, x, d)) continue;
@@ -3162,14 +3204,14 @@
   }
   function sellLoss(V, x, i, K) {
     var nOpp = Math.max(1, V.alive - 1), L = V.lvl[i];
-    return SELLV[i] + (RL[i][L] - RL[i][L - 1]) * nOpp * 6;
+    return LSELL[i][L] + (RL[i][L] - RL[i][L - 1]) * nOpp * 6;
   }
   function raiseAction(V, x, K, L, need, mortgagesOnly) {
     var best = null, bestScore = Infinity;
     for (var k = 0; k < L.length; k++) {
       var a = L[k], gain, loss;
       if (a.t === 'mortgage') { gain = MORTV[a.space]; loss = mortgageLoss(V, x, a.space, K); }
-      else if (a.t === 'sell' && !mortgagesOnly) { gain = SELLV[a.space]; loss = sellLoss(V, x, a.space, K); }
+      else if (a.t === 'sell' && !mortgagesOnly) { gain = LSELL[a.space][V.lvl[a.space]]; loss = sellLoss(V, x, a.space, K); }
       else continue;
       if (!(gain > 0)) continue;
       var score = loss / Math.min(gain, Math.max(1, need));
@@ -3367,7 +3409,7 @@
     for (var k = 0; k < L.length; k++) {
       var a = L[k];
       if (a.t !== 'build') continue;
-      var i = a.space, cost = BCOST[i];
+      var i = a.space, cost = LCOST[i][V.lvl[i] + 1];
       if (!K.buildFree && cash - cost < res * K.buildRes) continue;
       var gain = buildGain(V, i);
       if (gain * nOpp * K.H < cost * K.buildMin && cash - cost < 2 * res + 300) continue;
@@ -3386,14 +3428,15 @@
       if (V.lvl[q] < min) min = V.lvl[q];
     }
     if (V.lvl[i] > min) return false;
-    if (V.lvl[i] === MAXL - 1 && min < MAXL - 1) return false;
+    if (V.lvl[i] === TOWERL - 1 && min < TOWERL - 1) return false;
+    if (V.lvl[i] === TOWERL && min < TOWERL) return false;
     return true;
   }
   function fundBuild(V, p, K, L, cash, res) {
     var bi = -1, bScore = 0, nOpp = Math.max(1, V.alive - 1), i, k;
     for (i = 0; i < N; i++) {
       if (KIND[i] !== 'street' || !buildableNoCash(V, p, i)) continue;
-      var cost = BCOST[i];
+      var cost = LCOST[i][V.lvl[i] + 1];
       if (cash - cost >= res * K.buildRes) continue;
       var gain = buildGain(V, i);
       if (gain * nOpp * K.H < cost * K.buildMin) continue;
@@ -3411,7 +3454,7 @@
       if (lp < bestLoss) { bestLoss = lp; best = a; }
     }
     if (!best || bScore < bestLoss * 1.5) return null;
-    if (cash + MORTV[best.space] - BCOST[bi] < res * K.buildRes) return null;
+    if (cash + MORTV[best.space] - LCOST[bi][V.lvl[bi] + 1] < res * K.buildRes) return null;
     return best;
   }
   function unmortgageSingle(V, p, K, L, cash, res) {
@@ -3853,6 +3896,10 @@
           best = better(best, endCandidate(ctx, [sells[e1]], []));
           for (var e2 = 0; e2 < pairs.length; e2++) best = better(best, endCandidate(ctx, [sells[e1]], [pairs[e2].ts]));
         }
+        for (var e3 = 0; e3 < pairs.length; e3++) {
+          best = better(best, endCandidate(ctx, pairs[e3].mine, []));
+          for (var e4 = 0; e4 < pairs.length; e4++) if (e4 !== e3) best = better(best, endCandidate(ctx, pairs[e3].mine, [pairs[e4].ts]));
+        }
       }
     }
     if (!best) return null;
@@ -4082,10 +4129,11 @@
   var RETRY_MS = 5000;
   var GAME_NAME = 'Emerald City Estates';
 
-  var SETTINGS = { speed: 'normal', sound: true, volume: 0.6, rain: false, tips: true, reduceMotion: 'auto', closeUp: false };
+  var SETTINGS = { speed: 'normal', sound: true, volume: 0.6, rain: false, tips: true, reduceMotion: 'auto', closeUp: false, speedV: 2 };
   var SETUP = { name: 'You', token: 'orca', opponents: 3, level: 'normal', limit: 'none', auctions: true, rainFund: false, theme: 'emerald' };
   var STATS = { played: 0, won: 0, bestNet: 0, bestRank: 0, fastestWin: 0 };
-  var SPEEDS = ['normal', 'fast', 'instant'];
+  var SPEEDS = ['slow', 'normal', 'fast', 'veryfast', 'instant'];
+  var SPEED_V = 2;
   var MOTION = ['auto', 'on', 'off'];
   var LEVELS_DEFAULT = ['easy', 'normal', 'hard'];
   var LIMITS_DEFAULT = ['none', 'm10', 'm15', 'r20', 'r30', 'r40'];
@@ -4105,6 +4153,7 @@
     for (var i = 0; i < list.length; i++) if (list[i] && typeof list[i].id === 'string') out.push(list[i].id);
     return out.length ? out : fallback;
   }
+  function maxLevel() { var B = ECE.BoardData, m = B && B.RULES && B.RULES.maxLevel; return typeof m === 'number' && m >= 5 ? Math.max(6, m | 0) : 6; }
   function levelIds() { var G = gloss(); return ids(G && G.levels, LEVELS_DEFAULT); }
   function limitIds() {
     var G = gloss(), list = G && G.limits, out = [];
@@ -4348,8 +4397,17 @@
     rain: cleanBool,
     tips: cleanBool,
     reduceMotion: function (v, d) { return cleanEnum(v, MOTION, d); },
-    closeUp: cleanBool
+    closeUp: cleanBool,
+    speedV: function (v, d) { return v === SPEED_V ? v : d; }
   };
+  function speedSettings(raw) {
+    if (!isObj(raw) || raw.speedV === SPEED_V) return raw;
+    var out = strictCopy(raw);
+    if (out.speed === 'fast') out.speed = 'veryfast';
+    out.speedV = SPEED_V;
+    return out;
+  }
+  function strictCopy(o) { var c = {}; for (var k in o) if (own(o, k)) c[k] = o[k]; return c; }
   var setupSpec = {
     name: function (v, d) { return cleanStr(v, NAME_MAX, d); },
     token: function (v, d) { return cleanEnum(v, tokenIds(), d); },
@@ -4416,6 +4474,16 @@
 
   function cleanBuild(v) { return typeof v === 'string' && /^[A-Za-z0-9._-]{1,40}$/.test(v) ? v : ''; }
 
+  function cleanMoves(v) {
+    if (!isObj(v) || typeof v.key !== 'string' || v.key.length > 60 || !Array.isArray(v.lines) || v.lines.length > 3) return null;
+    var lines = [];
+    for (var i = 0; i < v.lines.length; i++) {
+      var l = v.lines[i];
+      if (!isObj(l) || typeof l.text !== 'string' || typeof l.sig !== 'string' || !l.text || l.text.length > 400 || l.sig.length > 500) return null;
+      lines.push({ text: l.text, sig: l.sig });
+    }
+    return { key: v.key, lines: lines };
+  }
   function cleanPlayOn(v) {
     if (!isObj(v) || typeof v.key !== 'string' || !/^[0-9A-Za-z._-]{1,20}\|[0-9A-Za-z._-]{1,20}$/.test(v.key)) return null;
     if (typeof v.pct !== 'number' || !isFinite(v.pct) || Math.floor(v.pct) !== v.pct || v.pct < 0 || v.pct > 100) return null;
@@ -4438,7 +4506,13 @@
     }
     if (strict) for (var t in top) out[t] = top[t];
     else for (var t2 in top) src[t2] = top[t2];
-    out.settings = section(src.settings, settingsSpec, SETTINGS, strict, strict ? null : repairs, 'settings');
+    var rawSettings = src.settings;
+    if (isObj(rawSettings) && rawSettings.speedV !== SPEED_V) {
+      var moved = speedSettings(rawSettings);
+      if (strict) rawSettings = moved;
+      else { rawSettings.speed = moved.speed; rawSettings.speedV = SPEED_V; }
+    }
+    out.settings = section(rawSettings, settingsSpec, SETTINGS, strict, strict ? null : repairs, 'settings');
     out.setup = section(src.setup, setupSpec, SETUP, strict, strict ? null : repairs, 'setup');
     out.stats = section(src.stats, statsSpec, STATS, strict, strict ? null : repairs, 'stats');
     out.tips = cleanTips(src.tips, strict, strict ? null : repairs);
@@ -4447,6 +4521,9 @@
     out.keepTipShown = tipShown;
     out.game = own(src, 'game') && src.game !== undefined ? src.game : null;
     out.history = cleanHistory(src.history, strict, strict ? null : repairs);
+    var mv = cleanMoves(src.moves);
+    if (mv) out.moves = mv;
+    else if (own(src, 'moves')) { if (!strict) { delete src.moves; repairs.push('moves'); } }
     var po = cleanPlayOn(src.playOn);
     if (po) out.playOn = po;
     else if (!strict && own(src, 'playOn')) { delete src.playOn; repairs.push('playOn'); }
@@ -4672,7 +4749,7 @@
         if (!own(g.props, k) || !/^\d{1,2}$/.test(k) || +k >= spaceCount()) continue;
         var p = g.props[k];
         if (!isObj(p)) continue;
-        out.props[String(+k)] = { owner: int(p.owner, 0, maxPlayers() - 1, 0), level: int(p.level, 0, 5, 0), mortgaged: cleanBool(p.mortgaged, false) };
+        out.props[String(+k)] = { owner: int(p.owner, 0, maxPlayers() - 1, 0), level: int(p.level, 0, maxLevel(), 0), mortgaged: cleanBool(p.mortgaged, false) };
       }
     }
     if (Array.isArray(g.log)) {
@@ -5790,10 +5867,19 @@
   Dom.levelGlyphs = function (level, mortgaged) {
     var wrap = Dom.h('span', { cls: 'ui-levels', 'aria-hidden': 'true' });
     if (mortgaged) { wrap.appendChild(Dom.h('span', { cls: 'ui-mort' }, 'M')); return wrap; }
-    if (level >= 5) {
-      var t = Dom.s('svg', { viewBox: '0 0 12 16', width: 11, height: 15, cls: 'ui-tower' });
-      t.appendChild(Dom.s('path', { d: 'M3 15V4l3-3 3 3v11z', fill: '#3D5A80', stroke: '#22344d', 'stroke-width': 1 }));
-      t.appendChild(Dom.s('path', { d: 'M5 6h2M5 9h2M5 12h2', stroke: '#cfe0f5', 'stroke-width': 1 }));
+    var R = ECE.BoardData && ECE.BoardData.RULES, towerAt = (R && R.towerLevel) || 5, skyAt = Math.max(towerAt, (R && R.maxLevel) || 5);
+    if (skyAt > towerAt && level >= skyAt) {
+      var k = Dom.s('svg', { viewBox: '0 0 12 18', width: 11, height: 17, cls: 'ui-tower ui-sky' });
+      k.appendChild(Dom.s('path', { d: 'M6 0.6V3.6', stroke: '#22344d', 'stroke-width': 1.2, 'stroke-linecap': 'round' }));
+      k.appendChild(Dom.s('path', { d: 'M2.5 17.4V6.6L6 3.1l3.5 3.5v10.8z', fill: '#2C4A73', stroke: '#1B2B44', 'stroke-width': 1 }));
+      k.appendChild(Dom.s('path', { d: 'M4.5 8.5h3M4.5 11.5h3M4.5 14.5h3', stroke: '#E7C77A', 'stroke-width': 1 }));
+      wrap.appendChild(k);
+      return wrap;
+    }
+    if (level >= towerAt) {
+      var t = Dom.s('svg', { viewBox: '0 0 12 14', width: 11, height: 13, cls: 'ui-tower' });
+      t.appendChild(Dom.s('path', { d: 'M3 13V4l3-3 3 3v9z', fill: '#3D5A80', stroke: '#22344d', 'stroke-width': 1 }));
+      t.appendChild(Dom.s('path', { d: 'M5 6h2M5 8.5h2M5 11h2', stroke: '#cfe0f5', 'stroke-width': 1 }));
       wrap.appendChild(t);
       return wrap;
     }
@@ -5882,7 +5968,7 @@
   var DEFAULT = 'emerald';
   var ID_RE = /^[a-z][a-z0-9]{1,15}$/;
   var SPACE_KEYS = ['name', 'label', 'area', 'about', 'street', 'note'];
-  var WORD_KEYS = ['start', 'traffic', 'rest', 'bridge', 'drivingBy', 'rainFund', 'carpool', 'carpools', 'stuck', 'leaveStuck', 'leftStuck', 'street', 'streets'];
+  var WORD_KEYS = ['start', 'traffic', 'rest', 'bridge', 'drivingBy', 'rainFund', 'carpool', 'carpools', 'stuck', 'leaveStuck', 'leftStuck', 'street', 'streets', 'skyscraper'];
   var CORNER_WORDS = { start: 'START', traffic: 'TRAFFIC', rest: 'REST', bridge: 'BRIDGE' };
   var PHRASE_WORDS = ['carpools', 'carpool', 'rainFund', 'stuck', 'leaveStuck', 'leftStuck'];
   var TERM_WORDS = ['streets', 'street'];
@@ -6569,6 +6655,44 @@
     el('path', { d: 'M' + r3(x - w * 0.04) + ' ' + r3(top + h * 0.1) + 'L' + r3(mid) + ' ' + r3(top) + 'L' + r3(x + w * 1.04) + ' ' + r3(top + h * 0.1) + 'Z', fill: '#1E2E37' }, g);
     el('path', { d: 'M' + r3(x - w * 0.02) + ' ' + r3(top + h * 0.1) + 'H' + r3(x + w * 1.02), stroke: '#E8D29E', 'stroke-width': r3(Math.max(0.006, Math.min(w, h) * 0.05)), opacity: 0.95 }, g);
     el('path', { d: 'M' + r3(x + w * 0.1) + ' ' + r3(top + h * 0.16) + 'V' + r3(bottom - h * 0.04), stroke: '#FFFFFF', 'stroke-width': r3(w * 0.05), opacity: 0.45 }, g);
+    return g;
+  }
+
+  function skyscraper(parent, cx, bottom, w, h, cls) {
+    var g = el('g', { 'class': cls || 'ece-skyscraper' }, parent);
+    skyscraperParts(g, cx, bottom, w, h, {
+      lit: '#A7C3CF', shade: '#3B5C6C', ink: '#1B2A31', floors: '#E4F1F6', floorsOp: 0.55, crown: '#1E2E37', line: '#E8D29E',
+      edge: '#FFFFFF', edgeOp: 0.45, spire: '#22343D', tip: '#E8D29E', shadow: '#000000', shadowOp: 0.3
+    });
+    return g;
+  }
+  function skyscraperParts(g, cx, bottom, w, h, k) {
+    var spH = h * 0.27, bodyH = h - spH, bTop = bottom - bodyH, yS = bottom - bodyH * 0.56;
+    var wu = w * 0.72, x0 = cx - w / 2, x1 = cx + w / 2, u0 = cx - wu / 2, u1 = cx + wu / 2;
+    var m0 = x0 + w * 0.56, m1 = u0 + wu * 0.56, cTop = bTop + bodyH * 0.07;
+    var sw = r3(Math.max(0.004, Math.min(w, h) * 0.045)), lw = r3(Math.max(0.006, Math.min(w, h) * 0.05));
+    var P = function (d, a) { a.d = d; return el('path', a, g); };
+    P('M' + r3(x0 + w * 0.3) + ' ' + r3(bottom + w * 0.08) + 'H' + r3(x0 + w * 1.35) + 'L' + r3(x0 + w * 1.05) + ' ' + r3(bottom - w * 0.05) + 'H' + r3(x0 + w * 0.3) + 'Z',
+      { fill: k.shadow, opacity: k.shadowOp });
+    P('M' + r3(x0) + ' ' + r3(bottom) + 'V' + r3(yS) + 'H' + r3(m0) + 'V' + r3(bottom) + 'Z', { fill: k.lit, stroke: k.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' });
+    P('M' + r3(m0) + ' ' + r3(bottom) + 'V' + r3(yS) + 'H' + r3(x1) + 'V' + r3(bottom) + 'Z', { fill: k.shade, stroke: k.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' });
+    P('M' + r3(u0) + ' ' + r3(yS) + 'V' + r3(cTop) + 'H' + r3(m1) + 'V' + r3(yS) + 'Z', { fill: k.lit, stroke: k.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' });
+    P('M' + r3(m1) + ' ' + r3(yS) + 'V' + r3(cTop) + 'H' + r3(u1) + 'V' + r3(yS) + 'Z', { fill: k.shade, stroke: k.ink, 'stroke-width': sw, 'stroke-linejoin': 'round' });
+    var d = '', rowsL = Math.max(3, Math.round((bottom - yS) / (w * 0.2))), rowsU = Math.max(3, Math.round((yS - cTop) / (w * 0.2)));
+    for (var i = 1; i < rowsL; i++) { var yl = yS + i * ((bottom - yS) / rowsL); d += 'M' + r3(x0) + ' ' + r3(yl) + 'H' + r3(x1); }
+    for (var j = 1; j < rowsU; j++) { var yu = cTop + j * ((yS - cTop) / rowsU); d += 'M' + r3(u0) + ' ' + r3(yu) + 'H' + r3(u1); }
+    if (d) P(d, { stroke: k.floors, 'stroke-width': r3(Math.max(0.005, Math.min(w, h) * 0.03)), opacity: k.floorsOp, fill: 'none' });
+    P('M' + r3(x0 - w * 0.04) + ' ' + r3(yS) + 'H' + r3(x1 + w * 0.04), { stroke: k.line, 'stroke-width': lw, opacity: 0.95, fill: 'none' });
+    P('M' + r3(x0 + w * 0.1) + ' ' + r3(yS + bodyH * 0.04) + 'V' + r3(bottom - bodyH * 0.03) + 'M' + r3(u0 + wu * 0.12) + ' ' + r3(cTop + bodyH * 0.03) + 'V' + r3(yS - bodyH * 0.02),
+      { stroke: k.edge, 'stroke-width': r3(w * 0.05), opacity: k.edgeOp, fill: 'none' });
+    P('M' + r3(u0 - wu * 0.05) + ' ' + r3(cTop) + 'L' + r3(cx) + ' ' + r3(bTop) + 'L' + r3(u1 + wu * 0.05) + ' ' + r3(cTop) + 'Z', { fill: k.crown });
+    P('M' + r3(u0 - wu * 0.03) + ' ' + r3(cTop) + 'H' + r3(u1 + wu * 0.03), { stroke: k.line, 'stroke-width': lw, opacity: 0.95, fill: 'none' });
+    var top = bottom - h, sb = Math.max(w * 0.17, 0.012), tipH = Math.min(spH * 0.3, w * 0.3);
+    P('M' + r3(cx - sb / 2) + ' ' + r3(bTop + bodyH * 0.03) + 'L' + r3(cx) + ' ' + r3(top + tipH * 0.6) + 'L' + r3(cx + sb / 2) + ' ' + r3(bTop + bodyH * 0.03) + 'Z',
+      { fill: k.spire, stroke: k.ink, 'stroke-width': r3(Math.max(0.003, sb * 0.18)), 'stroke-linejoin': 'round' });
+    P('M' + r3(cx - sb * 0.18) + ' ' + r3(bTop) + 'L' + r3(cx) + ' ' + r3(top + tipH), { stroke: k.line, 'stroke-width': r3(Math.max(0.003, sb * 0.22)), opacity: 0.85, fill: 'none', 'stroke-linecap': 'round' });
+    P('M' + r3(cx) + ' ' + r3(top) + 'L' + r3(cx + tipH * 0.32) + ' ' + r3(top + tipH * 0.55) + 'L' + r3(cx) + ' ' + r3(top + tipH * 1.1) + 'L' + r3(cx - tipH * 0.32) + ' ' + r3(top + tipH * 0.55) + 'Z',
+      { fill: k.tip, stroke: k.ink, 'stroke-width': r3(Math.max(0.003, tipH * 0.12)), 'stroke-linejoin': 'round' });
     return g;
   }
 
@@ -7318,6 +7442,8 @@
     tokenIcon: tokenIcon,
     house: house,
     tower: tower,
+    skyscraper: skyscraper,
+    skyscraperParts: skyscraperParts,
     icon: icon,
     car: car,
     tree: tree,
@@ -8179,6 +8305,7 @@
     sealInner: '#EEF2F6', sealInk: '#15202B', roadShade: '#0B1520', haloGlow: '#BFDDF8', haloRing: '#FFFFFF',
     ringKey: '#0E1B28', youRing: '#FFFFFF', focusLine: '#2F7FD0', pulse: '#2F7FD0', popEdge: '#0B1824',
     hlLine: '#2F7FD0', hlVeil: '#EEF3F8',
+    spotLine: '#E2A527', spotGlow: '#F4C64F', spotVeil: '#22364C', spotVeilOpacity: 0.22, tipFill: '#0E1B28', tipInk: '#FFFFFF', tipEdge: '#2F7FD0',
     ownKey: '#0E1B28',
     legendTile: '#EEF3F8', legendTileMort: '#CBD2DA'
   };
@@ -8335,6 +8462,17 @@
     el('path', { d: 'M' + r3(x - w * 0.04) + ' ' + r3(top + h * 0.1) + 'L' + r3(mid) + ' ' + r3(top) + 'L' + r3(x + w * 1.04) + ' ' + r3(top + h * 0.1) + 'Z', fill: '#2A3D51' }, g);
     el('path', { d: 'M' + r3(x - w * 0.02) + ' ' + r3(top + h * 0.1) + 'H' + r3(x + w * 1.02), stroke: '#E3EEF8', 'stroke-width': r3(Math.max(0.006, Math.min(w, h) * 0.05)), opacity: 0.95 }, g);
     el('path', { d: 'M' + r3(x + w * 0.1) + ' ' + r3(top + h * 0.16) + 'V' + r3(bottom - h * 0.04), stroke: '#FFFFFF', 'stroke-width': r3(w * 0.06), opacity: 0.55 }, g);
+    return g;
+  }
+
+  function skyscraper(parent, cx, bottom, w, h, cls) {
+    shared();
+    var g = el('g', { 'class': cls || 'ece-skyscraper' }, parent);
+    var A = ECE.Art;
+    if (A && typeof A.skyscraperParts === 'function') {
+      A.skyscraperParts(g, cx, bottom, w, h, { lit: 'url(#d1-glass)', shade: 'url(#d1-glass-d)', ink: '#1A2836', floors: '#FFFFFF', floorsOp: 0.6,
+        crown: '#2A3D51', line: '#E3EEF8', edge: '#FFFFFF', edgeOp: 0.55, spire: '#2A3D51', tip: '#2563B4', shadow: '#0B1622', shadowOp: 0.24 });
+    }
     return g;
   }
 
@@ -10169,7 +10307,7 @@
     FONT: FONT, SERIF: DISPLAY, COLORS: COLORS, PALETTE: P,
     tagColors: tagColors, bandColors: bandColors, mapTone: mapTone, enamel: enamel, contrast: contrast, mix: mix,
     shared: shared,
-    disc: disc, pin: pin, tokenIcon: tokenIcon, house: house, tower: tower, icon: icon,
+    disc: disc, pin: pin, tokenIcon: tokenIcon, house: house, tower: tower, skyscraper: skyscraper, icon: icon,
     corner: corner, centre: centre, title: title, die: die, pile: pile, cardFace: cardFace, jar: jar, gavel: gavel, coin: coin,
     map: CampusMap,
     tileDecor: tileDecor,
@@ -10192,8 +10330,11 @@
   var GAP = 0.035;
   var MIN_FONT = 0.165;
   var ZOOM = 2;
-  var HOP = { normal: 85, fast: 38, instant: 0 };
-  var PACE = { normal: 1, fast: 0.4, instant: 0 };
+  var SPEEDS = ['slow', 'normal', 'fast', 'veryfast', 'instant'];
+  var HOP = { slow: 255, normal: 128, fast: 85, veryfast: 38, instant: 0 };
+  var PACE = { slow: 3, normal: 1.5, fast: 1, veryfast: 0.4, instant: 0 };
+  function speedId(v) { return typeof v === 'string' && Object.prototype.hasOwnProperty.call(PACE, v) ? v : 'normal'; }
+  function towerLevel() { var R = ECE.BoardData && ECE.BoardData.RULES; return (R && R.towerLevel > 0 ? R.towerLevel : 5) | 0; }
   var QUIET_MS = 160;
   var DICE_MS = 280;
   var MORT_BAND = '#9AA4A8';
@@ -10202,6 +10343,8 @@
   var MORT_TEXT = '#3A464C';
   var OWN_W = 0.058, OWN_KEY = 0.008, OWN_DASH = '0.15 0.085';
   var OWN_IN = OWN_W + OWN_KEY + 0.006;
+  var SKY_GAP = 0.016, SKY_MAX = 0.1;
+  var TOWER_K = 0.85, SKY_K = 1.4;
 
   function themeOf(id) {
     var T = ECE.Theme, G = ECE.Glossary || {};
@@ -10538,6 +10681,7 @@
     this.usedAt = -1e9;
     this.destroyed = false;
     this.highlighted = null;
+    this.spot = null;
     this.cam = { on: false, z: ZOOM, cx: 5, cy: 7, follow: null, panned: false, vb: null, coverPx: 0, hostH: 0, sidePx: 0, hostW: 0 };
     this.popSlots = {};
     this.drawnCards = [];
@@ -10607,8 +10751,10 @@
     this.gRoad = el('g', { 'class': 'ece-road', 'aria-hidden': 'true' }, svg);
     this.gCentre = el('g', { 'class': 'ece-centre-layer', 'aria-hidden': 'true' }, svg);
     this.gSpaces = el('g', { 'class': 'ece-spaces' }, svg);
+    this.gSpotDim = el('g', { 'class': 'ece-spot-layer', 'aria-hidden': 'true' }, svg);
     this.gLive = el('g', { 'class': 'ece-live', 'aria-hidden': 'true' }, svg);
     this.gHl = el('g', { 'class': 'ece-hl-layer', 'aria-hidden': 'true' }, svg);
+    this.gSpot = el('g', { 'class': 'ece-spot', 'aria-hidden': 'true' }, live);
     this.gDice = el('g', { 'class': 'ece-dice', 'aria-hidden': 'true' }, live);
     this.gTokens = el('g', { 'class': 'ece-tokens', 'aria-hidden': 'true' }, live);
     this.gFx = el('g', { 'class': 'ece-fx', 'aria-hidden': 'true' }, live);
@@ -10616,11 +10762,12 @@
     this.focusRing = { g: fr, on: false, at: '', rects: [
       el('rect', { rx: 0.13, fill: 'none', stroke: C0.ringKey || '#06100F', 'stroke-opacity': 0.85, 'stroke-width': 0.14 }, fr),
       el('rect', { rx: 0.13, fill: 'none', stroke: C0.focusLine || '#F4E4BA', 'stroke-opacity': 0.85, 'stroke-width': 0.07 }, fr)
-    ] };
+    ], tip: null, tipAt: -1 };
 
     this.drawRoad();
     this.anchors = A.centre(this.gCentre, Lo.scene, { board: true, title: th.title, heart: wide ? this.heartU() : null });
     this.tiles = [];
+    this.skyRooms = null;
     for (var i = 0; i < Lo.n; i++) this.tiles.push(this.buildTile(i));
     if (th.decor) this.decorTiles();
     this.setStop(0);
@@ -10891,7 +11038,10 @@
       var chipW = (this.em.t(d.tag) || 1.4) * tf + pad, chipH = tf * 1.5;
       t.bandEl = el('rect', { x: 0, y: 0, width: r3(chipW), height: r3(chipH), rx: r3(chipH * 0.24), fill: tc.fill, stroke: C.plateRim || '#D9BE86', 'stroke-width': 0.016, 'stroke-opacity': 0.9, 'class': 'ece-band' }, g);
       t.chipEl = t.bandEl;
-      t.chipSheen = el('rect', { x: 0, y: 0, width: r3(chipW), height: r3(chipH), rx: r3(chipH * 0.24), fill: 'url(#' + this.uid + '-sheen)' }, g);
+      t.tagTip = tagTitle(d);
+      var tt = el('title', { 'class': 'ece-tag-title' }, t.bandEl);
+      tt.textContent = t.tagTip;
+      t.chipSheen = el('rect', { x: 0, y: 0, width: r3(chipW), height: r3(chipH), rx: r3(chipH * 0.24), fill: 'url(#' + this.uid + '-sheen)', 'pointer-events': 'none' }, g);
       t.chipW = chipW; t.chipH = chipH;
       t.tagEl = A.text(g, band.x + band.w / 2, band.y + band.h / 2 + tf * TAG_UP, d.tag, tf, { 'font-weight': 700, fill: tc.text, 'letter-spacing': 0.01, 'class': 'ece-tag' });
       t.tagF = tf; t.tagText = d.tag;
@@ -10978,6 +11128,19 @@
       t.mortgaged = false;
       t.ownG = null; t.ownKey = '';
       if (!t.ownBefore) t.ownBefore = t.labelEls[0] || t.priceEl || t.ownerG;
+    }
+    t.skyRoom = 0;
+    if (t.band && portrait) {
+      var bandEdge = outerFirst ? card.y + bandD : card.y + card.h - bandD, nearY = null;
+      if (outerFirst) {
+        if (showLabel && positions.length) nearY = positions[0].y + lf * 0.36 - lf * 0.78;
+        else if (hasPrice) nearY = t.pricePos.y + pf * 0.36 - pf * 0.78;
+        if (nearY !== null) t.skyRoom = r3(clamp(nearY - bandEdge - SKY_GAP, 0, SKY_MAX));
+      } else {
+        if (hasPrice) nearY = t.pricePos.y + pf * 0.36 + pf * 0.13;
+        else if (showLabel && positions.length) nearY = positions[positions.length - 1].y + lf * 0.36 + lf * 0.26;
+        if (nearY !== null) t.skyRoom = r3(clamp(bandEdge - nearY - SKY_GAP, 0, SKY_MAX));
+      }
     }
     t.hoverEl = el('rect', { x: r3(card.x), y: r3(card.y), width: r3(card.w), height: r3(card.h), rx: 0.09, fill: 'none', 'class': 'ece-hover' }, g);
     return t;
@@ -11085,8 +11248,9 @@
       var op = pr && m.byId ? m.byId[pr.owner] : null;
       if (!pr) parts.push('for sale');
       else parts.push(pr.owner === m.you ? 'yours' : op ? op.name : 'owned');
-      var lv = pr ? pr.level | 0 : 0, top = (B.RULES && B.RULES.maxLevel) || 5;
-      if (lv >= top) parts.push('a tower');
+      var lv = pr ? pr.level | 0 : 0, tw = towerLevel();
+      if (lv > tw) parts.push('a skyscraper');
+      else if (lv >= tw) parts.push('a tower');
       else if (lv > 0) parts.push(lv + (lv === 1 ? ' home' : ' homes'));
       if (pr && pr.mortgaged) parts.push('mortgaged');
     } else if (s.kind === 'tax') parts.push('pay ' + money(s.amount));
@@ -11097,6 +11261,7 @@
     else if (s.kind === 'bridge') parts.push('go to ' + ((th && th.word && th.word('trafficThe')) || places.traffic || 'Stuck in Traffic'));
     return parts.join(', ');
   }
+  function tagTitle(d) { return d && d.tag ? d.tag + ' = ' + d.name + ' district' : ''; }
   function kindLabel(th, k, dflt) {
     if (!th || th.id === 'emerald' || !th.kinds) return dflt;
     var w = th.kinds[k];
@@ -11127,7 +11292,10 @@
       if (this.queued) { this.pendingRender = { state: state, opts: opts }; return; }
       var gk = state ? String(state.seed) + '|' + String(state.createdAt) : '';
       var place = !this.model || gk !== this.gameKey;
-      if (gk !== this.gameKey) { this.gameKey = gk; this.lastDice = null; this.drawn.dice = null; if (this.model) this.cam.follow = null; }
+      if (gk !== this.gameKey) {
+        this.gameKey = gk; this.lastDice = null; this.drawn.dice = null; if (this.model) this.cam.follow = null;
+        if (this.spot !== null && this.spot !== undefined) { this.spot = null; this.drawSpot(); }
+      }
       this.model = modelFrom(state, opts.you);
       this.draw();
       if (place && this.cam.on) this.placeCamera();
@@ -11187,7 +11355,31 @@
         r.rects[j].setAttribute('width', r3(c.w + 0.06)); r.rects[j].setAttribute('height', r3(c.h + 0.06));
       }
     }
+    this.tagTip(t);
     if (!r.on) { r.on = true; r.g.setAttribute('visibility', 'visible'); }
+  };
+  View.prototype.tagTip = function (t) {
+    var r = this.focusRing;
+    if (r.tipAt === t.i) return;
+    r.tipAt = t.i;
+    if (r.tip && r.tip.parentNode) r.tip.parentNode.removeChild(r.tip);
+    r.tip = null;
+    if (!t.tagTip) return;
+    var A = this.th.art, C = A.COLORS || {}, el = A.el, Lo = this.Lo, c = t.card, side = t.cell.side;
+    var f = 0.2, padX = 0.12, h = f * 1.6, w = (this.em.p(t.tagTip) || 8) * f + 2 * padX, off = 0.1;
+    var x, y;
+    if (side === 'top') { x = c.x + c.w / 2 - w / 2; y = c.y + c.h + off; }
+    else if (side === 'bottom') { x = c.x + c.w / 2 - w / 2; y = c.y - off - h; }
+    else if (side === 'left') { x = c.x + c.w + off; y = c.y + c.h / 2 - h / 2; }
+    else { x = c.x - off - w; y = c.y + c.h / 2 - h / 2; }
+    x = clamp(x, Lo.inner.x + 0.05, Lo.inner.x + Lo.inner.w - w - 0.05);
+    y = clamp(y, Lo.inner.y + 0.05, Lo.inner.y + Lo.inner.h - h - 0.05);
+    var g = el('g', { 'class': 'ece-tag-tip' }, r.g);
+    el('rect', { x: r3(x), y: r3(y), width: r3(w), height: r3(h), rx: r3(h * 0.3), fill: C.tipFill || '#0B1418', 'fill-opacity': 0.94,
+      stroke: C.tipEdge || C.focusLine || '#F4E4BA', 'stroke-opacity': 0.85, 'stroke-width': 0.016 }, g);
+    A.text(g, x + w / 2, y + h / 2 + f * 0.35, t.tagTip, f, { 'font-weight': 600, fill: C.tipInk || '#F7F1E1', 'class': 'ece-tag-tip-text' });
+    r.tip = g;
+    r.tipBox = { x: x, y: y, w: w, h: h };
   };
 
   View.prototype.drawTile = function (t, pr, m) {
@@ -11274,13 +11466,17 @@
     var z = this.placeTag(t, level);
     if (level <= 0 || !z) return;
     var bd = t.band, FR = OWN_IN + 0.004;
-    if (level >= 5) {
-      if (t.portrait) {
-        var top = t.cell.side === 'top';
-        var base = top ? bd.y + bd.h - 0.012 : Math.min(bd.y + bd.h - 0.024, t.card.y + t.card.h - FR);
-        var th = Math.min(0.27, bd.h - 0.035, top ? base - (t.card.y + FR) : base - (bd.y + 0.006));
-        A.tower(g, z.x + z.w / 2, base, 0.21, th);
-      } else A.tower(g, z.x + z.w / 2, z.y + z.h - 0.01, Math.min(0.19, z.w - 0.01), Math.min(0.6, z.h - 0.11));
+    if (level >= towerLevel()) {
+      var tb = this.towerBox(t, z);
+      var sky = level > towerLevel() ? (typeof A.skyscraper === 'function' ? A.skyscraper : ECE.Art && ECE.Art.skyscraper) : null;
+      if (typeof sky !== 'function') { A.tower(g, tb.cx, tb.base, tb.w, tb.h); return; }
+      var room = t.portrait ? this.skyRoomOf(t.cell.side) : 0, cap = tb.h * SKY_K, sb = tb.base, sh;
+      if (!t.portrait) sh = Math.min(z.h - 0.025, cap);
+      else if (t.cell.side === 'top') {
+        sh = Math.min(tb.base + room - (t.card.y + FR), cap);
+        sb = t.card.y + FR + sh;
+      } else sh = Math.min(sb - (bd.y + 0.006 - room), cap);
+      sky(g, tb.cx, sb, tb.w, sh);
       return;
     }
     var gap = 0.022;
@@ -11298,6 +11494,32 @@
     var hv = Math.min(0.2, (roomV - (level - 1) * gap) / (level * 0.92), z.w * 0.9);
     var totalV = level * hv * 0.92 + (level - 1) * gap;
     for (var k2 = 0; k2 < level; k2++) A.house(g, z.x + z.w / 2, z.y + z.h / 2 - totalV / 2 + hv * 0.92 + k2 * (hv * 0.92 + gap), hv);
+  };
+
+  View.prototype.towerBox = function (t, z) {
+    var bd = t.band, FR = OWN_IN + 0.004, base, w, h;
+    if (t.portrait) {
+      var top = t.cell.side === 'top';
+      base = top ? bd.y + bd.h - 0.012 : Math.min(bd.y + bd.h - 0.024, t.card.y + t.card.h - FR);
+      w = 0.21;
+      h = Math.min(0.27, bd.h - 0.035, top ? base - (t.card.y + FR) : base - (bd.y + 0.006));
+    } else {
+      base = z.y + z.h - 0.01; w = Math.min(0.19, z.w - 0.01); h = Math.min(0.6, z.h - 0.11);
+    }
+    return { cx: z.x + z.w / 2, base: base, w: w, h: h * TOWER_K, h120: h };
+  };
+
+  View.prototype.skyRoomOf = function (side) {
+    if (!this.skyRooms) this.skyRooms = {};
+    if (this.skyRooms[side] === undefined) {
+      var least = SKY_MAX;
+      for (var i = 0; i < this.tiles.length; i++) {
+        var t = this.tiles[i];
+        if (t.band && t.portrait && t.cell.side === side) least = Math.min(least, t.skyRoom > 0 ? t.skyRoom : 0);
+      }
+      this.skyRooms[side] = least;
+    }
+    return this.skyRooms[side];
   };
 
   View.prototype.tokenNode = function (p) {
@@ -11723,7 +11945,7 @@
   View.prototype.run = function (events, opts) {
     var self = this;
     if (this.destroyed || !this.model) return Promise.resolve();
-    var speed = opts.speed === 'fast' || opts.speed === 'instant' ? opts.speed : 'normal';
+    var speed = speedId(opts.speed);
     if (opts.you !== undefined) this.model.you = opts.you;
     var reduce = opts.reduceMotion === true || opts.reduceMotion === 'on' || (opts.reduceMotion !== false && opts.reduceMotion !== 'off' && prefersReduced());
     if (speed === 'instant' || hidden()) {
@@ -11765,6 +11987,7 @@
 
   View.prototype.keepInView = function () {
     if (!this.cam.on || this.cam.panned || !this.cam.vb || !this.model) return;
+    if (this.spot !== null && this.spot !== undefined) return;
     var id = this.followId();
     var at = id !== null && id !== undefined ? this.restPositions().at[id] : null;
     if (!at) return;
@@ -11924,7 +12147,9 @@
         this.apply(ev);
         this.drawTile(this.tiles[ev.space], m.props[ev.space], m);
         this.buildPop(ev.space);
-        var cost = ev.amount !== undefined ? Math.abs(ev.amount | 0) :
+        var lc = ev.amount !== undefined ? 0 : ev.t === 'build' ? (typeof B.levelCost === 'function' ? B.levelCost(ev.space, ev.level | 0) : 0) :
+          (typeof B.levelSellValue === 'function' ? B.levelSellValue(ev.space, (ev.level | 0) + 1) : 0);
+        var cost = ev.amount !== undefined ? Math.abs(ev.amount | 0) : lc > 0 ? lc :
           ev.t === 'build' ? B.buildCost(ev.space) : Math.round(B.buildCost(ev.space) * B.RULES.sellShare);
         if (cost) this.popSpace(ev.space, signed(ev.t === 'build' ? -cost : cost), ev.t !== 'build');
         return this.wait(100 * k);
@@ -12373,6 +12598,51 @@
     } catch (e) { report(e, 'highlight'); }
   };
 
+  View.prototype.spotlight = function (i) {
+    var was = this.spot === undefined || this.spot === null ? null : this.spot;
+    if (arguments.length === 0 || this.destroyed) return was;
+    var idx = typeof i === 'number' && i === Math.floor(i) && i >= 0 && i < this.tiles.length ? i : null;
+    try {
+      if (idx !== was) { this.spot = idx; this.drawSpot(); }
+      if (this.cam.on && (idx !== null || was !== null)) {
+        this.cam.panned = false;
+        if (idx !== null) this.centreOnSpace(idx, true); else this.centreOn(this.followId(), true);
+      }
+    } catch (e) { report(e, 'spotlight'); }
+    return idx;
+  };
+  View.prototype.drawSpot = function () {
+    var g = this.gSpot, gd = this.gSpotDim, A = this.th.art, C = A.COLORS || {}, el = A.el;
+    if (!g || !gd) return;
+    while (g.firstChild) g.removeChild(g.firstChild);
+    while (gd.firstChild) gd.removeChild(gd.firstChild);
+    var i = this.spot, t = i === null || i === undefined ? null : this.tiles[i];
+    this.root.classList.toggle('ece-spotlit', !!t);
+    if (t) this.root.setAttribute('data-spot', String(i)); else this.root.removeAttribute('data-spot');
+    if (!t) return;
+    for (var j = 0; j < this.tiles.length; j++) {
+      if (j === i) continue;
+      var cj = this.tiles[j].card;
+      el('rect', { x: r3(cj.x), y: r3(cj.y), width: r3(cj.w), height: r3(cj.h), rx: 0.09, fill: C.spotVeil || '#071219',
+        opacity: typeof C.spotVeilOpacity === 'number' ? C.spotVeilOpacity : 0.3, 'class': 'ece-spot-veil' }, gd);
+    }
+    var c = t.card, pad = 0.03, R = 0.12;
+    var box = { x: r3(c.x - pad), y: r3(c.y - pad), width: r3(c.w + 2 * pad), height: r3(c.h + 2 * pad), rx: R, fill: 'none' };
+    var ring = el('g', { 'class': 'ece-spot-ring', 'data-space': String(i) }, g);
+    var put = function (extra) { var a = {}, k; for (k in box) a[k] = box[k]; for (k in extra) a[k] = extra[k]; return el('rect', a, ring); };
+    put({ stroke: C.spotGlow || '#F3D27A', 'stroke-width': 0.22, 'stroke-opacity': 0.5, 'class': 'ece-spot-glow' });
+    put({ stroke: C.ringKey || '#06100F', 'stroke-opacity': 0.85, 'stroke-width': 0.12, 'class': 'ece-spot-key' });
+    put({ stroke: C.spotLine || '#E9C25A', 'stroke-width': 0.065, 'class': 'ece-spot-line' });
+  };
+  View.prototype.centreOnSpace = function (i, animated) {
+    var cell = this.Lo.cells[i];
+    if (!this.cam.on || !cell) return;
+    var from = this.cam.vb || this.viewBox();
+    this.cam.cx = cell.x + cell.w / 2; this.cam.cy = cell.y + cell.h / 2;
+    var to = this.viewBox();
+    if (animated) this.animateViewBox(from, to); else this.setVB(to);
+  };
+
   View.prototype.placeCamera = function () {
     if (!this.cam.on) return;
     this.cam.panned = false;
@@ -12417,6 +12687,8 @@
   };
 
   View.prototype.focusPoint = function () {
+    var sc = this.spot !== null && this.spot !== undefined ? this.Lo.cells[this.spot] : null;
+    if (sc) return { x: sc.x + sc.w / 2, y: sc.y + sc.h / 2 };
     var id = this.followId();
     var tk = id !== null && id !== undefined ? this.tokens[id] : null;
     if (tk && tk.shown && tk.x !== null) return { x: tk.x, y: tk.y };
@@ -12605,6 +12877,7 @@
 
   View.prototype.centreOn = function (pid, animated) {
     if (!this.cam.on) return;
+    if (this.spot !== null && this.spot !== undefined && this.Lo.cells[this.spot]) { this.centreOnSpace(this.spot, animated); return; }
     var tk = pid !== null && pid !== undefined ? this.tokens[pid] : null;
     var pt = tk && tk.shown && tk.x !== null ? { x: tk.x, y: tk.y } : null;
     if (!pt && this.model && pid !== null && pid !== undefined) pt = this.restPositions().at[pid] || null;
@@ -12778,7 +13051,7 @@
     if (this.queued) { this.pendingLayout = Lo; return; }
     this.pendingLayout = null;
     var keep = { hl: this.drawn.hl, note: this.noteOn, title: this.drawn.title, top: this.centreTop, at: this.kbd.at, moved: this.kbd.moved,
-      cam: this.cam.on, focus: null };
+      cam: this.cam.on, focus: null, spot: this.spot === undefined ? null : this.spot };
     try {
       var ae = typeof document !== 'undefined' ? document.activeElement : null;
       for (var n = ae; n && n !== this.root; n = n.parentNode) {
@@ -12802,6 +13075,7 @@
     if (keep.top !== null && keep.top !== undefined) { this.centreTop = keep.top; this.centreKey = null; this.placeCentre(); }
     if (this.model) this.draw();
     if (keep.hl) this.highlight(keep.hl.split(',').map(Number));
+    this.spot = keep.spot; this.drawSpot();
     if (keep.note) this.setNote(true);
     if (keep.title === 'hidden') this.setTitle(false);
     this.kbd.moved = keep.moved;
@@ -12862,6 +13136,7 @@
       closeUp: function () { return v.closeUp(); },
       follow: function (pid) { v.follow(pid); },
       highlight: function (list) { v.highlight(list); },
+      spotlight: function (i) { return arguments.length ? v.spotlight(i) : v.spotlight(); },
       setNote: function (on) { v.setNote(on); },
       dropCards: function () { v.dropCards(); },
       setTitle: function (on) { v.setTitle(on); },
@@ -12900,12 +13175,15 @@
     _wideSplit: wideSplit,
     _toMap: toMap,
     OWN: { w: OWN_W, key: OWN_KEY, inset: OWN_IN, dash: OWN_DASH },
+    TOWER: { k: TOWER_K, sky: SKY_K },
     _dpr: dprNow,
     MIN_FONT: MIN_FONT,
     HOP_MS: HOP,
     PACE: PACE,
     HOP: HOP,
-    DICE_MS: DICE_MS
+    DICE_MS: DICE_MS,
+    SPEEDS: SPEEDS.slice(),
+    speedId: speedId
   };
 })(window.ECE = window.ECE || {});
 ;
@@ -13095,13 +13373,15 @@
     try { SOUNDS[name](ac.currentTime + 0.01 + Math.max(0, (when || 0) / 1000)); } catch (e) { report(e); }
   };
 
+  var SPACING = { slow: { hop: 180, pace: 2 }, normal: { hop: 135, pace: 1.5 }, fast: { hop: 90, pace: 1 }, veryfast: { hop: 40, pace: 0.4 } };
+  Sound.SPACING = SPACING;
   Sound.events = function (list, speed, you) {
     if (!ac || !enabled || !(volume > 0) || !list || !list.length) return;
     if (speed === 'instant') return;
-    var fast = speed === 'fast';
+    var sp = SPACING[speed] ? speed : 'normal';
     var BV = ECE.BoardView || {};
-    var hop = (BV.HOP_MS && BV.HOP_MS[fast ? 'fast' : 'normal']) || (fast ? 40 : 90);
-    var diceMs = Math.round(((BV.DICE_MS || 380) + 100) * ((BV.PACE && BV.PACE[fast ? 'fast' : 'normal']) || (fast ? 0.4 : 1)));
+    var hop = (BV.HOP_MS && BV.HOP_MS[sp]) || SPACING[sp].hop;
+    var diceMs = Math.round(((BV.DICE_MS || 380) + 100) * ((BV.PACE && BV.PACE[sp]) || SPACING[sp].pace));
     var t = 0, step = 0;
     for (var i = 0; i < list.length; i++) {
       var ev = list[i], k = ev && (ev.t || ev.type);
@@ -13298,6 +13578,98 @@
   };
   Panel.lastLine = function (st, you) { return Panel.lastLines(st, you, 1)[0] || ''; };
 
+  var MINE = { buy: 1, auctionEnd: 1, rent: 1, tax: 1, build: 1, sell: 1, card: 1, cash: 1, trade: 1, mortgage: 1, unmortgage: 1, fund: 1, leave: 1, bankrupt: 1 };
+  function isMine(ev, you) {
+    var k = evType(ev);
+    if (!MINE[k]) return false;
+    if (k === 'auctionEnd') return ev.winner === you;
+    if (k === 'rent') return ev.p === you || ev.owner === you;
+    if (k === 'trade') return !!ev.offer && (ev.offer.from === you || ev.offer.to === you);
+    if (k === 'cash') return ev.p === you || ev.to === you;
+    return ev.p === you;
+  }
+  function cardLine(ev, cash) {
+    var C = Dom.cards(), d = C && C.DECKS ? C.DECKS[ev.deck] : null, name = d && d.name ? d.name : 'a card';
+    if (!cash) return 'You drew ' + name + '.';
+    var a = cash.amount | 0;
+    if (cash.to !== null && cash.to !== undefined && cash.p !== cash.to) return 'You drew ' + name + ' and paid ' + money(Math.abs(a)) + '.';
+    return 'You drew ' + name + (a >= 0 ? ' and collected ' : ' and paid ') + money(Math.abs(a)) + '.';
+  }
+  function buildRun(st, run, you) {
+    var Bd = Dom.board(), R0 = Bd.RULES || {}, top = R0.towerLevel || 5, sky = Math.max(top, R0.maxLevel || 5);
+    var homes = 0, towers = 0, skies = 0, total = 0, ds = {};
+    run.forEach(function (ev) {
+      var lv = ev.level | 0;
+      if (sky > top && lv >= sky) skies++; else if (lv >= top) towers++; else homes++;
+      total += ev.amount | 0;
+      var d = Bd.districtOf(ev.space);
+      if (d) ds[d.id] = d.name;
+    });
+    var parts = [];
+    if (homes) parts.push(homes === 1 ? 'a home' : homes + ' homes');
+    if (towers) parts.push(towers === 1 ? 'a tower' : towers + ' towers');
+    if (skies) { var w = String(Dom.word('skyscraper', 'Skyscraper')).toLowerCase(); parts.push(skies === 1 ? 'a ' + w : skies + ' ' + w + 's'); }
+    var names = Object.keys(ds).map(function (k) { return ds[k]; });
+    var who = run[0].p === you ? 'You' : (Dom.player(st, run[0].p) || {}).name || 'Someone';
+    return who + ' built ' + Panel.andList(parts) + (names.length === 1 ? ' in ' + names[0] : '') + ' for ' + money(total) + '.';
+  }
+  Panel.andList = function (parts) {
+    parts = (parts || []).filter(function (x) { return !!x; });
+    if (parts.length <= 2) return parts.join(' and ');
+    return parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1];
+  };
+  function buildDistrict(ev) {
+    var d = ev && typeof ev.space === 'number' ? Dom.board().districtOf(ev.space) : null;
+    return d ? d.id : null;
+  }
+  Panel.MOVES_EMPTY = 'Your moves show here.';
+  Panel.yourMoves = function (st, you, n) {
+    var out = [];
+    if (!st || !st.log || you === null || you === undefined) return out;
+    n = n || 3;
+    var log = st.log, round = st.round | 0, seen = {};
+    var rounds = new Array(log.length), r = null;
+    for (var a = 0; a < log.length; a++) { if (log[a] && log[a].t === 'turn' && typeof log[a].round === 'number') r = log[a].round; rounds[a] = r; }
+    var raw = [];
+    for (var i = log.length - 1; i >= 0 && raw.length < n; i--) {
+      var ev = log[i];
+      if (!ev || !isMine(ev, you)) continue;
+      var k = evType(ev), text = '';
+      if (k === 'build') {
+        var run = [ev], j = i - 1, dk = buildDistrict(ev);
+        while (j >= 0 && log[j] && evType(log[j]) === 'build' && log[j].p === ev.p && buildDistrict(log[j]) === dk) { run.unshift(log[j]); j--; }
+        text = run.length > 1 ? buildRun(st, run, you) : call('text', [st, ev, you], '');
+        i = j + 1;
+      } else if (k === 'cash' && ev.p === you && i > 0 && log[i - 1] && evType(log[i - 1]) === 'card' && log[i - 1].p === ev.p) {
+        text = cardLine(log[i - 1], ev);
+        i = i - 1;
+      } else if (k === 'card') text = cardLine(ev, null);
+      else text = call('text', [st, ev, you], '');
+      if (!text) continue;
+      var rd = rounds[i] === null || rounds[i] === undefined ? round : rounds[i];
+      var base = rd + '|' + text;
+      seen[base] = (seen[base] | 0) + 1;
+      raw.push({ text: text, base: base });
+    }
+    raw.forEach(function (x) { var total = seen[x.base]; seen[x.base]--; out.push({ text: x.text, sig: x.base + '#' + (total - 1) }); });
+    return out;
+  };
+  Panel.mergeMoves = function (fresh, keep, n, trimmed) {
+    n = n || 3;
+    fresh = (fresh || []).slice(0, n);
+    if (!trimmed || fresh.length >= n || !Array.isArray(keep)) return fresh;
+    var have = {};
+    fresh.forEach(function (x) { have[x.sig] = 1; });
+    var from = 0;
+    if (fresh.length) { for (var i = 0; i < keep.length; i++) if (keep[i] && keep[i].sig === fresh[fresh.length - 1].sig) { from = i + 1; break; } }
+    var out = fresh.slice();
+    for (var j = from; j < keep.length && out.length < n; j++) {
+      var x = keep[j];
+      if (x && typeof x.text === 'string' && x.text && typeof x.sig === 'string' && !have[x.sig]) { out.push({ text: x.text, sig: x.sig }); have[x.sig] = 1; }
+    }
+    return out;
+  };
+
   var TAIL = / \([^()]*\)(?=[.!?]?$)/;
   Panel.stripText = function (text, fits) {
     text = String(text || '');
@@ -13485,12 +13857,15 @@
   }
   Panel.passBadge = passBadge;
 
+  Panel.menuButton = function (fn) {
+    return Dom.btn([Dom.icon('menu'), h('span', { cls: 'ui-menu-word' }, 'Menu')], fn, { ghost: true, cls: 'ui-menu-btn', aria: 'Menu' });
+  };
   Panel.mount = function (el, handlers) {
     handlers = handlers || {};
     Dom.clear(el);
     el.classList.add('ui-panel');
     var head = h('div', { cls: 'ui-panel-head' });
-    var menuBtn = Dom.btn(Dom.icon('menu'), function () { handlers.onMenu && handlers.onMenu(); }, { ghost: true, cls: 'ui-icon-btn', aria: 'Menu' });
+    var menuBtn = Panel.menuButton(function () { handlers.onMenu && handlers.onMenu(); });
     var title = h('div', { cls: 'ui-panel-title' }, [h('div', { cls: 'ui-panel-name' }, panelName()), h('div', { cls: 'ui-panel-round', 'aria-live': 'off' })]);
     var camBtn = Dom.btn(Dom.icon('zoom'), function () { handlers.onCloseUp && handlers.onCloseUp(); }, { ghost: true, cls: 'ui-icon-btn ui-cam-btn', aria: 'Close-up camera', pressed: false });
     head.appendChild(menuBtn); head.appendChild(title); head.appendChild(camBtn);
@@ -13519,12 +13894,17 @@
     var recent = h('div', { cls: 'ui-recent' }, [h('div', { cls: 'ui-recent-head' }, [h('span', null, 'Latest moves'),
       Dom.btn('Full log', function () { handlers.onLog && handlers.onLog(); }, { small: true, ghost: true, cls: 'ui-recent-all', aria: 'Open the full game log' })]), recentList]);
 
+    var movesList = h('ol', { cls: 'ui-moves-list', 'aria-label': 'Your moves, newest first' });
+    var moves = h('section', { cls: 'ui-moves', 'aria-label': 'Your moves' }, [h('div', { cls: 'ui-moves-head' }, 'Your moves'), movesList]);
+    moves.hidden = true;
+
     el.appendChild(head);
     el.appendChild(turn);
     el.appendChild(chips);
     el.appendChild(pickLine);
     el.appendChild(actions);
     el.appendChild(logBtn);
+    el.appendChild(moves);
     el.appendChild(recent);
 
     var lastCash = {};
@@ -13546,7 +13926,7 @@
     }
     var lastCtx = null;
     var panel = {
-      el: el, actionsEl: actions, primaryEl: primaryBtn, manageEl: manageBtn, tradeEl: tradeBtn, logEl: logBtn, recentEl: recent,
+      el: el, actionsEl: actions, primaryEl: primaryBtn, manageEl: manageBtn, tradeEl: tradeBtn, logEl: logBtn, recentEl: recent, movesEl: moves,
       headEl: head, camEl: camBtn, turnEl: turn, chipsEl: chips, altsEl: alts, rowEl: row, current: null,
       home: function (altsElsewhere) {
         if (!altsElsewhere && (alts.parentNode !== actions || alts.nextSibling !== row)) actions.insertBefore(alts, row);
@@ -13575,6 +13955,7 @@
       }
 
       Dom.text(title.firstChild, panelName());
+      fitName();
       Dom.text(title.lastChild, Panel.roundText(st));
       fitRound();
       camBtn.setAttribute('aria-pressed', ctx.closeUp ? 'true' : 'false');
@@ -13688,7 +14069,71 @@
       fitStrip(logText.firstChild, two[0] || 'Tap for the game log');
       fitStrip(logText.lastChild, two[1] || '');
       renderRecent(st, you);
+      renderMoves(st, you, ctx);
     }
+
+    function fitName() {
+      var n = title.firstChild;
+      if (!n || !n.classList) return;
+      n.classList.remove('ui-name-fit');
+      n.classList.remove('ui-name-fit2');
+      if (!n.getClientRects || !n.getClientRects().length) return;
+      if (n.scrollWidth > n.clientWidth + 1) n.classList.add('ui-name-fit');
+      if (n.scrollWidth > n.clientWidth + 1) { n.classList.remove('ui-name-fit'); n.classList.add('ui-name-fit2'); }
+    }
+    panel.fitName = fitName;
+    var movesSig = '';
+    var onPhone = function () { return typeof document !== 'undefined' && document.documentElement.classList.contains('phone'); };
+    function renderMoves(st, you, ctx) {
+      var lines = typeof ctx.yourMoves === 'function' ? ctx.yourMoves(st, you) : Panel.yourMoves(st, you, 3);
+      lines = (lines || []).slice(0, 3);
+      var phone = onPhone();
+      var sig = (phone ? 'phone:' : '') + lines.map(function (l) { return l.sig + '=' + l.text; }).join('\n');
+      if (sig !== movesSig) {
+        movesSig = sig;
+        Dom.clear(movesList);
+        lines.forEach(function (l, k) {
+          var li = h('li', { cls: 'ui-moves-line' + (k === 0 ? ' ui-moves-new' : ''), title: l.text }, [h('span', { cls: 'ui-moves-text' }, l.text)]);
+          movesList.appendChild(li);
+        });
+        if (!lines.length && phone) movesList.appendChild(h('li', { cls: 'ui-moves-empty' }, [h('span', { cls: 'ui-moves-text' }, Panel.MOVES_EMPTY)]));
+        moves.hidden = !lines.length && !phone;
+      }
+      panel.fitMoves();
+    }
+    panel.fitMoves = function () {
+      var items = movesList.children;
+      for (var i = 0; i < items.length; i++) items[i].hidden = false;
+      Dom.toggle(moves, 'ui-moves-none', false);
+      Dom.toggle(moves, 'ui-moves-nohead', false);
+      if (moves.hidden || !onPhone() || !moves.getClientRects().length) return;
+      for (var t = 0; t < items.length; t++) {
+        var sp = items[t].querySelector('.ui-moves-text');
+        if (sp && items[t].title) fitTwo(sp, items[t].title);
+      }
+      var over = function () { return moves.scrollHeight > moves.clientHeight + 1; };
+      var M = typeof ECE !== 'undefined' && ECE.Mobile && ECE.Mobile.movesMax ? ECE.Mobile.movesMax : null;
+      var cap = M ? M(parseFloat(moves.style.maxHeight) || 0) : 3;
+      for (var c = cap; c < items.length; c++) items[c].hidden = true;
+      for (var k = items.length - 1; k > 0 && over(); k--) items[k].hidden = true;
+      if (over()) Dom.toggle(moves, 'ui-moves-nohead', true);
+      if (over()) Dom.toggle(moves, 'ui-moves-none', true);
+    };
+    function fitTwo(span, text) {
+      Dom.text(span, Panel.stripText(text, function (tx) {
+        Dom.text(span, tx);
+        if (!span.isConnected || !span.getClientRects || !span.getClientRects().length) return true;
+        return span.scrollHeight <= span.clientHeight + 1;
+      }));
+    }
+    panel.movesHome = function () {
+      if (moves.parentNode !== el || moves.previousSibling !== logBtn) { if (recent.parentNode === el) el.insertBefore(moves, recent); else el.appendChild(moves); }
+      moves.classList.remove('ui-moves-map');
+      moves.classList.remove('ui-moves-away');
+      moves.classList.remove('ui-moves-nohead');
+      moves.style.removeProperty('left'); moves.style.removeProperty('top'); moves.style.removeProperty('bottom');
+      moves.style.removeProperty('width'); moves.style.removeProperty('max-height');
+    };
 
     function renderPick(st, you) {
       var p = selected === null ? null : Dom.player(st, selected);
@@ -13855,8 +14300,8 @@
 
   function topHandle() { return stack.length ? stack[stack.length - 1] : null; }
 
-  var RETAP_MS = 450, TAP_OPEN_MS = 400, CPU_OPEN_MS = 700, RETAP_PX = 32;
-  D.RETAP_MS = RETAP_MS; D.TAP_OPEN_MS = TAP_OPEN_MS; D.CPU_OPEN_MS = CPU_OPEN_MS;
+  var RETAP_MS = 450, TAP_OPEN_MS = 400, CPU_OPEN_MS = 700, RETAP_PX = 32, DOUBLE_PX = 6;
+  D.RETAP_MS = RETAP_MS; D.TAP_OPEN_MS = TAP_OPEN_MS; D.CPU_OPEN_MS = CPU_OPEN_MS; D.DOUBLE_PX = DOUBLE_PX;
   var tapping = false;
   var tapAt = null;
   var tapClosed = null;
@@ -13864,8 +14309,9 @@
     document.addEventListener('click', function (ev) {
       if (!(ev.detail > 0)) return;
       var t = ev.target && ev.target.closest ? ev.target : null;
+      var near = t && opensOnly(t) ? DOUBLE_PX : RETAP_PX;
       if (tapClosed && Dom.now() - tapClosed.at < TAP_OPEN_MS && t && t.closest('#app') && t.closest('button') &&
-          Math.abs(ev.clientX - tapClosed.x) <= RETAP_PX && Math.abs(ev.clientY - tapClosed.y) <= RETAP_PX) {
+          Math.abs(ev.clientX - tapClosed.x) <= near && Math.abs(ev.clientY - tapClosed.y) <= near) {
         ev.stopPropagation(); ev.preventDefault(); return;
       }
       tapping = true;
@@ -13873,6 +14319,8 @@
       setTimeout(function () { tapping = false; }, 0);
     }, true);
   }
+  function opensOnly(t) { var b = t && t.closest ? t.closest('button') : null; return !!b && !!b.closest && !!b.closest('.ui-manage-btn, .ui-trade-btn') && !b.closest('.ui-dlg-layer'); }
+  D.opensOnly = opensOnly;
   function quietOn(hd) { return !!hd.quietUntil && Dom.now() < hd.quietUntil; }
   function markQuiet(hd) {
     var on = hd.open && quietOn(hd);
@@ -13966,30 +14414,97 @@
     }
   }
 
+  function scrollMark(hd) {
+    var body = hd.body, a = document.activeElement;
+    var k = a && a !== hd.box && hd.box.contains(a) && a.dataset && a.dataset.k ? a.dataset.k : (hd.tapKey && hd.tapKey.at && Dom.now() - hd.tapKey.at < 4000 ? hd.tapKey.k : null);
+    var mark = { top: body.scrollTop, k: null, y: 0 };
+    if (k && body.scrollTop > 0) {
+      var el = body.querySelector('[data-k="' + String(k).replace(/"/g, '') + '"]');
+      if (el && el.getClientRects().length) { mark.k = k; mark.y = el.getBoundingClientRect().top - body.getBoundingClientRect().top; }
+    }
+    return mark;
+  }
+  function scrollBack(hd, mark) {
+    var body = hd.body;
+    body.scrollTop = mark.top;
+    pinRow(hd, mark);
+    return body.scrollTop;
+  }
+  function pinRow(hd, mark) {
+    var body = hd.body;
+    if (!mark || !mark.k) return false;
+    var el = body.querySelector('[data-k="' + String(mark.k).replace(/"/g, '') + '"]');
+    if (!el || !el.getClientRects().length) {
+      el = rowKin(hd, mark.k);
+      if (el && typeof body.contains === 'function' && !body.contains(el)) el = null;
+    }
+    if (!el || !el.getClientRects().length) return false;
+    var y = el.getBoundingClientRect().top - body.getBoundingClientRect().top;
+    if (Math.abs(y - mark.y) >= 1) body.scrollTop = Math.max(0, body.scrollTop + (y - mark.y));
+    return true;
+  }
+  D.scrollMark = scrollMark;
+  D.scrollBack = scrollBack;
+
   function renderInto(hd) {
     var keep = document.activeElement && hd.box.contains(document.activeElement) ? document.activeElement : null;
     var keepKey = keep && keep.dataset ? keep.dataset.k : null;
-    var scroll = hd.body.scrollTop;
+    var caret = keep && keep.tagName === 'INPUT' && typeof keep.selectionStart === 'number' ? [keep.selectionStart, keep.selectionEnd] : null;
+    var mark = scrollMark(hd);
     Dom.clear(hd.body);
     Dom.clear(hd.foot);
     hd.foot.hidden = false;
+    if (hd.footHeld && hd.foot.style) { hd.foot.style.minHeight = ''; hd.footHeld = false; }
     try { hd.spec.render(hd); } catch (e) { Dom.report(e, 'dialog:' + hd.id); hd.body.appendChild(Dom.h('p', { cls: 'ui-error-line' }, 'This window could not be drawn.')); hd.foot.appendChild(Dom.btn('Close', function () { hd.close('error'); }, { primary: true })); }
     if (!hd.foot.firstChild) hd.foot.hidden = true;
     if (hd.retapAt && Dom.now() - hd.retapAt < 1500) { hd.retapAt = 0; quiet(hd, RETAP_MS, false, false); }
     else markQuiet(hd);
-    hd.body.scrollTop = scroll;
+    var want = scrollBack(hd, mark);
     if (keepKey) {
       var again = hd.box.querySelector('[data-k="' + keepKey.replace(/"/g, '') + '"]');
-      if (again && !again.disabled) Dom.focus(again);
-      else focusFirst(hd);
-    } else if (keep && !keep.isConnected) focusFirst(hd);
+      if (again && !again.disabled) {
+        Dom.focus(again);
+        if (caret && again.tagName === 'INPUT') { try { again.setSelectionRange(caret[0], caret[1]); } catch (e) { } }
+      } else {
+        var kin = rowKin(hd, keepKey);
+        if (kin) Dom.focus(kin); else focusFirst(hd, true);
+      }
+    } else if (keep && !keep.isConnected) focusFirst(hd, true);
     place(hd);
+    var jump = hd.jump;
+    hd.jump = null;
+    if (jump) { jump(); want = hd.body.scrollTop; }
+    else {
+      if (hd.body.scrollTop !== want) hd.body.scrollTop = want;
+      if (pinRow(hd, mark)) want = hd.body.scrollTop;
+    }
+    if ((mark.top > 0 || jump) && typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(function () {
+        if (!hd.open) return;
+        if (jump) { jump(); return; }
+        if (Math.abs(hd.body.scrollTop - want) > 1 && hd.body.scrollHeight - hd.body.clientHeight >= want - 1) hd.body.scrollTop = want;
+        pinRow(hd, mark);
+      });
+    }
   }
 
-  function focusFirst(hd) {
+  var KIN = { mort: ['unm', 'sell', 'build'], unm: ['mort', 'build', 'sell'], build: ['sell', 'mort', 'unm'], sell: ['build', 'mort', 'unm'] };
+  function rowKin(hd, key) {
+    var m = /^(mort|unm|build|sell)(\d+)$/.exec(String(key || ''));
+    var root = hd && (hd.box || hd.body);
+    if (!m || !root || typeof root.querySelector !== 'function') return null;
+    var list = KIN[m[1]];
+    for (var i = 0; i < list.length; i++) {
+      var el = root.querySelector('[data-k="' + list[i] + m[2] + '"]');
+      if (el && !el.disabled && el.getClientRects().length) return el;
+    }
+    return null;
+  }
+  D.rowKin = rowKin;
+  function focusFirst(hd, again) {
     if (hd.spec.focus === 'box') { Dom.focus(hd.box); return; }
     var f = hd.box.querySelector('[data-autofocus]:not([disabled])') || hd.foot.querySelector('.ui-btn-primary:not([disabled])') ||
-      Dom.focusables(hd.foot)[0] || Dom.focusables(hd.body)[0] || hd.box;
+      Dom.focusables(hd.foot)[0] || (again ? null : Dom.focusables(hd.body)[0]) || hd.box;
     Dom.focus(f);
   }
 
@@ -14031,7 +14546,13 @@
     layer.appendChild(backdrop);
     layer.appendChild(box);
     Dom.on(box, 'keydown', function (ev) { Dom.trapTab(box, ev); });
+    box.addEventListener('pointerdown', function (ev) {
+      var kb = ev.target && ev.target.closest ? ev.target.closest('[data-k]') : null;
+      if (kb && box.contains(kb)) hd.tapKey = { k: kb.dataset.k, at: Dom.now() };
+    }, true);
     box.addEventListener('click', function (ev) {
+      var kc = ev.target && ev.target.closest ? ev.target.closest('[data-k]') : null;
+      if (kc && box.contains(kc)) hd.tapKey = { k: kc.dataset.k, at: Dom.now() };
       if (!(ev.detail > 0)) return;
       var b = ev.target && ev.target.closest ? ev.target.closest('button') : null;
       if (!b || !box.contains(b)) return;
@@ -14158,8 +14679,21 @@
     return h('span', { cls: 'ui-mini-chip' + (extra ? ' ' + extra : '') }, [Dom.token(p.token, p.color, 20), h('span', { cls: 'ui-mini-name' }, id === ctx.you ? 'You' : p.name)]);
   }
   function key(b, k) { b.dataset.k = k; return b; }
-  function homesForTower() { var R0 = B() && B().RULES; return Math.max(1, ((R0 && R0.maxLevel) || 5) - 1); }
+  function homesForTower() { return Math.max(1, towerLv() - 1); }
   D.homesForTower = homesForTower;
+  function towerLv() { var R0 = B() && B().RULES; return (R0 && R0.towerLevel) || 5; }
+  function skyLv() { var R0 = B() && B().RULES; return Math.max(towerLv(), (R0 && R0.maxLevel) || 5); }
+  function skyWord() { return W('skyscraper', 'Skyscraper'); }
+  D.towerLv = towerLv;
+  D.skyLv = skyLv;
+  function nextCost(st, j) {
+    var Bd = B(), c = ruleCall('buildPrice', [st, j], 0);
+    return c > 0 ? c : Bd.buildCost(j);
+  }
+  function sellBack(j, lv) {
+    var Bd = B();
+    return ruleCall('sellValue', [j, lv], Math.round(Bd.buildCost(j) * (Bd.RULES.sellShare || 0.5)));
+  }
   function youName(ctx, p) {
     if (p.id !== ctx.you) return p.name;
     return /^you$/i.test(String(p.name || '').trim()) ? 'You' : p.name + ' (you)';
@@ -14177,12 +14711,38 @@
     var about = withAbout && typeof s.about === 'string' && s.about;
     var d = s.district ? B().district(s.district) : null;
     var area = d ? d.name : (s.area || '');
-    if (typeof s.street === 'string' && s.street) { var where = s.area || area, sn = s.street.replace(/ /g, '\u00a0'); area = where ? where + ' · ' + sn : sn; }
-    var head = h('div', { cls: 'ui-space-head' }, [Dom.spaceBadge(i), h('div', { cls: 'ui-space-names' }, [h('div', { cls: 'ui-space-name' }, s.name ? Dom.spaceNameNodes(i) : ''), area ? h('div', { cls: 'ui-space-area' }, area) : null, about ? h('div', { cls: 'ui-space-about' }, s.about) : null])]);
+    var hasStreet = typeof s.street === 'string' && !!s.street;
+    if (hasStreet) { var where = s.area || area, sn = s.street.replace(/ /g, '\u00a0'); area = where ? where + ' · ' + sn : sn; }
+    var key2 = s.kind === 'street' && d ? tagKeyLine(d) : null;
+    if (key2 && !hasStreet) area = '';
+    var head = h('div', { cls: 'ui-space-head' }, [Dom.spaceBadge(i), h('div', { cls: 'ui-space-names' }, [h('div', { cls: 'ui-space-name' }, s.name ? Dom.spaceNameNodes(i) : ''), area ? h('div', { cls: 'ui-space-area' }, area) : null, key2, about ? h('div', { cls: 'ui-space-about' }, s.about) : null])]);
     if (d) head.style.borderColor = Dom.tagColors(d.color).fill;
     return head;
   }
 
+  function tagKeyLine(d) {
+    var t = Dom.tag(d.id, 'ui-tag-mini');
+    var line = h('div', { cls: 'ui-space-area ui-space-tagkey', title: d.tag + ' = ' + d.name + ' district' }, [t, ' ', h('span', null, '= ' + d.name + ' district')]);
+    line.setAttribute('aria-label', d.tag + ' = ' + d.name + ' district');
+    return line;
+  }
+  D.tagKeyLine = tagKeyLine;
+  function ownStreet(st, you, i, legal) {
+    var s = Dom.space(i), pp = prop(st, i);
+    if (!s || s.kind !== 'street' || !pp || pp.owner !== you) return null;
+    var d = B().districtOf(i);
+    if (!d) return null;
+    var n = d.spaces.filter(function (j) { var q = prop(st, j); return q && q.owner === you; }).length, all = d.spaces.length;
+    if (n < all) return { text: Dom.say('Your street. You own ' + n + ' of ' + all + ' ' + d.name + ' streets: own all ' + all + ' to build homes.'), build: false, n: n, of: all, d: d };
+    var can = (legal || []).some(function (a) { return a && a.t === 'build' && d.spaces.indexOf(a.space) >= 0; });
+    var lv = pp.level | 0;
+    if (!can) {
+      var why = pp.mortgaged ? 'Pay off its mortgage to build.' : lv >= skyLv() ? Dom.say('It has a ' + skyWord().toLowerCase() + ': the most a street can hold.') : null;
+      return { text: Dom.say('Your street. You own all ' + all + ' ' + d.name + ' streets.') + (why ? ' ' + why : ''), build: false, n: n, of: all, d: d };
+    }
+    return { text: 'Build here: Manage', build: true, n: n, of: all, d: d };
+  }
+  D.ownStreet = ownStreet;
   function transitCount(state, owner) {
     var n = 0, T = B().TRANSIT || [];
     for (var k = 0; k < T.length; k++) { var pp = prop(state, T[k]); if (pp && pp.owner === owner) n++; }
@@ -14194,15 +14754,16 @@
     return n;
   }
 
-  function rentRows(state, i) {
+  function rentRows(state, i, noSky) {
     var s = Dom.space(i), Bd = B(), out = [];
     if (!s) return out;
     var pp = prop(state, i);
     var owner = pp ? pp.owner : null;
     if (s.kind === 'street') {
-      var names = (ECE.Glossary && ECE.Glossary.buildings && ECE.Glossary.buildings.levelNames) || ['No buildings', '1 home', '2 homes', '3 homes', '4 homes', 'Tower'];
+      var names = (ECE.Glossary && ECE.Glossary.buildings && ECE.Glossary.buildings.levelNames) || ['No buildings', '1 home', '2 homes', '3 homes', '4 homes', 'Tower', 'Skyscraper'];
       var full = owner !== null && owner !== undefined ? !!ruleCall('ownsDistrict', [state, owner, s.district], false) : false;
-      for (var lv = 0; lv <= 5; lv++) {
+      var topLv = s.rent && s.rent.length > skyLv() && !noSky ? skyLv() : Math.min(towerLv(), (s.rent ? s.rent.length : 6) - 1);
+      for (var lv = 0; lv <= topLv; lv++) {
         var r = { label: Dom.say(names[lv]), amount: s.rent[lv], current: !!pp && !pp.mortgaged && (pp.level | 0) === lv };
         if (lv === 0) { r.extra = 'all 3: ' + money(s.rent[0] * 2); if (r.current && full) r.boost = true; }
         out.push(r);
@@ -14220,8 +14781,28 @@
     return out;
   }
 
-  function rentTable(state, i) {
-    var rows = rentRows(state, i);
+  function rentLine(state, i) {
+    var s = Dom.space(i), Bd = B();
+    if (!s) return '';
+    if (s.kind === 'street' && s.rent && s.rent.length) {
+      var top = s.rent[Math.min(skyLv(), s.rent.length - 1)];
+      var d = Bd.districtOf(i), n = d ? d.spaces.length : 3;
+      return money(s.rent[0]) + ', all ' + n + ': ' + money(s.rent[0] * 2) + ', up to ' + money(top);
+    }
+    if (s.kind === 'transit') {
+      var tr = Bd.RULES.transitRent || [];
+      return tr.length ? money(tr[0]) + ' – ' + money(tr[tr.length - 1]) + ' (1 to ' + tr.length + ' stops)' : '';
+    }
+    if (s.kind === 'utility') {
+      var ut = Bd.RULES.utilityTimes || [];
+      return ut.length > 1 ? 'dice × ' + ut[0] + ', × ' + ut[1] + ' with both' : '';
+    }
+    return '';
+  }
+  D.rentLine = rentLine;
+  D.rentTable = function (state, i, noSky) { return rentTable(state, i, noSky); };
+  function rentTable(state, i, noSky) {
+    var rows = rentRows(state, i, noSky);
     if (!rows.length) return null;
     var t = h('div', { cls: 'ui-rent', role: 'table', 'aria-label': 'Rent' });
     rows.forEach(function (r) {
@@ -14293,12 +14874,19 @@
           body.appendChild(row('Price', money(s.price), 'ui-price-row'));
           var rt = rentTable(st, i);
           if (rt) { body.appendChild(h('div', { cls: 'ui-sub' }, 'Rent')); body.appendChild(rt); }
+          var buildHere = null;
           if (s.kind === 'street') {
             var d = Bd.districtOf(i);
             body.appendChild(row('Build', money(Bd.buildCost(i)) + ' per home or tower'));
+            if (skyLv() > towerLv()) body.appendChild(row(skyWord(), money(typeof Bd.levelCost === 'function' ? Bd.levelCost(i, skyLv()) : Bd.buildCost(i) * (Bd.RULES.skyscraperCost || 2)), 'ui-sky-row'));
             var dp = prop(st, i);
             var whole = !!dp && !!d && !!ruleCall('ownsDistrict', [st, dp.owner, d.id], false);
-            if (whole && dp.owner === ctx.you) body.appendChild(para(Dom.say('You own all of ' + d.name + '. Build evenly; a tower needs ' + homesForTower() + ' homes on each street.'), 'ui-small'));
+            var mineLine = dp && dp.owner === ctx.you ? ownStreet(st, ctx.you, i, ruleCall('actor', [st], null) === ctx.you && ctx.legal ? ctx.legal() : []) : null;
+            if (mineLine && !whole) body.appendChild(para(mineLine.text, 'ui-small ui-own-line'));
+            else if (whole && dp.owner === ctx.you) {
+              body.appendChild(para(Dom.say('You own all of ' + d.name + '. Build evenly; a tower needs ' + homesForTower() + ' homes on each street' + (skyLv() > towerLv() ? '; a ' + skyWord().toLowerCase() + ' needs a tower on each street' : '') + '.'), 'ui-small'));
+              if (mineLine && mineLine.build && ctx.openManage) buildHere = d.id;
+            }
             else if (whole) body.appendChild(para(Who(ctx, dp.owner) + ' owns all of ' + d.name + '.', 'ui-small'));
             else body.appendChild(para('Own all of ' + (d ? d.name : 'the district') + ' (' + (d ? d.spaces.map(Dom.spaceName).join(', ') : '') + ') to build.', 'ui-small'));
           }
@@ -14328,6 +14916,7 @@
         }
         var asker = askOwner(ctx, i);
         if (asker !== null) hd.foot.appendChild(key(Dom.btn('Offer a trade', function () { openAsk(ctx, hd, asker, i); }, { aria: 'Offer ' + Who(ctx, asker) + ' a trade for ' + s.name }), 'ask'));
+        if (typeof buildHere === 'string') { var bd0 = buildHere; hd.foot.appendChild(key(Dom.btn([Dom.icon('build', 18), h('span', null, 'Build')], function () { hd.close('build'); ctx.openManage({ district: bd0 }); }, { cls: 'ui-build-here', aria: 'Build: open Manage at ' + (Bd.district(bd0) || {}).name }), 'buildhere')); }
         hd.foot.appendChild(Dom.btn('Close', function () { hd.close('ok'); }, { primary: true }));
       }
     });
@@ -14365,7 +14954,7 @@
           });
           hd.body.appendChild(ownersLine);
         }
-        var rt = rentTable(st, i);
+        var rt = rentTable(st, i, true);
         if (rt) { hd.body.appendChild(h('div', { cls: 'ui-sub' }, 'Rent')); hd.body.appendChild(rt); }
         if (s.kind === 'street') hd.body.appendChild(row('Homes', money(B().buildCost(i)) + ' each', 'ui-small-row'));
         var auctions = !st.rules || st.rules.auctions !== false;
@@ -14413,6 +15002,8 @@
         var aArea = ad ? ad.name : (s.area || '');
         hd.title('Auction' + (aArea ? ' · ' + aArea : ''));
         hd.body.appendChild(spaceHead(i));
+        var rl = rentLine(st, i);
+        if (rl) hd.body.appendChild(row('Rent', rl, 'ui-auction-rent'));
         hd.body.appendChild(row('Price on the board', money(s.price || 0)));
         var stake = running ? auctionNote(ctx, i) : null;
         if (stake) hd.body.appendChild(h('p', { cls: 'ui-small ui-hint' + (stake.warn ? ' ui-hint-warn' : '') }, [Dom.tag(stake.d.id), h('span', null, stake.text)]));
@@ -14521,7 +15112,7 @@
     else if (e.cash) label = (e.cash > 0 ? 'Collect ' : 'Pay ') + money(Math.abs(e.cash));
     else if (e.each) label = (e.each > 0 ? 'Collect ' : 'Pay ') + money(Math.abs(e.each) * others);
     else if (e.repairs) {
-      var homes = 0, towers = 0, top = (Bd.RULES && Bd.RULES.maxLevel) || 5;
+      var homes = 0, towers = 0, top = towerLv();
       for (var k in (st.props || {})) {
         if (!Object.prototype.hasOwnProperty.call(st.props, k)) continue;
         var pp = st.props[k];
@@ -14571,8 +15162,9 @@
   }
   D.holdingsOf = holdings;
 
-  D.manage = function (ctx) {
+  D.manage = function (ctx, opts) {
     var opened = false;
+    var goTo = opts && opts.district ? String(opts.district) : null;
     return D.open({
       id: 'manage', title: 'Manage', cls: 'ui-dlg-manage', place: 'side', closable: true, lightBackdrop: true,
       render: function (hd) {
@@ -14616,7 +15208,7 @@
         hold.groups.forEach(function (g) {
           var d = g.d;
           var full = !!ruleCall('ownsDistrict', [st, ctx.you, d.id], false);
-          var sec = h('section', { cls: 'ui-manage-group' });
+          var sec = h('section', { cls: 'ui-manage-group', 'data-district': d.id });
           var hdr = h('div', { cls: 'ui-group-head' }, [Dom.tag(d.id), h('b', null, d.name), h('span', { cls: 'ui-group-note' }, full ? 'Homes ' + money(d.build) + ' each' : g.mine.length + ' of 3 owned')]);
           sec.appendChild(hdr);
           d.spaces.forEach(function (j) {
@@ -14637,8 +15229,13 @@
           hold.other.forEach(function (j) { sec2.appendChild(manageRow(ctx, hd, st, j, prop(st, j), legal, false)); });
           hd.body.appendChild(sec2);
         }
-        if (all.length) hd.body.appendChild(para(Dom.say('Build evenly: a street gets its next home only when no street of its district has fewer. ' + homesForTower() + ' homes on all three, then a tower. Buildings sell back for ' + Dom.share(B().RULES.sellShare) + '.'), 'ui-small ui-rulenote'));
+        if (all.length) hd.body.appendChild(para(Dom.say('Build evenly: a street gets its next home only when no street of its district has fewer. ' + homesForTower() + ' homes on all three, then a tower' + (skyLv() > towerLv() ? '; a tower on all three, then a ' + skyWord().toLowerCase() : '') + '. Buildings sell back for ' + Dom.share(B().RULES.sellShare) + '.'), 'ui-small ui-rulenote'));
         hd.foot.appendChild(key(Dom.btn('Done', function () { hd.close('done'); }, { primary: true }), 'done'));
+        if (goTo) {
+          var at = goTo; goTo = null;
+          var grp = hd.body.querySelector('[data-district="' + at.replace(/"/g, '') + '"]');
+          if (grp) hd.jump = function () { if (hd.open && grp.isConnected) hd.body.scrollTop = Math.max(0, grp.getBoundingClientRect().top - hd.body.getBoundingClientRect().top + hd.body.scrollTop - 4); };
+        }
       },
       onClose: function () { if (ctx.view && ctx.view.highlight) { try { ctx.view.highlight([]); } catch (e) { Dom.report(e, 'view.highlight'); } } }
     });
@@ -14652,8 +15249,8 @@
     if (s.kind === 'street') {
       var full = !!ruleCall('ownsDistrict', [st, pp.owner, s.district], false);
       var cur = money(Bd.streetRent(s, lv, full));
-      var top = (Bd.RULES && Bd.RULES.maxLevel) || 5;
-      if (full && lv < top && !now) return (lv === top - 1 ? cur + ' → ' + money(Bd.streetRent(s, lv + 1, full)) : 'rent ' + cur + ' → ' + money(Bd.streetRent(s, lv + 1, full)));
+      var top = towerLv(), sky = skyLv();
+      if (full && lv < sky && !now) return (lv >= top - 1 ? cur + ' → ' + money(Bd.streetRent(s, lv + 1, full)) : 'rent ' + cur + ' → ' + money(Bd.streetRent(s, lv + 1, full)));
       return 'rent ' + cur;
     }
     if (s.kind === 'transit') return 'rent ' + money((Bd.RULES.transitRent || [])[Math.max(0, transitCount(st, pp.owner) - 1)] || 0);
@@ -14702,15 +15299,21 @@
     var rent = rentText(st, ctx.you, j, !!raiseOnly);
     r.appendChild(h('div', { cls: 'ui-mleft' }, [h('span', { cls: 'ui-mname' }, Dom.spaceNameNodes(j)), h('span', { cls: 'ui-mstate' }, [Dom.levelGlyphs(lv, pp.mortgaged), ' ', rent])]));
     var btns = h('div', { cls: 'ui-mbtns' });
-    var cost = Bd.buildCost(j);
-    var back = ruleCall('sellValue', [j], Math.round(cost * (Bd.RULES.sellShare || 0.5)));
+    var cost = s.kind === 'street' ? nextCost(st, j) : 0;
+    var back = s.kind === 'street' ? sellBack(j, lv) : 0;
     var district = s.kind === 'street' && full;
     var cellA = null, cellB = null, cellC = null;
+    var TL = towerLv(), SL = skyLv(), skyOn = SL > TL;
     if (district && !pp.mortgaged) {
       var canB = !!legalHas(legal, 'build', j);
       var canS = !!legalHas(legal, 'sell', j);
-      if (lv > 0) cellA = key(mbtn(ctx, [h('span', null, lv >= 5 ? 'Sell tower' : 'Sell'), h('small', null, '+' + money(back))], 'sell', j, canS, (lv >= 5 ? 'Sell the tower on ' : 'Sell a home on ') + s.name + ' for ' + money(back)), 'sell' + j);
-      if (lv < 5 && !raiseOnly) cellB = key(mbtn(ctx, [h('span', null, lv === 4 ? 'Tower' : 'Home'), h('small', null, '-' + money(cost))], 'build', j, canB, (lv === 4 ? 'Build a tower on ' : 'Build a home on ') + s.name + ' for ' + money(cost), 'ui-btn-build'), 'build' + j);
+      var what = skyOn && lv >= SL ? 'sky' : lv >= TL ? 'tower' : 'home';
+      var sellWord = what === 'sky' ? 'Sell ' + skyWord().toLowerCase() : what === 'tower' ? 'Sell tower' : 'Sell';
+      var sellAria = (what === 'sky' ? 'Sell the ' + skyWord().toLowerCase() + ' on ' : what === 'tower' ? 'Sell the tower on ' : 'Sell a home on ') + s.name + ' for ' + money(back);
+      if (lv > 0) cellA = key(mbtn(ctx, [h('span', null, sellWord), h('small', null, '+' + money(back))], 'sell', j, canS, sellAria, what === 'sky' ? 'ui-btn-sky' : ''), 'sell' + j);
+      var next = lv === TL - 1 ? 'Tower' : skyOn && lv === TL ? skyWord() : 'Home';
+      var buildAria = (lv === TL - 1 ? 'Build a tower on ' : skyOn && lv === TL ? 'Build a ' + skyWord().toLowerCase() + ' on ' : 'Build a home on ') + s.name + ' for ' + money(cost);
+      if (lv < SL && !raiseOnly) cellB = key(mbtn(ctx, [h('span', null, next), h('small', null, '-' + money(cost))], 'build', j, canB, buildAria, 'ui-btn-build' + (skyOn && lv === TL ? ' ui-btn-sky' : '')), 'build' + j);
     }
     if (pp.mortgaged) {
       if (raiseOnly) { r.appendChild(btns); return r; }
@@ -14747,8 +15350,8 @@
   D.holdRank = holdRank;
   function buildWords(lv) {
     lv = lv | 0;
-    var top = (B().RULES && B().RULES.maxLevel) || 5;
-    return lv >= top ? 'Tower' : lv > 0 ? lv + (lv === 1 ? ' home' : ' homes') : '';
+    var top = towerLv(), sky = skyLv();
+    return sky > top && lv >= sky ? skyWord() : lv >= top ? 'Tower' : lv > 0 ? lv + (lv === 1 ? ' home' : ' homes') : '';
   }
   D.buildWords = buildWords;
   function holdRow(st, j, owner) {
@@ -14920,47 +15523,60 @@
         cols.appendChild(sideColumn(ctx, hd, 'You give', draft.give, mine, ctx.you));
         cols.appendChild(sideColumn(ctx, hd, 'You get', draft.get, theirs, draft.to));
         hd.body.appendChild(cols);
-        var offer = { from: ctx.you, to: draft.to, give: copySide(draft.give), get: copySide(draft.get) };
-        var chk = (cnt ? (ctx.checkCounter ? ctx.checkCounter(offer) : ruleCall('checkOffer', [st, offer], null)) :
-          ruleCall('checkOffer', [st, offer], { ok: false, error: 'not available' })) || { ok: false };
-        var maxOffers = (R() && R().MAX_OFFERS) || 3;
-        var left = maxOffers - (st.offersThisTurn | 0);
-        var myTurn = cnt ? !countered && !!ctx.canCounter && ctx.canCounter() : actor === ctx.you && (st.phase === 'roll' || st.phase === 'end');
-        if (cnt) left = 1;
-        var same = !!(answer && !answer.accept && answer.sent && answer.sent === offerKey(offer));
-        hintLines(ctx, offer).forEach(function (x) { hd.body.appendChild(x); });
-        if (answer) hd.foot.appendChild(h('p', { cls: 'ui-answer ' + (answer.accept ? 'ui-good' : 'ui-warn'), role: 'status', 'aria-live': 'polite' }, [chipFor(ctx, answer.from), h('span', { cls: 'ui-answer-text' }, answer.text)]));
-        var more = answer && !answer.accept ? (answer.more > 0 ? Math.round(answer.more) : askedMore(answer.text)) : 0;
-        if (more > 0 && answer.from === draft.to && !cnt) {
-          var me = pl(st, ctx.you) || { cash: 0 };
-          var next = withMore(draft, more);
-          var nOffer = { from: ctx.you, to: draft.to, give: next.give, get: next.get };
-          var nChk = ruleCall('checkOffer', [st, nOffer], { ok: false }) || { ok: false };
-          var can = myTurn && left > 0 && nChk.ok && next.give.cash <= me.cash && !(answer.short && next.give.cash > me.cash);
-          hd.foot.appendChild(once(key(Dom.btn('Add ' + money(more) + ' and propose', function () {
-            draft.give = next.give; draft.get = next.get;
-            send(hd, { from: ctx.you, to: draft.to, give: copySide(draft.give), get: copySide(draft.get) });
-          }, { disabled: !can, cls: 'ui-add-more', aria: 'Add ' + money(more) + ' to your side and propose again' }), 'addmore')));
-        }
-        var sum = dealSummary(st, offer);
-        var status;
-        var cname = cnt ? ((pl(st, draft.to) || {}).name || 'They') : '';
-        if (cnt) status = countered ? 'One counter per offer.' : !chk.ok ? niceError(chk.error) : 'One counter per offer: ' + cname + ' answers at once.';
-        else if (!myTurn) status = 'You can trade on your own turn.';
-        else if (left <= 0) status = 'No offers left this turn (' + maxOffers + ' per turn).';
-        else if (!chk.ok && !sum) status = niceError(chk.error);
-        else if (same) status = 'Change the offer to propose again. Offers left: ' + left + '.';
-        else status = 'Offers left: ' + left + '.';
-        var line = h('p', { cls: 'ui-small ui-trade-status' });
-        if (sum) line.appendChild(h('span', { cls: 'ui-trade-sum' + (sum.lopsided ? ' ui-warn' : '') }, sum.text + ' '));
-        line.appendChild(h('span', { cls: 'ui-trade-left' }, status));
-        hd.foot.appendChild(line);
-        hd.foot.appendChild(key(Dom.btn('Close', function () { hd.close('x'); }), 'close'));
-        hd.foot.appendChild(once(key(Dom.btn('Propose', function () {
-          send(hd, { from: ctx.you, to: draft.to, give: copySide(draft.give), get: copySide(draft.get) });
-        }, { primary: true, disabled: !chk.ok || !myTurn || left <= 0 || same }), 'propose')));
+        var offer0 = { from: ctx.you, to: draft.to, give: copySide(draft.give), get: copySide(draft.get) };
+        hintLines(ctx, offer0).forEach(function (x) { hd.body.appendChild(x); });
+        hd.data.refreshFoot = function (hd2) {
+          if (!hd2.open) return;
+          Dom.clear(hd2.foot);
+          tradeFoot(hd2, st, actor);
+          hd2.foot.hidden = !hd2.foot.firstChild;
+        };
+        tradeFoot(hd, st, actor);
       }
     });
+    function tradeFoot(hd, st, actor) {
+      var CASH_FOOT = 'Change the cash amount to propose.';
+      var bad = draft.give.cashBad || draft.get.cashBad || '';
+      var offer = { from: ctx.you, to: draft.to, give: copySide(draft.give), get: copySide(draft.get) };
+      var chk = (cnt ? (ctx.checkCounter ? ctx.checkCounter(offer) : ruleCall('checkOffer', [st, offer], null)) :
+        ruleCall('checkOffer', [st, offer], { ok: false, error: 'not available' })) || { ok: false };
+      var maxOffers = (R() && R().MAX_OFFERS) || 3;
+      var left = maxOffers - (st.offersThisTurn | 0);
+      var myTurn = cnt ? !countered && !!ctx.canCounter && ctx.canCounter() : actor === ctx.you && (st.phase === 'roll' || st.phase === 'end');
+      if (cnt) left = 1;
+      var same = !!(answer && !answer.accept && answer.sent && answer.sent === offerKey(offer));
+      if (answer) hd.foot.appendChild(h('p', { cls: 'ui-answer ' + (answer.accept ? 'ui-good' : 'ui-warn'), role: 'status', 'aria-live': 'polite' }, [chipFor(ctx, answer.from), h('span', { cls: 'ui-answer-text' }, answer.text)]));
+      var more = answer && !answer.accept ? (answer.more > 0 ? Math.round(answer.more) : askedMore(answer.text)) : 0;
+      if (more > 0 && answer.from === draft.to && !cnt) {
+        var me = pl(st, ctx.you) || { cash: 0 };
+        var next = withMore(draft, more);
+        var nOffer = { from: ctx.you, to: draft.to, give: next.give, get: next.get };
+        var nChk = ruleCall('checkOffer', [st, nOffer], { ok: false }) || { ok: false };
+        var can = myTurn && left > 0 && nChk.ok && next.give.cash <= me.cash && !(answer.short && next.give.cash > me.cash);
+        hd.foot.appendChild(once(key(Dom.btn('Add ' + money(more) + ' and propose', function () {
+          draft.give = next.give; draft.get = next.get;
+          send(hd, { from: ctx.you, to: draft.to, give: copySide(draft.give), get: copySide(draft.get) });
+        }, { disabled: !can, cls: 'ui-add-more', aria: 'Add ' + money(more) + ' to your side and propose again' }), 'addmore')));
+      }
+      var sum = dealSummary(st, offer);
+      var status;
+      var cname = cnt ? ((pl(st, draft.to) || {}).name || 'They') : '';
+      if (cnt) status = countered ? 'One counter per offer.' : bad ? CASH_FOOT : !chk.ok ? niceError(chk.error) : 'One counter per offer: ' + cname + ' answers at once.';
+      else if (bad) status = CASH_FOOT;
+      else if (!myTurn) status = 'You can trade on your own turn.';
+      else if (left <= 0) status = 'No offers left this turn (' + maxOffers + ' per turn).';
+      else if (!chk.ok && !sum) status = niceError(chk.error);
+      else if (same) status = 'Change the offer to propose again. Offers left: ' + left + '.';
+      else status = 'Offers left: ' + left + '.';
+      var line = h('p', { cls: 'ui-small ui-trade-status' });
+      if (sum) line.appendChild(h('span', { cls: 'ui-trade-sum' + (sum.lopsided ? ' ui-warn' : '') }, sum.text + ' '));
+      line.appendChild(h('span', { cls: 'ui-trade-left' }, status));
+      hd.foot.appendChild(line);
+      hd.foot.appendChild(key(Dom.btn('Close', function () { hd.close('x'); }), 'close'));
+      hd.foot.appendChild(once(key(Dom.btn('Propose', function () {
+        send(hd, { from: ctx.you, to: draft.to, give: copySide(draft.give), get: copySide(draft.get) });
+      }, { primary: true, disabled: !chk.ok || !myTurn || left <= 0 || same || !!bad }), 'propose')));
+    }
   };
 
   function sideOf(x) { x = x || {}; return { cash: x.cash | 0, spaces: Array.isArray(x.spaces) ? x.spaces.slice() : [], passes: x.passes | 0 }; }
@@ -15086,8 +15702,59 @@
     }
     if (held) col.appendChild(para(Dom.say('Streets in a district with buildings can’t be traded.'), 'ui-small ui-muted ui-trade-why'));
     var cash = Math.max(0, avail.cash | 0);
-    col.appendChild(stepper(hd, 'Cash', side.cash, 0, cash, 10, function (v) { side.cash = v; }, 'cs' + owner, money, true));
+    col.appendChild(cashField(ctx, hd, side, cash, owner));
     return col;
+  }
+
+  function readCash(text, max, whose) {
+    var t = String(text === undefined || text === null ? '' : text).replace(/\s+/g, '').replace(/^\$/, '').replace(/,/g, '');
+    if (t === '') return { cash: 0, bad: '' };
+    if (!/^\d+$/.test(t)) return { cash: 0, bad: 'Whole dollars only: type a number like 120.' };
+    var n = parseInt(t.replace(/^0+(?=\d)/, ''), 10);
+    if (!(n >= 0) || n > 1e9) return { cash: 0, bad: 'Whole dollars only: type a number like 120.' };
+    if (n > max) return { cash: max, bad: (whose || 'This side') + ' ' + (whose === 'You' ? 'have ' : 'has ') + money(max) + ': type ' + money(max) + ' or less.' };
+    return { cash: n, bad: '' };
+  }
+  D.readCash = readCash;
+  function cashField(ctx, hd, side, max, owner) {
+    var whose = owner === ctx.you ? 'You' : Who(ctx, owner);
+    var k = 'cash' + owner;
+    var wrap = h('div', { cls: 'ui-cashf', role: 'group', 'aria-label': (owner === ctx.you ? 'Cash you give' : 'Cash you get') });
+    var fid = 'ui-cashf-' + owner + '-' + (hd.id || 'trade');
+    wrap.appendChild(h('div', { cls: 'ui-cashf-head' }, [h('label', { cls: 'ui-step-label', 'for': fid }, 'Cash'), h('span', { cls: 'ui-cashf-range' }, '0 – ' + money(max))]));
+    var shown = side.cashText !== undefined ? side.cashText : (side.cash > 0 ? String(side.cash) : '');
+    var input = h('input', { id: fid, type: 'text', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: 'done',
+      cls: 'ui-input ui-cashf-input', value: shown, placeholder: '0', maxlength: '9', 'aria-describedby': fid + '-x', 'aria-label': (owner === ctx.you ? 'Cash you give' : 'Cash you get') + ', 0 to ' + money(max) });
+    key(input, k);
+    var err = h('p', { id: fid + '-x', cls: 'ui-cashf-err ui-warn', 'aria-live': 'polite', hidden: !side.cashBad }, side.cashBad || '');
+    if (side.cashBad) input.setAttribute('aria-invalid', 'true');
+    function typed() {
+      var r = readCash(input.value, max, whose), wasBad = !!side.cashBad;
+      side.cashText = input.value;
+      side.cash = r.bad ? 0 : r.cash;
+      side.cashBad = r.bad;
+      Dom.text(err, r.bad);
+      err.hidden = !r.bad;
+      if (r.bad) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+      var foot = hd.foot, body = hd.body, rect = function (e) { return e && e.getBoundingClientRect ? e.getBoundingClientRect() : null; };
+      var f0 = rect(foot), y0 = rect(input);
+      if (typeof hd.data.refreshFoot === 'function') hd.data.refreshFoot(hd);
+      var f1 = rect(foot);
+      if (f0 && f1 && foot.style && f1.height < f0.height - 0.5 && body && body.scrollTop > 0) { foot.style.minHeight = Math.ceil(f0.height) + 'px'; hd.footHeld = true; }
+      var y1 = rect(input);
+      if (y0 && y1 && body && Math.abs(y1.top - y0.top) >= 1) body.scrollTop = Math.max(0, body.scrollTop + (y1.top - y0.top));
+      if (r.bad && !wasBad && typeof err.scrollIntoView === 'function') { try { err.scrollIntoView({ block: 'nearest' }); } catch (e) { } }
+    }
+    Dom.on(input, 'input', typed);
+    Dom.on(input, 'change', function () { if (!side.cashBad) { side.cashText = side.cash > 0 ? String(side.cash) : ''; input.value = side.cashText; } });
+    Dom.on(input, 'keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); if (input.blur) input.blur(); } });
+    var maxBtn = key(Dom.btn('Max', function () {
+      side.cash = max; side.cashText = max > 0 ? String(max) : ''; side.cashBad = '';
+      hd.update();
+    }, { small: true, ghost: true, cls: 'ui-cashf-max', disabled: max <= 0, aria: (owner === ctx.you ? 'Give all your cash, ' : 'Ask for all their cash, ') + money(max) }), k + 'max');
+    wrap.appendChild(h('div', { cls: 'ui-cashf-row' }, [h('span', { cls: 'ui-cashf-pre', 'aria-hidden': 'true' }, '$'), input, maxBtn]));
+    wrap.appendChild(err);
+    return wrap;
   }
 
   function stepper(hd, label, value, min, max, step, set, k, fmt, big) {
@@ -15207,7 +15874,7 @@
       }
       case 'tax': return sp ? sp + '.' : Dom.say('A tax.');
       case 'card': { var c = lastCardOf(ctx.state, d.player); return c ? 'Your card: "' + c.text + '"' : 'A card you drew.'; }
-      case 'repairs': return 'Repairs on your homes and towers (a card).';
+      case 'repairs': return Dom.say('Repairs on your homes and towers (a card).');
       case 'each': {
         var dr = lastCardDraw(ctx.state);
         var card = dr && Dom.cards() ? Dom.cards().card(dr.deck, dr.id) : null;
@@ -15244,14 +15911,14 @@
     if (!me) return out;
     var need = (amount | 0) - (me.cash | 0);
     if (need <= 0) return out;
-    var top = (Bd.RULES && Bd.RULES.maxLevel) || 5;
+    var top = towerLv(), sky = skyLv();
     raiseOrder(st, you, legal).forEach(function (j) {
       if (out.length >= QUICK_MAX) return;
       var pp = prop(st, j), s = Dom.space(j) || { name: '' };
       var a = null, gain = 0, label = '';
       if (pp && (pp.level | 0) > 0 && legalHas(legal, 'sell', j)) {
-        a = { t: 'sell', space: j }; gain = ruleCall('sellValue', [j], 0);
-        label = ((pp.level | 0) >= top ? 'Sell the tower on ' : 'Sell a home on ') + s.name;
+        a = { t: 'sell', space: j }; gain = ruleCall('sellValue', [j, pp.level | 0], 0);
+        label = (sky > top && (pp.level | 0) >= sky ? 'Sell the ' + skyWord().toLowerCase() + ' on ' : (pp.level | 0) >= top ? 'Sell the tower on ' : 'Sell a home on ') + s.name;
       } else if (legalHas(legal, 'mortgage', j)) {
         a = { t: 'mortgage', space: j }; gain = Bd.mortgageValue(j);
         label = 'Mortgage ' + s.name;
@@ -15443,7 +16110,9 @@
         if (ctx.speed) {
           var cur = ctx.speed();
           var seg = h('div', { cls: 'ui-seg ui-menu-speed', role: 'radiogroup', 'aria-label': 'Computer speed' });
-          [['normal', 'Normal'], ['fast', 'Fast'], ['instant', 'Instant']].forEach(function (x) {
+          var seg5 = (ECE.Screens && ECE.Screens.SPEEDS) || [['slow', 'Slow'], ['normal', 'Normal'], ['fast', 'Fast'], ['veryfast', 'Very fast'], ['instant', 'Instant']];
+          seg.classList.add('ui-seg-speed');
+          seg5.forEach(function (x) {
             var b = key(Dom.btn(x[1], function () { ctx.speed(x[0]); hd.update(); }, { cls: 'ui-seg-btn' + (cur === x[0] ? ' ui-on' : '') }), 'speed-' + x[0]);
             b.setAttribute('role', 'radio');
             b.setAttribute('aria-checked', cur === x[0] ? 'true' : 'false');
@@ -15523,6 +16192,12 @@
     return h('header', { cls: 'ui-screen-head' }, [back, h('h1', { cls: 'ui-screen-title', tabindex: '-1', 'data-autofocus': '' }, title)]);
   }
 
+  S.tagKey = function (Bd) {
+    Bd = Bd || B();
+    return (Bd.DISTRICTS || []).map(function (d) { return d.tag + ' ' + d.name; }).join(', ') + '.';
+  };
+  S.SPEEDS = [['slow', 'Slow'], ['normal', 'Normal'], ['fast', 'Fast'], ['veryfast', 'Very fast'], ['instant', 'Instant']];
+  S.speedOf = function (id) { for (var i = 0; i < S.SPEEDS.length; i++) if (S.SPEEDS[i][0] === id) return id; return 'normal'; };
   function segmented(label, opts, value, onPick, cls) {
     var g = h('div', { cls: 'ui-seg' + (cls ? ' ' + cls : ''), role: 'radiogroup', 'aria-label': label });
     opts.forEach(function (o) {
@@ -15892,9 +16567,8 @@
     wrap.appendChild(header(ctx, 'Settings'));
     function changed() { ctx.settingsChanged(); }
 
-    wrap.appendChild(field('Computer turn speed', segmented('Computer turn speed', [
-      { id: 'normal', label: 'Normal' }, { id: 'fast', label: 'Fast' }, { id: 'instant', label: 'Instant' }
-    ], set.speed || 'normal', function (id) { set.speed = id; changed(); }), 'How fast the computer players take their turns.'));
+    wrap.appendChild(field('Computer turn speed', segmented('Computer turn speed', S.SPEEDS.map(function (x) { return { id: x[0], label: x[1] }; }),
+      S.speedOf(set.speed), function (id) { set.speed = id; changed(); }, 'ui-seg-speed'), 'How fast the computer players take their turns.'));
 
     var vol = h('input', { type: 'range', min: '0', max: '100', step: '5', cls: 'ui-range', 'aria-label': 'Volume', value: String(Math.round((set.volume === undefined ? 0.6 : set.volume) * 100)) });
     var fill = function () { vol.style.setProperty('--fill', (+vol.value || 0) + '%'); };
@@ -16021,7 +16695,9 @@
     Object.keys(C.DECKS || {}).forEach(function (k) { (C.DECKS[k].cards || []).forEach(function (c) { if (c.effect && c.effect.carpool) passes++; }); });
     var firstStreet = 0;
     for (var fi = 0; fi < Bd.SPACES.length; fi++) if (Bd.SPACES[fi].kind === 'street') { firstStreet = fi; break; }
-    var homes = (R.maxLevel || 5) - 1;
+    var towerAt = R.towerLevel || 5, skyOn = (R.maxLevel || 5) > towerAt;
+    var homes = towerAt - 1;
+    var skyName = W('skyscraper', 'Skyscraper'), skyLow = skyName.toLowerCase();
     var maxOffers = Rl.MAX_OFFERS || R.maxOffers || 3;
     var lim = (G().limits || []).filter(function (l) { return l.kind !== 'none'; });
     var mins = lim.filter(function (l) { return l.kind === 'minutes'; }).map(function (l) { return l.value; });
@@ -16067,10 +16743,11 @@
       'There ' + (passes === 1 ? 'is 1 ' + W('carpool', 'Carpool Pass') : 'are ' + passes + ' ' + W('carpools', 'Carpool Passes')) + ' in the decks: keep yours until you use it, or trade it.',
       'While stuck you still collect rent, build and trade.'
     ]);
-    section('Homes and towers', [
+    section(skyOn ? 'Homes, towers and ' + skyLow + 's' : 'Homes and towers', [
       say('Own all three streets of a district, none mortgaged, to build.'),
       'A home or a tower costs: ' + costs + '.',
       say('Build evenly: a street gets its next building only when no street of its district has fewer. 1-' + homes + ' homes, then a tower (' + homes + ' homes on every street of the district first).'),
+      skyOn ? say('Then a ' + skyLow + ': it needs a tower on every street of the district and costs ' + (R.skyscraperCost || 2) + 'x the build cost (' + Bd.DISTRICTS[0].name + ' ' + money(Bd.DISTRICTS[0].build * (R.skyscraperCost || 2)) + ', ' + Bd.DISTRICTS[Bd.DISTRICTS.length - 1].name + ' ' + money(Bd.DISTRICTS[Bd.DISTRICTS.length - 1].build * (R.skyscraperCost || 2)) + '). Its rent is the highest on the street; selling it leaves the tower.') : '',
       say('Buildings sell back for ' + share(R.sellShare) + '.')
     ]);
     section('Money', [
@@ -16097,7 +16774,7 @@
       'If you go bankrupt, the game ends for you; the others are ranked by net worth.',
       say('Net worth = cash + each space’s price (its mortgage value if mortgaged) + what was paid for its buildings.')
     ].filter(Boolean));
-    if (!document.documentElement.classList.contains('phone')) section('Keys', ['Space or Enter = ' + W('bigButton', 'the big gold button') + ', Esc = close, ' + Dom.tabKey() + ' = move between buttons.', 'On the board: the arrow keys go from space to space; Enter or Space opens that space’s card.']);
+    if (!document.documentElement.classList.contains('phone')) section('Keys', ['Space or Enter = ' + W('bigButton', 'the big gold button') + ', Esc = Menu / close, ' + Dom.tabKey() + ' = move between buttons.', 'On the board: the arrow keys go from space to space; Enter or Space opens that space’s card.']);
 
     var leg = h('ul', { cls: 'ui-legend' });
     var tagD = Bd.DISTRICTS[3];
@@ -16108,12 +16785,19 @@
       t.textContent = tagD.tag;
       svg.appendChild(t);
     }, 'District tag (' + tagD.tag + ' = ' + tagD.name + ')'));
+    var keyLine = h('li', { cls: 'ui-legend-key' }, [h('span', { cls: 'ui-legend-key-head' }, 'The tags are each district’s initials: '),
+      h('span', { cls: 'ui-legend-key-list' }, S.tagKey(Bd))]);
+    leg.appendChild(keyLine);
     leg.appendChild(legendItem(function (svg) {
       if (A && A.house) A.house(svg, 12, 19, 14); else svg.appendChild(Dom.s('path', { d: 'M5 12l7-6 7 6v7H5z', fill: '#fff', stroke: '#8A5A3B', 'stroke-width': 1.6 }));
     }, 'A home'));
     leg.appendChild(legendItem(function (svg) {
-      if (A && A.tower) A.tower(svg, 12, 22, 8, 19); else svg.appendChild(Dom.s('rect', { x: 8, y: 3, width: 8, height: 19, fill: '#3D5A80' }));
+      if (A && A.tower) A.tower(svg, 12, 22, 8, 16); else svg.appendChild(Dom.s('rect', { x: 8, y: 6, width: 8, height: 16, fill: '#3D5A80' }));
     }, 'A tower'));
+    if (skyOn) leg.appendChild(legendItem(function (svg) {
+      if (A && A.skyscraper) A.skyscraper(svg, 12, 23, 8, 22.4);
+      else { svg.appendChild(Dom.s('rect', { x: 8, y: 5, width: 8, height: 18, fill: '#2C4A73' })); svg.appendChild(Dom.s('path', { d: 'M12 1v4', stroke: '#2C4A73', 'stroke-width': 1.4 })); }
+    }, 'A ' + skyLow));
     leg.appendChild(legendItem(function (svg) {
       svg.appendChild(Dom.s('rect', { x: 3, y: 3, width: 18, height: 18, rx: 3, fill: '#D3D7D6' }));
       for (var k = -12; k < 24; k += 5) svg.appendChild(Dom.s('path', { d: 'M' + (3 + k) + ' 21L' + (21 + k) + ' 3', stroke: '#7B878C', 'stroke-width': 1.2 }));
@@ -16256,6 +16940,51 @@
     var w = window.innerWidth || 0, h = window.innerHeight || 0;
     return w > h * 1.05;
   };
+
+  var MOVES_SPOT = { gap: 3, side: 0.14, hop: 0.22, cardY: 0.47, cardHalf: 1.12, edge: 6 };
+  M.MOVES_SPOT = MOVES_SPOT;
+  M.movesBand = function (o) {
+    var c = o && o.center, u = o && o.unit, S = MOVES_SPOT;
+    if (!c || !(c.w > 0) || !(u > 0)) return null;
+    var side = Math.max(S.edge, S.side * u);
+    var x = c.x + side, w = c.w - side * 2;
+    var top = Math.max(+o.titleBottom || 0, c.y + c.h * 0.085 + 0.62 * u) + S.gap;
+    var bottom = c.y + c.h * S.cardY - S.cardHalf * u - S.gap;
+    var list = o.obstacles || [];
+    for (var i = 0; i < list.length; i++) {
+      var q = list[i];
+      if (!q || !(q.w > 0) || q.x >= x + w || q.x + q.w <= x || q.y + q.h <= top) continue;
+      bottom = Math.min(bottom, q.y - S.gap);
+    }
+    if (!(w > 40) || !(bottom - top >= 12)) return null;
+    return { x: x, y: top, w: w, h: bottom - top };
+  };
+  M.movesCorner = function (o) {
+    var v = o && o.view, b = o && o.box;
+    if (!v || !b || !(b.w > 0) || !(b.h > 0)) return null;
+    var e = +o.edge || 0;
+    if (b.w > v.w - e * 2 + 0.5 || b.h > v.h - e * 2 + 0.5) return null;
+    var xs = [e, v.w - e - b.w], ys = [e, v.h - e - b.h];
+    var f = o.from || { x: v.w / 2, y: v.h / 2 }, list = [];
+    for (var j = 0; j < 2; j++) {
+      for (var i = 0; i < 2; i++) {
+        var cx = xs[i] + b.w / 2, cy = ys[j] + b.h / 2;
+        list.push({ x: xs[i], y: ys[j], d: (cx - f.x) * (cx - f.x) + (cy - f.y) * (cy - f.y), k: list.length });
+      }
+    }
+    list.sort(function (p, q) { return q.d - p.d || p.k - q.k; });
+    var obs = o.obstacles || [];
+    for (var n = 0; n < list.length; n++) {
+      var c = list[n], hit = false;
+      for (var m = 0; m < obs.length && !hit; m++) {
+        var r = obs[m];
+        hit = !!r && r.w > 0 && r.h > 0 && r.x < c.x + b.w && r.x + r.w > c.x && r.y < c.y + b.h && r.y + r.h > c.y;
+      }
+      if (!hit) return { x: c.x, y: c.y };
+    }
+    return null;
+  };
+  M.movesMax = function (h) { return h > 0 && h < 75 ? 2 : 3; };
 
   var BOARD_MIN_SHARE = 0.95;
   var MINI_CHIP_W = 72;
@@ -17189,11 +17918,14 @@
   var App = {};
   ECE.App = App;
 
-  var THINK = { normal: 280, fast: 100, instant: 0 };
-  var AFTER = { normal: 230, fast: 80, instant: 0 };
-  var CARD_MS = { normal: 1200, fast: 550, instant: 0 };
-  var MANAGE_MS = { normal: 60, fast: 20, instant: 0 };
-  var END_MS = { normal: 160, fast: 60, instant: 0 };
+  var THINK = { slow: 560, normal: 420, fast: 280, veryfast: 100, instant: 0 };
+  var AFTER = { slow: 460, normal: 345, fast: 230, veryfast: 80, instant: 0 };
+  var CARD_MS = { slow: 2400, normal: 1800, fast: 1200, veryfast: 550, instant: 0 };
+  var MANAGE_MS = { slow: 120, normal: 90, fast: 60, veryfast: 20, instant: 0 };
+  var END_MS = { slow: 320, normal: 240, fast: 160, veryfast: 60, instant: 0 };
+  var SPEEDS = [['slow', 'Slow'], ['normal', 'Normal'], ['fast', 'Fast'], ['veryfast', 'Very fast'], ['instant', 'Instant']];
+  App.SPEEDS = SPEEDS;
+  App.TIMING = { THINK: THINK, AFTER: AFTER, CARD_MS: CARD_MS, MANAGE_MS: MANAGE_MS, END_MS: END_MS };
   var SCREENS = ['home', 'setup', 'game', 'settings', 'howto'];
   var SCREEN_NAMES = { home: 'Home', setup: 'New game', game: 'Game', settings: 'Settings', howto: 'How to play' };
   var MANAGE = { build: 1, sell: 1, mortgage: 1, unmortgage: 1 };
@@ -17342,16 +18074,23 @@
     App.saveSoon();
     if (App.panel && App.game) renderPanel();
   };
+  function towerLevel() { var R = ECE.BoardData && ECE.BoardData.RULES; return (R && R.towerLevel) || 5; }
+  function skyLevel() { var R = ECE.BoardData && ECE.BoardData.RULES; return Math.max(towerLevel(), (R && R.maxLevel) || 6); }
+  function lvWord(k) { return String(Dom.word(k, k)).toLowerCase(); }
+  App.towerLevel = towerLevel;
+  App.skyLevel = skyLevel;
   function cpuSpeed() {
     if (App.auto) return 'instant';
     if (App.test && !App.testSpeed) return 'instant';
     var sp = App.testSpeed || (App.save && App.save.settings.speed) || 'normal';
-    return THINK[sp] === undefined ? 'normal' : sp;
+    sp = THINK[sp] === undefined ? 'normal' : sp;
+    if (App.lesson && !App.testSpeed) return sp === 'veryfast' || sp === 'instant' ? sp : 'fast';
+    return sp;
   }
   function humanSpeed() {
     if (App.auto || (App.test && !App.testSpeed)) return 'instant';
     if (App.testSpeed === 'instant') return 'instant';
-    return 'normal';
+    return 'fast';
   }
 
   function el(id, tag, cls, parent) {
@@ -17388,7 +18127,7 @@
   function buildGameScreen(g) {
     Dom.clear(g);
     var top = h('header', { cls: 'ui-topbar' });
-    var menu = Dom.btn(Dom.icon('menu'), function () { openMenu(); }, { ghost: true, cls: 'ui-icon-btn', aria: 'Menu' });
+    var menu = ECE.Panel.menuButton(function () { openMenu(); });
     var round = h('div', { cls: 'ui-topbar-round', 'aria-live': 'off' });
     var cam = Dom.btn(Dom.icon('zoom'), function () { App.setCloseUp(!closeUpOn()); }, { ghost: true, cls: 'ui-icon-btn ui-cam-btn', aria: 'Close-up camera', pressed: false });
     top.appendChild(menu); top.appendChild(round); top.appendChild(cam);
@@ -17573,7 +18312,7 @@
       case 'turn': return seen(P.turnEl);
       case 'chips': return seen(P.chipsEl);
       case 'log': return pickVisible([P.recentEl, P.logEl]);
-      case 'menu': return pickVisible([App.el.top && App.el.top.querySelector('.ui-icon-btn:not(.ui-cam-btn)'), P.headEl.querySelector('.ui-icon-btn:not(.ui-cam-btn)')]);
+      case 'menu': return pickVisible([App.el.top && App.el.top.querySelector('.ui-menu-btn'), P.headEl.querySelector('.ui-menu-btn')]);
       case 'closeup': return pickVisible([App.el.cam, P.camEl]);
       case 'board': return seen(App.el.boardHost);
       case 'finish': return App.noteKind === 'finish' ? seen(App.el.note.querySelector('.ui-note-finish')) : null;
@@ -17640,7 +18379,40 @@
   }
   function renderBoard() {
     if (App.view && App.game) viewCall('render', [App.game, { you: App.you, reduceMotion: reduceMotion() }]);
+    syncSpotlight();
   }
+  var spot = { view: null, space: null };
+  function auctionSpace(st) {
+    return st && st.phase === 'auction' && st.pending && st.pending.kind === 'auction' && typeof st.pending.space === 'number' ? st.pending.space : null;
+  }
+  function syncSpotlight() {
+    var v = App.view;
+    if (!v || typeof v.spotlight !== 'function') { spot.view = v || null; spot.space = null; return; }
+    var want = App.screen === 'game' && !App.auto ? auctionSpace(App.game) : null;
+    if (spot.view === v && spot.space === want) return;
+    spot.view = v; spot.space = want;
+    viewCall('spotlight', [want]);
+    peekSync();
+    movesSpot();
+  }
+  App.syncSpotlight = syncSpotlight;
+  function peekSync() {
+    var v = App.view;
+    if (App.peek && App.peek !== v) App.peek = null;
+    var want = !!v && App.screen === 'game' && onPhone() && !closeUpOn() && spot.view === v && spot.space !== null;
+    if (!want) {
+      if (App.peek) { App.peek = null; if (!closeUpOn()) viewCall('setCloseUp', [false]); }
+      return;
+    }
+    if (App.peek || !((App.sheetPx || 0) > 0) || !App.el || !App.el.boardHost) return;
+    var r = viewCall('spaceRect', [spot.space]), hr = App.el.boardHost.getBoundingClientRect();
+    if (!r || !(r.height > 0)) return;
+    if (r.top + r.height <= hr.bottom - App.sheetPx - 2) return;
+    App.peek = v;
+    viewCall('setCloseUp', [true]);
+  }
+  App.peeking = function () { return !!App.peek && App.peek === App.view; };
+  App.spotlit = function () { return spot.view === App.view ? spot.space : null; };
   function onSpaceTap(i) {
     if (!App.game || ECE.Dialogs.blocking()) return;
     ECE.Dialogs.deed(App.gameCtx(), i);
@@ -17883,7 +18655,7 @@
       canCounter: function () { return canCounter(st, you); },
       checkCounter: function (o) { return checkCounter(st, o); },
       finishPct: function (p) { return finishPct(st, p === undefined ? you : p); },
-      openManage: function () { ECE.Dialogs.manage(App.gameCtx(demo)); },
+      openManage: function (opts) { ECE.Dialogs.manage(App.gameCtx(demo), opts && typeof opts === 'object' ? opts : undefined); },
       pickPlayer: function (id) {
         if (demo) { viewCall('highlight', [id === null || id === undefined ? [] : ECE.Panel.ownedBy(st, id)]); return; }
         if (App.panel && App.panel.setPick) App.panel.setPick(id);
@@ -18034,6 +18806,7 @@
     if (ECE.Sound) ECE.Sound.unlock();
     if (App.noteDemo) hideNote();
     if ((App.noteKind === 'waited' || App.noteKind === 'finish') && action && ROLLS[action.t]) hideNote(App.noteKind, true);
+    if (App.noteKind === 'own' && !(action && MANAGE[action.t])) hideNote('own', true);
     App.busy = true;
     var gen = App.gen;
     renderPanel();
@@ -18041,6 +18814,7 @@
       if (gen !== App.gen) return res;
       App.busy = false;
       if (!res.ok && res.error && res.error !== 'busy') toast(niceError(res.error));
+      if (res.ok) ownLanding(App.game, res.events);
       after();
       return res;
     }, function (e) { if (gen === App.gen) { App.busy = false; after(); } App.report(e, 'humanAct'); return { ok: false, error: 'internal' }; });
@@ -18431,7 +19205,7 @@
     viewCall('setNote', [false]);
     viewCall('setTitle', [true]);
     var seq = ++noteSeq;
-    var done = function () { if (seq !== noteSeq) return; n.hidden = true; Dom.clear(n); n.classList.remove('ui-note-out'); };
+    var done = function () { if (seq !== noteSeq) return; n.hidden = true; Dom.clear(n); n.classList.remove('ui-note-out'); movesSpot(); };
     if (fade && !reduceMotion()) { n.classList.add('ui-note-out'); setTimeout(done, NOTE_FADE_MS); return; }
     done();
   }
@@ -18460,7 +19234,7 @@
     cr = wideMid() || (geo && geo.center) || null;
     if (!cr) cr = { x: hr.width * 0.206, y: hr.width * 0.206, w: hr.width * 0.588, h: hr.height * 0.706 };
     var x0 = hr.left - wr.left + cr.x, y0 = hr.top - wr.top + cr.y, w = cr.w, hh = cr.h;
-    var close = closeUpOn(), atBottom = false, strip = close && App.noteKind === 'waited';
+    var close = closeUpOn() || App.peeking(), atBottom = false, strip = close && App.noteKind === 'waited';
     if (close) {
       var tp = viewCall('focusScreen');
       var seen = Math.max(80, hr.height - (App.sheetPx || 0) - (App.wide ? App.dockPx || 0 : 0));
@@ -18524,8 +19298,119 @@
       covers = tr.width > 0 && nr.left < tr.right && nr.right > tr.left && nr.top < tr.bottom && nr.bottom > tr.top;
     }
     viewCall('setTitle', [!covers]);
+    movesSpot();
   }
   App.placeNote = placeNote;
+
+  var MOVES = ECE.Mobile && ECE.Mobile.MOVES_SPOT ? ECE.Mobile.MOVES_SPOT : { gap: 3, side: 0.14, hop: 0.22, cardY: 0.47, cardHalf: 1.12, edge: 6 };
+  var movesClock = 0;
+  function movesSpot() {
+    var P = App.panel, box = P && P.movesEl;
+    if (!box || !App.el || !App.el.wrap) return;
+    if (!onPhone() || App.screen !== 'game' || App.landscape) {
+      if (!onPhone() && P.movesHome) P.movesHome();
+      movesTick(false);
+      return;
+    }
+    var wrap = App.el.wrap, host = App.el.boardHost;
+    if (box.parentNode !== wrap) wrap.insertBefore(box, App.el.note);
+    box.classList.add('ui-moves-map');
+    var hr = host.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+    var geo = boardGeo();
+    if (!geo || !geo.center || !(geo.unit > 0) || !(hr.width > 40) || box.hidden) { Dom.toggle(box, 'ui-moves-away', true); return; }
+    var u = geo.unit, c = geo.center, ox = hr.left - wr.left, oy = hr.top - wr.top;
+    var cam = closeUpOn() || App.peeking();
+    movesTick(cam);
+    var rel = function (r, grow) {
+      if (!r || !(r.width > 0)) return null;
+      var g = grow || 0;
+      return { x: r.left - hr.left - g, y: r.top - hr.top - g, w: r.width + g * 2, h: r.height + g * 2 };
+    };
+    var side = Math.max(MOVES.edge, MOVES.side * u), w = c.w - side * 2, away = false;
+    var fit = false, size = function (k, v) { if (box.style[k] !== v) { box.style[k] = v; fit = true; } };
+    size('width', Math.floor(w) + 'px');
+    box.style.left = Math.floor(ox + c.x + side) + 'px';
+    if (!cam) {
+      var obst = [], q = host.querySelectorAll('.ece-dice, .ece-jar, .ece-pile');
+      for (var i = 0; i < q.length; i++) {
+        var e = q[i], cs = getComputedStyle(e);
+        if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+        obst.push(rel(e.getBoundingClientRect(), e.classList.contains('ece-dice') ? MOVES.hop * u : 0));
+      }
+      if (App.el.center && !App.el.center.hidden) obst.push(rel(App.el.center.getBoundingClientRect(), 0));
+      var tEl = host.querySelector('.ece-title'), tr = tEl ? tEl.getBoundingClientRect() : null;
+      var band = ECE.Mobile.movesBand({ center: c, unit: u, titleBottom: tr && tr.height > 0 ? tr.bottom - hr.top : null, obstacles: obst });
+      if (!band) { box.style.maxHeight = '0px'; Dom.toggle(box, 'ui-moves-none', true); return; }
+      box.style.removeProperty('bottom');
+      box.style.top = Math.floor(oy + band.y) + 'px';
+      size('maxHeight', Math.floor(band.h) + 'px');
+      if (fit && P.fitMoves) P.fitMoves();
+    } else {
+      var sTop = movesSheetTop(hr);
+      var seen = Math.max(0, Math.min(hr.height - (App.sheetPx || 0), sTop === null ? hr.height : sTop));
+      var sp = App.spotlit(), st = App.game, me = null;
+      if (sp === null && st && st.players[st.turn]) sp = st.players[st.turn].pos;
+      var shownRaw = sp !== null && sp !== undefined ? viewCall('spaceRect', [sp]) : null;
+      var shown = rel(shownRaw, 4);
+      var fp = viewCall('focusScreen');
+      if (fp) me = { x: fp.x - hr.left - fp.r - 4, y: fp.y - hr.top - fp.r - 4, w: fp.r * 2 + 8, h: fp.r * 2 + 8 };
+      var keep = [shown, me].filter(Boolean);
+      var from = keep.length ? { x: keep[0].x + keep[0].w / 2, y: keep[0].y + keep[0].h / 2 } : null;
+      var gs = geo.spaces && sp !== null && sp !== undefined ? geo.spaces[sp] : null;
+      var zoom = shownRaw && gs && gs.w > 0 && shownRaw.width > 0 ? shownRaw.width / gs.w : 1;
+      size('maxHeight', Math.floor(Math.max(0, Math.min(seen * 0.3, 64))) + 'px');
+      if (fit && P.fitMoves) P.fitMoves();
+      var bh = box.offsetHeight || 0;
+      var obst = keep.concat(movesPieces(host, rel, MOVES.hop * u * zoom));
+      var nSp = geo.spaces ? geo.spaces.length : 0;
+      for (var si = 0; si < nSp; si++) { var q2 = rel(viewCall('spaceRect', [si]), 0); if (q2) obst.push(q2); }
+      var at = box.classList.contains('ui-moves-none') || box.classList.contains('ui-moves-nohead') ? null :
+        ECE.Mobile.movesCorner({ view: { w: hr.width, h: seen }, box: { w: w, h: bh }, edge: MOVES.edge, from: from, obstacles: obst });
+      box.style.removeProperty('bottom');
+      if (at) {
+        box.style.left = Math.floor(ox + at.x) + 'px';
+        box.style.top = Math.floor(oy + at.y) + 'px';
+      } else away = true;
+    }
+    if (!away) {
+      var sT = movesSheetTop(hr), bb = box.getBoundingClientRect();
+      if (sT !== null && bb.height > 0 && bb.bottom - hr.top > sT + 0.5) away = true;
+    }
+    var n = noteEl();
+    if (!away && n && !n.hidden) {
+      var nr = n.getBoundingClientRect(), br = box.getBoundingClientRect();
+      away = nr.width > 0 && nr.left < br.right && nr.right > br.left && nr.top < br.bottom && nr.bottom > br.top;
+    }
+    Dom.toggle(box, 'ui-moves-away', away);
+  }
+  App.movesSpot = movesSpot;
+  function movesSheetTop(hr) {
+    var D = ECE.Dialogs, top = D && D.top ? D.top() : null;
+    if (!top || !D.get) return null;
+    var hd = D.get(top);
+    if (!hd || !hd.box || !hd.box.isConnected) return null;
+    var r = hd.box.getBoundingClientRect(), H = window.innerHeight || 0;
+    if (!(r.height > 0) || r.bottom < H - 80 || r.top <= hr.top) return null;
+    var fin = H - (hd.box.offsetHeight || 0);
+    return Math.min(r.top, fin > hr.top ? fin : r.top) - hr.top;
+  }
+  function movesPieces(host, rel, hop) {
+    var out = [], q = host.querySelectorAll('.ece-dice, .ece-pile, .ece-jar, .ece-title, .ece-drawn, .ece-token, .ece-spot-ring');
+    for (var i = 0; i < q.length; i++) {
+      var e = q[i], cs = getComputedStyle(e);
+      if (cs.visibility === 'hidden' || cs.display === 'none' || cs.opacity === '0') continue;
+      var r = rel(e.getBoundingClientRect(), e.classList.contains('ece-dice') ? hop : 2);
+      if (r) out.push(r);
+    }
+    return out;
+  }
+  App.movesPieces = function () { var h = App.el && App.el.boardHost; if (!h) return []; var hr = h.getBoundingClientRect(); return movesPieces(h, function (r, g) { if (!r || !(r.width > 0)) return null; g = g || 0; return { x: r.left - hr.left - g, y: r.top - hr.top - g, w: r.width + g * 2, h: r.height + g * 2 }; }, 0); };
+  function movesTick(on) {
+    if (on && !movesClock) {
+      movesClock = setInterval(function () { try { movesSpot(); } catch (e) { App.report(e, 'movesSpot'); } }, 300);
+      setTimeout(function () { try { if (movesClock) movesSpot(); } catch (e) { App.report(e, 'movesSpot'); } }, 340);
+    } else if (!on && movesClock) { clearInterval(movesClock); movesClock = 0; }
+  }
   function fitNoteTitle(n) {
     var t = n.querySelector('.ui-note-title');
     n.classList.remove('ui-note-snug');
@@ -18624,7 +19509,7 @@
       for (i = from; i < end; i++) if (log[i] && log[i].t === 'turn' && log[i].p !== you) { start = i; break; }
     }
     var R = ECE.Rules, out = [], groups = {};
-    var top = (ECE.BoardData.RULES && ECE.BoardData.RULES.maxLevel) || 5;
+    var top = towerLevel(), sky = skyLevel();
     var involves = function (ev) { return ev.p === you || ev.owner === you || ev.to === you || ev.winner === you || (ev.offer && (ev.offer.from === you || ev.offer.to === you)); };
     for (i = start; i < end; i++) {
       var ev = log[i];
@@ -18640,12 +19525,13 @@
         var d = Dom.board().districtOf(ev.space);
         var gk = t + ':' + ev.p + ':' + (d ? d.id : ev.space);
         var gr = groups[gk];
-        if (!gr) { gr = groups[gk] = { t: t, p: ev.p, d: d, homes: 0, towers: 0, streets: {}, at: out.length, prio: 2 }; out.push({ group: gr, prio: 2 }); }
+        if (!gr) { gr = groups[gk] = { t: t, p: ev.p, d: d, homes: 0, towers: 0, skies: 0, streets: {}, at: out.length, prio: 2 }; out.push({ group: gr, prio: 2 }); }
         if (t === 'build') {
           var lv = ev.level | 0, rec = gr.streets[ev.space];
           if (!rec) gr.streets[ev.space] = { from: lv - 1, to: lv };
           else rec.to = lv;
         }
+        else if (sky > top && (ev.level | 0) === top && (ev.count | 0) <= 1) gr.skies++;
         else if ((ev.level | 0) === top - 1 && (ev.count | 0) <= 1) gr.towers++;
         else gr.homes += Math.max(1, ev.count | 0);
         continue;
@@ -18659,18 +19545,20 @@
         p = who;
         var name = g.p === you ? 'You' : (who ? who.name : 'Someone');
         if (g.t === 'build') {
-          g.homes = 0; g.towers = 0;
+          g.homes = 0; g.towers = 0; g.skies = 0;
           Object.keys(g.streets).forEach(function (j) {
             var r = g.streets[j];
-            if (r.to >= top) { if (r.from < top) g.towers++; }
+            if (sky > top && r.to >= sky) { if (r.from < sky) g.skies++; }
+            else if (r.to >= top) { if (r.from < top) g.towers++; }
             else g.homes += Math.max(0, r.to - r.from);
           });
         }
         var parts = [];
         if (g.homes) parts.push(g.homes === 1 ? 'a home' : g.homes + ' homes');
         if (g.towers) parts.push(g.towers === 1 ? 'a tower' : g.towers + ' towers');
+        if (g.skies) parts.push(g.skies === 1 ? 'a ' + lvWord('skyscraper') : g.skies + ' ' + lvWord('skyscraper') + 's');
         if (!parts.length) return null;
-        text = name + (g.t === 'build' ? ' built ' : ' sold ') + parts.join(' and ') + (g.d ? ' in ' + g.d.name : '') + '.';
+        text = name + (g.t === 'build' ? ' built ' : ' sold ') + (ECE.Panel && ECE.Panel.andList ? ECE.Panel.andList(parts) : parts.join(' and ')) + (g.d ? ' in ' + g.d.name : '') + '.';
       } else {
         try { text = textOf(st, o.ev, you) || ''; } catch (e) { text = ''; }
         p = ECE.Panel && ECE.Panel.linePlayer ? ECE.Panel.linePlayer(st, o.ev, text, you) : (o.ev.p !== undefined ? Dom.player(st, o.ev.p) : null);
@@ -18801,6 +19689,36 @@
       n.appendChild(ol);
     }, !!demoRes);
   }
+  function ownLanding(st, events) {
+    if (!st || App.lesson || App.auto || st.phase === 'over') return;
+    var land = null;
+    (events || []).forEach(function (e) { if (e && e.t === 'land' && e.p === App.you) land = e.space; });
+    if (land === null) return;
+    showOwn(st, land);
+  }
+  function showOwn(st, i, demo) {
+    var D = ECE.Dialogs, R = ECE.Rules;
+    if (!D || typeof D.ownStreet !== 'function') return false;
+    var legal = [];
+    try { legal = R.actor(st) === App.you ? R.legal(st) || [] : []; } catch (e) { legal = []; }
+    var info = D.ownStreet(st, App.you, i, legal);
+    if (!info) return false;
+    App.ownSpace = i;
+    showNote('own', function (n) {
+      n.setAttribute('role', 'status');
+      n.setAttribute('aria-live', 'polite');
+      n.appendChild(h('p', { cls: 'ui-note-own-text' }, [Dom.tag(info.d.id), h('span', null, info.text)]));
+      if (info.build) {
+        var did = info.d.id;
+        n.appendChild(h('div', { cls: 'ui-note-own-foot' }, [key3(Dom.btn([Dom.icon('build', 18), h('span', null, 'Build')], function () {
+          hideNote('own');
+          if (App.game) { clearPick(); ECE.Dialogs.manage(App.gameCtx(), { district: did }); }
+        }, { primary: true, small: true, cls: 'ui-note-build', aria: 'Build: open Manage at ' + info.d.name }), 'ownbuild')]));
+      }
+    }, !!demo);
+    return true;
+  }
+  App.showOwn = showOwn;
   function noteDot(color) {
     if (ECE.Panel && ECE.Panel.dot) return ECE.Panel.dot(color);
     var dot = h('span', { cls: 'ui-log-dot' + (color ? '' : ' ui-log-dot-none'), 'aria-hidden': 'true' });
@@ -18822,6 +19740,12 @@
       if (!st || st.rolled || st.phase !== 'roll' || a !== App.you) hideNote('waited');
     }
     if (App.noteKind === 'card' && (!st || st.phase !== 'card')) hideNote('card');
+    if (App.noteKind === 'own') {
+      var oa = null;
+      try { oa = ECE.Rules.actor(st); } catch (e2) { oa = null; }
+      var op = st && st.props ? st.props[App.ownSpace] : null;
+      if (!st || st.phase === 'over' || oa !== App.you || !op || op.owner !== App.you) hideNote('own');
+    }
     if (App.noteKind === 'finish' && !canFinish(st)) hideNote('finish');
   }
 
@@ -18837,11 +19761,25 @@
   function renderPanel() {
     if (!App.panel || !App.game) return;
     try {
-      App.panel.render(App.game, { you: App.you, busy: App.busy && ECE.Rules.actor(App.game) === App.you, closeUp: closeUpOn(), centerHost: App.centerMode ? App.el.center : null, centerChips: !!(App.centerMode && App.centerChips), altsHost: !App.centerMode && App.altsCentre ? App.el.center : null });
+      App.panel.render(App.game, { you: App.you, busy: App.busy && ECE.Rules.actor(App.game) === App.you, closeUp: closeUpOn(), centerHost: App.centerMode ? App.el.center : null, centerChips: !!(App.centerMode && App.centerChips), altsHost: !App.centerMode && App.altsCentre ? App.el.center : null, yourMoves: yourMoves });
       if (App.wide) plateFit();
       if (App.wide) redock();
     } catch (e) { App.report(e, 'panel'); }
   }
+  var MOVES_N = 3;
+  function yourMoves(st, you) {
+    var P = ECE.Panel, fresh = P.yourMoves(st, you, MOVES_N);
+    var max = (ECE.BoardData.RULES && ECE.BoardData.RULES.logMax) || 200;
+    var trimmed = !!(st.log && st.log.length >= max);
+    var key = gameKey(st), mem = App.save && App.save.moves && App.save.moves.key === key && Array.isArray(App.save.moves.lines) ? App.save.moves.lines : [];
+    var out = P.mergeMoves(fresh, mem, MOVES_N, trimmed);
+    if (App.save && !App.lesson && st === App.game) {
+      var was = JSON.stringify(mem), now = JSON.stringify(out);
+      if (was !== now || !App.save.moves || App.save.moves.key !== key) App.save.moves = { key: key, lines: out.map(function (l) { return { text: l.text, sig: l.sig }; }) };
+    }
+    return out;
+  }
+  App.yourMoves = yourMoves;
   function renderAll() {
     if (App.screen !== 'game') return;
     renderBoard();
@@ -18911,6 +19849,7 @@
     sheetInset();
     sideInset();
     bannerSpot(res);
+    movesSpot();
   };
   function bannerSpot(res) {
     var root = document.documentElement, on = !!(res && res.stack) && !onPhone();
@@ -18955,6 +19894,8 @@
       }
     }
     if (px !== (App.sheetPx || 0)) { App.sheetPx = px; viewCall('setBottomInset', [px]); placeNote(); }
+    peekSync();
+    movesSpot();
   }
   App.sheetInset = sheetInset;
   function sideInset() {
@@ -19189,7 +20130,21 @@
     if (!g.classList.contains('ui-layout-wide') || g.classList.contains('ui-wide-dock') || !api.chipsEl.getClientRects().length) { P.style.removeProperty('--hud-lh'); return; }
     var cs = getComputedStyle(P);
     var lh = api.chipsEl.offsetTop + api.chipsEl.offsetHeight + (parseFloat(cs.paddingBottom) || 0);
-    var full = P.offsetHeight || 0;
+    var mv = api.movesEl, full0 = P.offsetHeight || 0;
+    if (mv) {
+      var mt = api.chipsEl.offsetTop + api.chipsEl.offsetHeight + 10;
+      P.style.setProperty('--hud-mt', Math.round(mt) + 'px');
+      var items = mv.querySelectorAll('.ui-moves-line');
+      for (var q = 0; q < items.length; q++) items[q].hidden = false;
+      Dom.toggle(mv, 'ui-moves-none', false);
+      if (!mv.hidden && mv.getClientRects().length) {
+        var room = full0 - (parseFloat(cs.paddingBottom) || 0) - mt;
+        for (var z = items.length - 1; z > 0 && mv.offsetHeight > room + 0.5; z--) items[z].hidden = true;
+        if (mv.offsetHeight > room + 0.5) Dom.toggle(mv, 'ui-moves-none', true);
+        else lh = mt + mv.offsetHeight + (parseFloat(cs.paddingBottom) || 0);
+      }
+    }
+    var full = full0;
     if (lh > 0 && full > 0 && lh < full - 0.5) P.style.setProperty('--hud-lh', Math.ceil(lh) + 'px');
     else P.style.removeProperty('--hud-lh');
   }
@@ -19420,7 +20375,8 @@
       if (ev.key === 'Escape' || ev.key === 'Esc') {
         if (ECE.Dialogs.isOpen()) { ECE.Dialogs.escape(); ev.preventDefault(); return; }
         if (App.screen === 'game' && App.panel && App.panel.clearPick && App.panel.clearPick()) { ev.preventDefault(); return; }
-        if (App.screen === 'settings' || App.screen === 'howto' || App.screen === 'setup') { App.back(); ev.preventDefault(); }
+        if (App.screen === 'settings' || App.screen === 'howto' || App.screen === 'setup') { App.back(); ev.preventDefault(); return; }
+        if (App.screen === 'game' && App.game && !onPhone() && !App.landscape && !App.takenOver) { openMenu(); ev.preventDefault(); }
         return;
       }
       if (ev.key !== ' ' && ev.key !== 'Enter' && ev.key !== 'Spacebar') return;
@@ -19703,7 +20659,7 @@
     App.query = Dom.query();
     App.test = App.query.test === '1';
     App.debug = App.query.debug === '1';
-    App.version = ECE.VERSION || '1.2.0';
+    App.version = ECE.VERSION || '1.3.1';
     installCatchers();
     if (App.test) installTestHooks();
     try {
