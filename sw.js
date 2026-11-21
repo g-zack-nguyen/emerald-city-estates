@@ -1,5 +1,5 @@
 /*! Emerald City Estates offline copy - made by tools/build/build_pages.js, do not edit */
-/*! build 8d826b264a144f1a: 9 files, each checked against its sha256 */
+/*! build f6b25cab75673440: 9 files, each checked against its sha256 */
 (function eceServiceWorker(BUILD, FILES) {
   'use strict';
   var PREFIX = 'emeraldcityestates-';
@@ -102,14 +102,14 @@
       }
     })());
   });
-})("8d826b264a144f1a", [
+})("f6b25cab75673440", [
   ["apple-touch-icon.png","b0c13fb5a7a82426834ad1c02300f25f096b1e48bfc2b48b887a89df78d37c94"],
   ["favicon.png","92e54593d2bc300e509c98bbbd11548c1da90f339ffa630ab21ba1b33caa8c86"],
-  ["game.css","3da3a7ef3544e957763a05baec7aea29d95f3b531bd166ce24b329cc199aff31"],
-  ["game.js","a730e18acbaf36b507eb336837d8b8c9e06160d10359ce9b4d82c40083c01961"],
+  ["game.css","eafb009105ebaf9c10e08dd628dd4f5bdfaebee073a22cf9145b3fce5e2cff4e"],
+  ["game.js","9a94ad24ec0c05dc472a5a0152217c9f0542d4f51ba6cafcd099cb995e5e6a61"],
   ["icon-192.png","f21f5c9e8c438a9592f3375365bf16048b8828b4bb596bd87bd78473112c1751"],
   ["icon-512.png","10ab7b508e393e6af47e61981e37ace4f44efd9236968d60348c57aa6aca691a"],
   ["icon-maskable-512.png","6bf1f8eb367f0ca304e5d41da751a7b7b3b06fe94ab6de179e18168309ef4148"],
-  ["index.html","cf0121c92953e420f2ac9ecff76a32d1735434faf62725bb42f505ff138bba70"],
-  ["manifest.webmanifest","c028cf489e13a0ae35ac891f0c0a4766dda12a97a32fcd0f6e9e2c15158a300c"]
+  ["index.html","4879ade8bb0baf149a1f6bc462c096736dc76a4f35dae25dcf8297e7be5d1b9f"],
+  ["manifest.webmanifest","1c19d7f2bf4c0744d9af5fa0ce48250dcec67e062571fd1495c71e2f8a931346"]
 ]);
