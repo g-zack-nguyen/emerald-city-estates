@@ -1,7 +1,7 @@
-/*! Emerald City Estates 1.4.0 (build f6b25cab75673440). An original game; no affiliation with any company. */
+/*! Emerald City Estates 1.4.1 (build 44e827e818ace394). An original game; no affiliation with any company. */
 (function (ECE) {
   'use strict';
-  ECE.BUILD = 'f6b25cab75673440';
+  ECE.BUILD = '44e827e818ace394';
 })(window.ECE = window.ECE || {});
 ;
 (function (ECE) {
@@ -133,7 +133,8 @@
     lastRound: 150,
     minPlayers: 2,
     maxPlayers: 6,
-    logMax: 200
+    logMax: 200,
+    codeLog: 30
   };
 
   function streetRent(space, level, ownsDistrict) {
@@ -251,7 +252,7 @@
       name: 'Emerald City Estates',
       short: 'Emerald Estates',
       codeId: 'emeraldcityestates',
-      tagline: 'Buy real Seattle-area streets, build homes and towers, and outlast the computer players.'
+      tagline: 'Buy real Seattle-area streets, build homes, towers and skyscrapers, and outlast the computer players.'
     },
     money: { sign: '$' },
     buildings: {
@@ -578,7 +579,7 @@
 
   var W = window;
 
-  ECE.VERSION = '1.4.0';
+  ECE.VERSION = '1.4.1';
 
   function money(n) {
     var v = Math.round(Number(n));
@@ -2898,6 +2899,7 @@
     if (s.limitHit) return 1;
     if (lim.kind === 'rounds') return Math.max(1, lim.value - r + 1);
     if (lim.kind === 'minutes' && s.playMs > 0 && r > 1) return Math.max(1, (lim.value * 60000 - s.playMs) / (s.playMs / (r - 1)));
+    if (lim.kind === 'none' && RULES.lastRound > 0) return Math.max(1, RULES.lastRound - r + 1);
     return 0;
   }
   function tradeKnobs(s, pl, partnerHuman) {
@@ -3138,12 +3140,12 @@
     }
     return gainAt(V, x, i, K, 0) + (deny ? denyValue(V, x, i, K) : 0);
   }
-  function bidLimit(V, x, i, K, order) {
-    var base = strength(V, x, K), hi = Math.max(0, V.cash[x]), rivals = [], k;
+  function bidGainFn(V, x, i, K, order) {
+    var base = strength(V, x, K), rivals = [], k;
     if (K.deny > 0 && order) for (k = 0; k < order.length; k++) if (order[k] !== x && V.inGame[order[k]] && V.own[i] < 0) rivals.push(order[k]);
     var rb = [];
     for (k = 0; k < rivals.length; k++) rb.push(strength(V, rivals[k], K));
-    function gain(X) {
+    return function (X) {
       var g = gainAt(V, x, i, K, X, base), most = 0;
       for (var r = 0; r < rivals.length; r++) {
         var y = rivals[r];
@@ -3152,7 +3154,10 @@
         if (gy > most) most = gy;
       }
       return g + K.deny * most;
-    }
+    };
+  }
+  function bidLimit(V, x, i, K, order) {
+    var gain = bidGainFn(V, x, i, K, order), hi = Math.max(0, V.cash[x]);
     if (gain(0) <= 0) return 0;
     if (gain(hi) > 0) return hi;
     var lo = 0;
@@ -3219,49 +3224,58 @@
     }
     return best;
   }
-  function mortgagePlan(V, x, K, need) {
-    var list = [], i;
-    for (i = 0; i < N; i++) {
-      if (V.own[i] !== x || V.mort[i] || !OWNABLE[i]) continue;
-      var d = DI[i];
-      if (d >= 0) {
-        var built = false;
-        for (var j = 0; j < DSP[d].length; j++) if (V.lvl[DSP[d][j]] > 0) built = true;
-        if (built || full(V, x, d)) continue;
-      }
-      list.push({ gain: MORTV[i], loss: mortgageLoss(V, x, i, K) });
-    }
-    list.sort(function (a, b) { return a.loss / a.gain - b.loss / b.gain; });
-    var got = 0, loss = 0;
-    for (var k = 0; k < list.length && got < need; k++) { got += list[k].gain; loss += list[k].loss; }
-    return got >= need ? { loss: loss, got: got } : null;
-  }
 
   function decideBuy(s, V, p, K, L) {
-    var i = s.pending.space, price = PRICE[i], cash = V.cash[p];
-    var buy = find(L, 'buy'), decline = find(L, 'decline');
-    var full0 = reserveOf(V, p, K), res = full0 * K.buyRes;
-    var mine = ownKey(V, p, i);
-    if (buy) {
-      if (mine && cash - price >= 0.25 * full0) return buy;
-      if (K.skip > 0 && !V.human[p] && !mine && playerPair(V, i) && rnd(s, p, 'skip', i) < K.skip) return decline;
-      var deny = denyValue(V, p, i, K);
-      var key = keySpace(V, p, i);
-      var surplus = gainAt(V, p, i, K, price) + deny;
-      if (surplus >= (K.buyMin - 1) * price && cash - price >= res) return buy;
-      if (key && surplus > 0 && cash - price >= res * 0.25) return buy;
-      return decline;
-    }
-    var deny2 = denyValue(V, p, i, K);
+    var i = s.pending.space, buy = find(L, 'buy'), decline = find(L, 'decline');
+    if (K.skip > 0 && !V.human[p] && !ownKey(V, p, i) && playerPair(V, i) && rnd(s, p, 'skip', i) < K.skip) return decline;
+    if (buy && buysAt(s, V, p, K, i)) return buy;
     var memo = turnMemo(s, p);
-    if (memo.raise < RAISE_CAP && !K.naive) {
-      var plan = mortgagePlan(V, p, K, price - cash);
-      if (plan && gainAt(V, p, i, K, cash) + deny2 - (price - cash) - plan.loss > Math.max(20, 0.15 * price)) {
-        var a = raiseAction(V, p, K, L, price - cash, true);
-        if (a) return a;
-      }
+    if (!K.naive && (!buy || memo.raise > 0) && memo.raise < RAISE_CAP) {
+      var a = buyPlan(s, V, p, K, L, i, RAISE_CAP - memo.raise);
+      if (a) return a;
     }
     return decline;
+  }
+  function buysAt(s, V, p, K, i) {
+    var price = PRICE[i], cash = V.cash[p];
+    if (cash < price) return false;
+    var full0 = reserveOf(V, p, K), res = full0 * K.buyRes;
+    if (ownKey(V, p, i) && cash - price >= 0.25 * full0) return true;
+    var surplus = gainAt(V, p, i, K, price) + denyValue(V, p, i, K);
+    if (surplus >= (K.buyMin - 1) * price && cash - price >= res) return true;
+    if (keySpace(V, p, i) && surplus > 0 && cash - price >= res * 0.25) return true;
+    return auctionMax(s, V, p, K, i, auctionOrder(s, p), 0) >= price;
+  }
+  function auctionOrder(s, p) {
+    var ps = s.players, n = ps.length, seat = seatOf(s, p), out = [];
+    for (var k = 1; k <= n; k++) { var q = ps[((seat + k) % n + n) % n]; if (q && !q.out) out.push(q.id); }
+    return out;
+  }
+  function viewMortgage(V, p, q, on) {
+    V.mort[q] = on ? 1 : 0;
+    V.cash[p] += on ? MORTV[q] : -MORTV[q];
+    for (var k = 0; k < V.ids.length; k++) V.res[V.ids[k]] = reserveRaw(V, V.ids[k]);
+  }
+  function buyPlan(s, V, p, K, L, i, cap) {
+    var price = PRICE[i], list = [], done = [], first = null, loss = 0, ok = false, k;
+    for (k = 0; k < L.length; k++) if (L[k].t === 'mortgage') list.push(L[k]);
+    var keep = reserveOf(V, p, K) * K.bidKeep * (keySpace(V, p, i) ? 0.4 : 1);
+    try {
+      while (done.length < cap && list.length) {
+        var a = raiseAction(V, p, K, list, price + keep - V.cash[p], true);
+        if (!a) break;
+        loss += mortgageLoss(V, p, a.space, K);
+        list.splice(list.indexOf(a), 1);
+        viewMortgage(V, p, a.space, true);
+        done.push(a.space);
+        if (!first) first = a;
+        if (buysAt(s, V, p, K, i)) { ok = true; break; }
+      }
+      var worth = ok ? bidGainFn(V, p, i, K, auctionOrder(s, p))(price) : 0;
+      return ok && worth - loss > Math.max(20, 0.15 * price) ? first : null;
+    } finally {
+      for (k = done.length - 1; k >= 0; k--) viewMortgage(V, p, done[k], false);
+    }
   }
   function playerPair(V, i) {
     var d = DI[i], human = false;
@@ -3293,18 +3307,24 @@
     return who >= 0;
   }
 
+  function bidStep(i) { return Math.max(RULES.auctionOpen, Math.round(PRICE[i] * 0.08 / 5) * 5); }
+  function auctionMax(s, V, p, K, i, order, bid) {
+    var jit = 1 + (rnd(s, p, 'bid', i) - 0.5) * 0.08;
+    var max = bidLimit(V, p, i, K, order) * K.bidMul * jit;
+    var step = bidStep(i);
+    if (K.deny > 0 && max < PRICE[i] + step && rivalFinishes(V, p, i, order, bid)) max = PRICE[i] + step;
+    var keep = reserveOf(V, p, K) * K.bidKeep;
+    if (keySpace(V, p, i)) keep *= 0.4;
+    if (max > V.cash[p] - keep) max = V.cash[p] - keep;
+    return Math.floor(max);
+  }
   function decideBid(s, V, p, K, L) {
     var pd = s.pending, i = pd.space, bid = find(L, 'bid'), pass = find(L, 'pass');
     if (!bid) return pass;
-    var minB = bid.amount, cash = V.cash[p];
-    var jit = 1 + (rnd(s, p, 'bid', i) - 0.5) * 0.08;
-    var max = bidLimit(V, p, i, K, pd.order) * K.bidMul * jit;
-    var step = Math.max(RULES.auctionOpen, Math.round(PRICE[i] * 0.08 / 5) * 5);
-    if (K.deny > 0 && max < PRICE[i] + step && rivalFinishes(V, p, i, pd)) max = PRICE[i] + step;
-    var keep = reserveOf(V, p, K) * K.bidKeep;
-    if (keySpace(V, p, i)) keep *= 0.4;
-    if (max > cash - keep) max = cash - keep;
-    max = Math.floor(max);
+    var minB = bid.amount, step = bidStep(i);
+    var max = auctionMax(s, V, p, K, i, pd.order, pd.bid);
+    var tp = s.players[s.turn];
+    if (tp && tp.id === p && max > PRICE[i] - 1) max = PRICE[i] - 1;
     if (minB > max) return pass;
     var amount = pd.bid === 0 ? Math.max(minB, down10(PRICE[i] * 0.5)) : pd.bid + step;
     if (amount > max) amount = max;
@@ -3317,12 +3337,12 @@
     return a > max ? minB : a;
   }
 
-  function rivalFinishes(V, x, i, pd) {
+  function rivalFinishes(V, x, i, order, bid) {
     var d = DI[i];
-    if (d < 0 || !pd.order) return false;
-    for (var k = 0; k < pd.order.length; k++) {
-      var y = pd.order[k];
-      if (y === x || !V.inGame[y] || V.cash[y] <= pd.bid) continue;
+    if (d < 0 || !order) return false;
+    for (var k = 0; k < order.length; k++) {
+      var y = order[k];
+      if (y === x || !V.inGame[y] || V.cash[y] <= bid) continue;
       if (ownKey(V, y, i)) return true;
     }
     return false;
@@ -4448,7 +4468,7 @@
   function cleanHistoryEntry(e) {
     if (!isObj(e)) return null;
     var of = cleanNum(e.of, 2, maxPlayers(), 2, true);
-    return {
+    var out = {
       at: cleanNum(e.at, 0, 1e15, 0, false),
       rounds: cleanNum(e.rounds, 0, 1e6, 0, true),
       rank: cleanNum(e.rank, 0, of, of, true),
@@ -4457,6 +4477,9 @@
       winnerName: cleanStr(e.winnerName, NAME_MAX, ''),
       limit: cleanLimit(e.limit)
     };
+    if (typeof e.theme === 'string' && THEME_ID.test(e.theme)) out.theme = e.theme;
+    if (e.ended === true) out.ended = true;
+    return out;
   }
   function cleanHistory(v, strict, repairs) {
     if (!Array.isArray(v)) { if (repairs && v !== undefined) repairs.push('history'); return []; }
@@ -5101,8 +5124,19 @@
 
   function exportCode(save) {
     var s = isObj(save) ? save : blank();
-    var bytes = utf8Encode(jsonOf(s));
+    var bytes = utf8Encode(jsonOf(codeCopy(s)));
     return CODE_PREFIX + b64urlEncode(bytes) + '-' + hex8(crc32(bytes));
+  }
+  function codeLogMax() { return (ECE.BoardData && ECE.BoardData.RULES && ECE.BoardData.RULES.codeLog) || 30; }
+  function codeCopy(s) {
+    var g = s.game, max = codeLogMax(), k;
+    if (!isObj(g) || !Array.isArray(g.log) || g.log.length <= max) return s;
+    var out = {}, g2 = {};
+    for (k in s) if (own(s, k)) out[k] = s[k];
+    for (k in g) if (own(g, k)) g2[k] = g[k];
+    g2.log = g.log.slice(g.log.length - max);
+    out.game = g2;
+    return out;
   }
 
   function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
@@ -5849,6 +5883,7 @@
     unzoom: ['M10.5 4.5a6 6 0 1 1 0 12a6 6 0 0 1 0-12z', 'M15 15l5 5', 'M8 10.5h5'],
     close: ['M6 6l12 12M18 6L6 18'],
     back: ['M15 5l-7 7 7 7'],
+    more: ['M9 5l7 7-7 7'],
     log: ['M5 6h14M5 10h14M5 14h10M5 18h7'],
     sound: ['M4 10h4l5-4v12l-5-4H4z', 'M16 9a4 4 0 0 1 0 6'],
     trade: ['M5 9h12l-3-3M19 15H7l3 3'],
@@ -14991,8 +15026,68 @@
   }
   D.bidInAuction = bidInAuction;
 
+  function readBid(text, least, cash) {
+    var t = String(text === undefined || text === null ? '' : text).replace(/\s+/g, '').replace(/^\$/, '').replace(/,/g, '');
+    if (t === '') return { amount: 0, bad: '' };
+    var n = /^\d+$/.test(t) ? parseInt(t.replace(/^0+(?=\d)/, ''), 10) : NaN;
+    if (!(n >= 0) || n > 1e9) return { amount: 0, bad: 'Whole dollars only: type a number like 120.' };
+    if (n < least) return { amount: 0, bad: 'Type ' + money(least) + ' or more.' };
+    if (n > cash) return { amount: 0, bad: 'You have ' + money(cash) + ': type ' + money(cash) + ' or less.' };
+    return { amount: n, bad: '' };
+  }
+  D.readBid = readBid;
+  function bidField(ctx, hd, memo, o) {
+    var fid = 'ui-bidf-' + (hd.id || 'auction'), phone = document.documentElement.classList.contains('phone');
+    var wrap = h('div', { cls: 'ui-cashf ui-bidf', role: 'group', 'aria-label': 'Type a bid' });
+    wrap.appendChild(h('div', { cls: 'ui-cashf-head' }, [h('label', { cls: 'ui-step-label', 'for': fid }, phone ? 'Type a bid' : 'Type a bid and press Enter'), h('span', { cls: 'ui-cashf-range' }, o.priced ? '' : money(o.least) + ' – ' + money(o.cash))]));
+    var input = h('input', { id: fid, type: 'text', inputmode: 'numeric', pattern: '[0-9]*', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', enterkeyhint: phone ? 'done' : 'go',
+      cls: 'ui-input ui-cashf-input ui-bidf-input', value: memo.bidText || '', placeholder: String(o.least), maxlength: '9', disabled: !!o.priced, 'aria-describedby': fid + '-x', 'aria-label': 'Your bid, ' + money(o.least) + ' to ' + money(o.cash) });
+    key(input, 'bidtyped');
+    var err = h('p', { id: fid + '-x', cls: 'ui-cashf-err ui-warn', 'aria-live': 'polite', hidden: true }, '');
+    var go = once(key(Dom.btn('Bid', function () { place(); }, { cls: 'ui-bidf-go', disabled: true, aria: 'Bid what you typed' }), 'bidgo'));
+    var errWas = true;
+    function respot() {
+      var A = ECE.App;
+      if (!A || typeof A.movesSpot !== 'function') return;
+      setTimeout(function () { try { A.movesSpot(); } catch (e) { Dom.report(e, 'auction.movesSpot'); } }, 0);
+    }
+    function check() {
+      var r = o.priced ? { amount: 0, bad: '' } : readBid(input.value, o.least, o.cash);
+      memo.bidText = input.value;
+      Dom.text(err, r.bad);
+      err.hidden = !r.bad;
+      if (err.hidden !== errWas) { errWas = err.hidden; respot(); }
+      if (r.bad) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+      var can = !!o.mine && r.amount > 0 && !r.bad;
+      go.disabled = !can;
+      go.setAttribute('aria-label', can ? 'Bid ' + money(r.amount) : 'Bid what you typed');
+      return r;
+    }
+    function place() {
+      var r = check();
+      if (!o.mine || !(r.amount > 0) || r.bad) return;
+      var text = memo.bidText;
+      memo.bidText = '';
+      Promise.resolve(ctx.act({ t: 'bid', amount: r.amount })).then(function (res) {
+        if (res && res.ok === false && !memo.bidText) { memo.bidText = text; if (hd.open) hd.update(); }
+      }, function (e) { Dom.report(e, 'auction.bid'); });
+    }
+    Dom.on(input, 'input', check);
+    Dom.on(input, 'keydown', function (ev) {
+      if (ev.key !== 'Enter') return;
+      ev.preventDefault();
+      if (phone) { if (input.blur) input.blur(); return; }
+      place();
+    });
+    check();
+    wrap.appendChild(h('div', { cls: 'ui-cashf-row' }, [h('span', { cls: 'ui-cashf-pre', 'aria-hidden': 'true' }, '$'), input, go]));
+    wrap.appendChild(err);
+    return wrap;
+  }
+  D.bidField = bidField;
+
   D.auction = function (ctx, opts) {
-    var memo = { space: null, result: null };
+    var memo = { space: null, result: null, bidText: '' };
     var pend0 = ctx.state.pending || {};
     memo.space = pend0.space;
     return D.open({
@@ -15054,9 +15149,10 @@
           var amt = bidFor(st, stp);
           if (k === 0 && amt > me.cash && me.cash >= least) amt = me.cash;
           var ok = mine && amt <= me.cash && amt >= least;
-          grid.appendChild(once(key(Dom.btn([h('b', null, '+' + money(Math.max(0, amt - cur))), h('small', null, money(amt))], function () { ctx.act({ t: 'bid', amount: amt }); }, { disabled: !ok, aria: 'Bid ' + money(amt), cls: 'ui-bid' }), 'bid' + stp)));
+          grid.appendChild(once(key(Dom.btn([h('b', null, '+' + money(Math.max(0, amt - cur))), h('small', null, money(amt))], function () { memo.bidText = ''; ctx.act({ t: 'bid', amount: amt }); }, { disabled: !ok, aria: 'Bid ' + money(amt), cls: 'ui-bid' }), 'bid' + stp)));
         });
         if (inIt) {
+          hd.foot.appendChild(bidField(ctx, hd, memo, { least: least, cash: me.cash, mine: mine, priced: priced }));
           hd.foot.appendChild(grid);
           if (!document.documentElement.classList.contains('phone')) hd.foot.appendChild(para(Dom.tabKey() + ' to a bid or Pass.', 'ui-small ui-keys-hint'));
           hd.foot.appendChild(once(key(Dom.btn('Pass', function () { ctx.act({ t: 'pass' }); }, { disabled: !mine, aria: 'Pass and leave the auction' }), 'pass')));
@@ -15881,7 +15977,7 @@
       }
       case 'tax': return sp ? sp + '.' : Dom.say('A tax.');
       case 'card': { var c = lastCardOf(ctx.state, d.player); return c ? 'Your card: "' + c.text + '"' : 'A card you drew.'; }
-      case 'repairs': return Dom.say('Repairs on your homes and towers (a card).');
+      case 'repairs': return Dom.say('Repairs on your homes, towers and skyscrapers (a card).');
       case 'each': {
         var dr = lastCardDraw(ctx.state);
         var card = dr && Dom.cards() ? Dom.cards().card(dr.deck, dr.id) : null;
@@ -16034,6 +16130,30 @@
   }
   D.overHow = overHow;
 
+  var PLACE_WORDS = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth'];
+  function overTies(ctx, st) {
+    var raw = (st && (st.standings || ruleCall('standings', [st], null))) || [], rows = [], out = [];
+    raw.forEach(function (r, k) {
+      if (!r || typeof r !== 'object') return;
+      var id = r.id !== undefined ? r.id : r.p, p = pl(st, id);
+      if (!p || r.out || p.out) return;
+      var net = typeof r.net === 'number' ? r.net : ruleCall('netWorth', [st, id], 0);
+      rows.push({ id: id, rank: r.rank || k + 1, net: net, cash: typeof r.cash === 'number' ? r.cash : p.cash | 0 });
+    });
+    for (var i = 0; i < rows.length;) {
+      var j = i + 1;
+      while (j < rows.length && rows[j].net === rows[i].net && rows[j].cash === rows[i].cash) j++;
+      if (j - i >= 2) {
+        var names = rows.slice(i, j).map(function (x) { return who(ctx, x.id); }), all = joinWords(names);
+        var rk = rows[i].rank, word = PLACE_WORDS[rk - 1] || Dom.ordinal(rk);
+        out.push('Tied for ' + Dom.ordinal(rk) + ': ' + all.charAt(0).toUpperCase() + all.slice(1) + ', ' + money(rows[i].net) + ' each (and the same cash). ' + word + ' place goes by turn order.');
+      }
+      i = j;
+    }
+    return out;
+  }
+  D.overTies = overTies;
+
   D.over = function (ctx) {
     return D.open({
       id: 'over', title: 'Game over', cls: 'ui-dlg-over', place: 'center',
@@ -16050,6 +16170,7 @@
         if (wp) hd.body.appendChild(h('div', { cls: 'ui-over-winner' }, [Dom.token(wp.token, wp.color, 40), h('span', null, winner === ctx.you ? 'Your net worth: ' + wnet : wp.name + ' wins with ' + wnet)]));
         var how = overHow(ctx, st, winner);
         if (how) hd.body.appendChild(para(how, 'ui-small'));
+        overTies(ctx, st).forEach(function (line) { hd.body.appendChild(para(line, 'ui-small ui-over-tie')); });
         var mins = Math.round((st.playMs || 0) / 60000);
         hd.body.appendChild(para('Round ' + (st.round || 1) + ' · ' + (mins < 1 ? 'under a minute' : mins + (mins === 1 ? ' minute' : ' minutes')) + ' of play', 'ui-small ui-muted'));
         var tbl = h('div', { cls: 'ui-standings', role: 'table', 'aria-label': 'Standings' });
@@ -16113,6 +16234,7 @@
         list.appendChild(key(Dom.btn('How to play', function () { hd.close('howto'); ctx.go('howto'); }), 'howto'));
         list.appendChild(key(Dom.btn('Settings', function () { hd.close('settings'); ctx.go('settings'); }), 'settings'));
         list.appendChild(key(Dom.btn(inLesson ? 'Main menu' : 'Main menu (game saved)', function () { hd.close('home'); ctx.home(); }), 'home'));
+        if (!inLesson && typeof ctx.endGame === 'function') list.appendChild(key(Dom.btn('End this game', function () { hd.close('end'); ctx.endGame(); }, { danger: true, cls: 'ui-menu-end' }), 'end'));
         hd.body.appendChild(list);
         if (ctx.speed) {
           var cur = ctx.speed();
@@ -16128,6 +16250,74 @@
           hd.body.appendChild(h('div', { cls: 'ui-menu-row' }, [h('div', { cls: 'ui-sub' }, 'Computer speed'), seg]));
         }
         hd.body.appendChild(para(inLesson ? 'The tutorial is not saved, and it never changes your own saved game.' : 'Your game is saved as you play.', 'ui-small ui-muted'));
+      }
+    });
+  };
+
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function gameDay(at) {
+    if (!(typeof at === 'number' && at > 0)) return '';
+    var d = new Date(at);
+    if (isNaN(d.getTime())) return '';
+    return MONTHS[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  }
+  function gameLimit(label) {
+    var m = /^(minutes|rounds):(\d{1,4})$/.exec(String(label || ''));
+    var name = m ? Dom.limitName({ kind: m[1], value: +m[2] }) : Dom.limitName(String(label || 'none'));
+    return name === 'No limit' ? name : 'Limit ' + name;
+  }
+  function gameTheme(id) {
+    var T = ECE.Theme;
+    if (typeof id !== 'string' || !T || typeof T.has !== 'function' || !T.has(id) || typeof T.data !== 'function') return '';
+    var n = T.data(id).name;
+    return typeof n === 'string' ? n : '';
+  }
+  function gameLine(e) {
+    e = e || {};
+    var ended = e.ended === true, rank = e.rank | 0, of = e.of | 0, rounds = e.rounds | 0;
+    var won = !ended && rank === 1;
+    var who = typeof e.winnerName === 'string' ? e.winnerName : '';
+    var meta = [gameDay(e.at), gameTheme(e.theme), rounds === 1 ? '1 round' : rounds + ' rounds', gameLimit(e.limit)].filter(Boolean);
+    return {
+      place: rank > 0 ? Dom.ordinal(rank) + ' of ' + of : of + ' players',
+      result: ended ? 'No winner' : won ? 'You won' : who ? who + ' won' : 'Finished',
+      status: ended ? 'Ended' : 'Finished', meta: meta.join(' · '), won: won, ended: ended
+    };
+  }
+  D.gameLine = gameLine;
+  D.games = function (o) {
+    o = o || {};
+    return D.open({
+      id: 'games', title: 'Your games', cls: 'ui-dlg-games', place: 'side', closable: true,
+      render: function (hd) {
+        var save = o.save || (ECE.App && ECE.App.save) || {};
+        var S = save.stats || {}, hist = Array.isArray(save.history) ? save.history : [];
+        var stat = function (k, v, cls) { return h('div', { cls: 'ui-hold-stat' + (cls ? ' ' + cls : '') }, [h('span', { cls: 'ui-hold-k' }, k), h('span', { cls: 'ui-hold-v' }, v)]); };
+        var best = S.bestRank | 0, fast = S.fastestWin | 0;
+        hd.body.appendChild(h('div', { cls: 'ui-hold-stats ui-games-stats' }, [
+          stat('Played', String(S.played | 0)), stat('Won', String(S.won | 0)),
+          stat('Best place', best > 0 ? Dom.ordinal(best) : 'None yet', best === 1 ? 'ui-hold-first' : ''),
+          stat('Fastest win', fast > 0 ? (fast === 1 ? '1 round' : fast + ' rounds') : 'None yet')]));
+        if (!hist.length) {
+          hd.body.appendChild(para('No finished games yet.', 'ui-small ui-hold-none ui-games-none'));
+        } else {
+          var rows = [];
+          for (var i = hist.length - 1; i >= 0 && rows.length < 20; i--) {
+            var g = gameLine(hist[i]);
+            var top = h('div', { cls: 'ui-games-top' }, [
+              h('span', { cls: 'ui-games-place' + (g.won ? ' ui-games-won' : '') }, g.place),
+              h('span', { cls: 'ui-games-result' + (g.won ? ' ui-games-won' : '') }, g.result),
+              h('span', { cls: 'ui-badge ui-games-status' + (g.ended ? ' ui-games-ended' : '') }, g.status)]);
+            var row = h('div', { cls: 'ui-hold-row ui-games-row' + (g.ended ? ' ui-games-row-ended' : ''), role: 'listitem' }, [top, h('div', { cls: 'ui-games-meta' }, g.meta)]);
+            row.setAttribute('aria-label', g.place + ', ' + g.result + ', ' + g.status.toLowerCase() + (g.meta ? ', ' + g.meta.replace(/ · /g, ', ') : ''));
+            rows.push(row);
+          }
+          var list = h('div', { cls: 'ui-hold-list ui-games-list', role: 'list', 'aria-label': 'Your last ' + rows.length + (rows.length === 1 ? ' game' : ' games') + ', newest first' });
+          rows.forEach(function (r) { list.appendChild(r); });
+          var head = h('div', { cls: 'ui-group-head ui-hold-head' }, [h('b', null, rows.length === 1 ? 'Your last game' : 'Your last ' + rows.length + ' games'), h('span', { cls: 'ui-group-note' }, rows.length > 1 ? 'newest first' : '')]);
+          hd.body.appendChild(h('section', { cls: 'ui-hold-group ui-games-group' }, [head, list]));
+        }
+        hd.foot.appendChild(key(Dom.btn('Close', function () { hd.close('ok'); }, { primary: true }), 'close'));
       }
     });
   };
@@ -16205,6 +16395,21 @@
   };
   S.SPEEDS = [['slow', 'Slow'], ['normal', 'Normal'], ['fast', 'Fast'], ['veryfast', 'Very fast'], ['instant', 'Instant']];
   S.speedOf = function (id) { for (var i = 0; i < S.SPEEDS.length; i++) if (S.SPEEDS[i][0] === id) return id; return 'normal'; };
+  S.SPEED_HINT_FROM = 4;
+  S.SPEED_HINT_AT = ['slow', 'normal', 'fast'];
+  S.speedHint = function (opponents, speed) {
+    var n = opponents | 0;
+    if (n < S.SPEED_HINT_FROM || S.SPEED_HINT_AT.indexOf(S.speedOf(speed)) < 0) return '';
+    return 'With ' + n + ' computer players, Fast or Very fast keeps your turns coming (Menu > Computer speed).';
+  };
+  S.longHint = function (opponents, limit) {
+    if ((opponents | 0) !== 1 || (limit || 'none') !== 'none') return '';
+    return '1-on-1 games with No limit can run long; a 30- or 40-round limit keeps it shorter.';
+  };
+  S.setupHint = function (setup, speed) {
+    setup = setup || {};
+    return S.longHint(setup.opponents | 0 || 3, setup.limit) || S.speedHint(setup.opponents | 0 || 3, speed);
+  };
   function segmented(label, opts, value, onPick, cls) {
     var g = h('div', { cls: 'ui-seg' + (cls ? ' ' + cls : ''), role: 'radiogroup', 'aria-label': label });
     opts.forEach(function (o) {
@@ -16294,9 +16499,30 @@
   function artRain(band) { return !!band && +band[1] <= CLOUD_TOP + 1e-9; }
   S.artRain = artRain;
 
+  function statsLines(btn) {
+    var tx = btn && btn.querySelector ? btn.querySelector('.ui-stats-text') : null;
+    if (!tx || !tx.getClientRects().length) return 0;
+    var rg = document.createRange(); rg.selectNodeContents(tx);
+    var tops = [];
+    Array.prototype.forEach.call(rg.getClientRects(), function (q) {
+      if (q.width < 0.5) return;
+      var t = Math.round(q.top);
+      if (tops.every(function (x) { return Math.abs(x - t) > 2; })) tops.push(t);
+    });
+    return tops.length;
+  }
+  S.statsLines = statsLines;
+  function fitStats(el) {
+    var btn = el.querySelector('.ui-stats-btn');
+    if (!btn) return;
+    Dom.toggle(btn, 'ui-stats-tight', false);
+    if (statsLines(btn) > 1) Dom.toggle(btn, 'ui-stats-tight', true);
+  }
+  var PHONE_MIN_BAND = 2.7;
   function phoneHome(el) {
     var svg = el.querySelector('.ui-title-svg'), wrap = el.querySelector('.ui-home');
     if (!svg || !wrap || !wrap.getClientRects().length || !wrap.firstElementChild) return;
+    fitStats(el);
     var tipNow = !!el.querySelector('.ui-keep-tip');
     var base = (tipNow ? SCENE.tip : tallPhone() ? SCENE.tall : SCENE.crop).split(' ').map(Number);
     var r3 = function (v) { return Math.round(v * 1000) / 1000; };
@@ -16311,6 +16537,11 @@
     var cs = getComputedStyle(wrap), first = wrap.firstElementChild, last = wrap.lastElementChild;
     var used = last.getBoundingClientRect().bottom - first.getBoundingClientRect().top + (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
     var free = (window.innerHeight || 0) - used - 4;
+    if (free < 0) {
+      var less = artBand(Math.max(PHONE_MIN_BAND, base[3] + free * SCENE.w / w));
+      if (less[3] < base[3] - 1e-9) set(less);
+      return;
+    }
     if (!(free > 12)) return;
     var addU = Math.min(4.2, free * SCENE.w / w);
     var top = Math.max(0.25, base[1] - addU * 0.5);
@@ -16452,7 +16683,9 @@
     }
 
     var st = save.stats || {};
-    wrap.appendChild(h('p', { cls: 'ui-stats' }, 'Played ' + (st.played | 0) + ' · Won ' + (st.won | 0) + (st.bestNet ? ' · Best net worth ' + money(st.bestNet) : '')));
+    var statsLine = 'Played ' + (st.played | 0) + ' · Won ' + (st.won | 0) + (st.bestNet ? ' · Best net worth ' + money(st.bestNet) : '');
+    var statsBtn = Dom.btn([h('span', { cls: 'ui-stats-text' }, statsLine), Dom.icon('more', 16)], function () { if (ctx.openGames) ctx.openGames(); }, { ghost: true, cls: 'ui-stats ui-stats-btn', aria: 'Your games: ' + statsLine.replace(/ · /g, ', ') });
+    wrap.appendChild(h('p', { cls: 'ui-stats-row' }, statsBtn));
 
     if (ctx.notice) {
       var note = h('div', { cls: 'ui-card ui-notice', role: 'status' }, [h('p', null, String(ctx.notice))]);
@@ -16536,10 +16769,19 @@
       var list = G().computers.slice(0, setup.opponents | 0 || 3).map(function (c) { return c.blurb ? c.name + ' ' + c.blurb.charAt(0).toLowerCase() + c.blurb.slice(1) : c.name + '.'; });
       Dom.text(cpuNames, list.join(' '));
     }
+    var speedHint = h('p', { cls: 'ui-field-note ui-speed-hint' });
+    function drawSpeedHint() {
+      var line = S.setupHint(setup, ctx.save && ctx.save.settings ? ctx.save.settings.speed : 'normal');
+      Dom.text(speedHint, line);
+      speedHint.hidden = !line;
+      speedHint.setAttribute('data-hint', !line ? '' : S.longHint(setup.opponents | 0 || 3, setup.limit) ? 'long' : 'speed');
+    }
     var counts = [1, 2, 3, 4, 5].map(function (n) { return { id: String(n), label: String(n) }; });
-    wrap.appendChild(field('Computer players', segmented('Computer players', counts, String(setup.opponents || 3), function (id) { setup.opponents = +id; drawNames(); }), null));
+    wrap.appendChild(field('Computer players', segmented('Computer players', counts, String(setup.opponents || 3), function (id) { setup.opponents = +id; drawNames(); drawSpeedHint(); }), null));
     wrap.lastChild.appendChild(cpuNames);
+    wrap.lastChild.appendChild(speedHint);
     drawNames();
+    drawSpeedHint();
 
     var levelNotes = { easy: Dom.say('They sell you the streets you need. You’ll win most games.'), normal: 'An even game if you trade: you win about 1 in 3 with 3 players.', hard: Dom.say('They charge 2.5x for the street you need: you win about 1 in 7.') };
     var levelNote = h('p', { cls: 'ui-field-note' }, levelNotes[setup.level] || '');
@@ -16548,7 +16790,7 @@
 
     var limitNote = h('p', { cls: 'ui-field-note' });
     function drawLimitNote() { var l = G().limits.filter(function (x) { return x.id === setup.limit; })[0]; Dom.text(limitNote, l ? l.note : ''); }
-    wrap.appendChild(field('Game end', segmented('Game end', G().limits.map(function (l) { return { id: l.id, label: l.name.replace(' minutes', ' min') }; }), setup.limit || 'none', function (id) { setup.limit = id; drawLimitNote(); }, 'ui-seg-grid')));
+    wrap.appendChild(field('Game end', segmented('Game end', G().limits.map(function (l) { return { id: l.id, label: l.name.replace(' minutes', ' min') }; }), setup.limit || 'none', function (id) { setup.limit = id; drawLimitNote(); drawSpeedHint(); }, 'ui-seg-grid')));
     wrap.lastChild.appendChild(limitNote);
     drawLimitNote();
 
@@ -16719,7 +16961,7 @@
     var payStep = Dom.payOffStep();
 
     section('The goal', [
-      TD('howto.goal', 'Buy real Seattle-area streets, collect rent, build homes and towers, and outlast the computer players.'),
+      TD('howto.goal', 'Buy real Seattle-area streets, collect rent, build homes, towers and skyscrapers, and outlast the computer players.'),
       'With a time or round limit, the richest player wins when it ends.'
     ]);
     section('Your turn', [
@@ -16730,7 +16972,7 @@
     ]);
     section('Who owns what', [
       'Every space someone owns wears a frame in that player’s colour, with their token’s pin; a dashed frame is mortgaged.',
-      (onPhone() || document.documentElement.classList.contains('touch') ? 'Tap' : 'Click') + ' a player’s chip (yours too) to see all of their spaces by district, with homes, towers, rent and mortgages, and their ' + W('carpools', 'Carpool Passes') + '. On your turn it also offers a trade with them.'
+      (onPhone() || document.documentElement.classList.contains('touch') ? 'Tap' : 'Click') + ' a player’s chip (yours too) to see all of their spaces by district, with homes, towers, ' + (skyOn ? skyLow + 's, ' : '') + 'rent and mortgages, and their ' + W('carpools', 'Carpool Passes') + '. On your turn it also offers a trade with them.'
     ]);
     section('The spaces', [
       house.auctions !== false
@@ -17191,7 +17433,8 @@
   function name(i) { var s = space(i); return s ? s.name : ''; }
   function district(id) { return B() && B().district ? B().district(id) : null; }
   function cls() { try { return document.documentElement.classList; } catch (e) { return { contains: function () { return false; } }; } }
-  function tapW(lower) { var c = cls(); var w = c.contains('phone') || c.contains('touch') ? 'Tap' : 'Click'; return lower ? w.toLowerCase() : w; }
+  function touchy() { var c = cls(); return c.contains('phone') || c.contains('touch'); }
+  function tapW(lower) { var w = touchy() ? 'Tap' : 'Click'; return lower ? w.toLowerCase() : w; }
   T.tapWord = tapW;
   function q(sel) { try { return document.querySelector(sel); } catch (e) { return null; } }
   function shown(el) { return !!el && el.isConnected && !!el.getClientRects && el.getClientRects().length > 0; }
@@ -17366,9 +17609,14 @@
       when: function (c) { return c.mine && c.st.phase === 'buy' && c.top === 'buy' && (c.st.pending || {}).space === FIRST; },
       target: function () { return inDialog('buy', '[data-k="buy"]'); } },
     { id: 'rent', title: function () { return 'Rent'; }, tap: false,
-      text: function (c) { return 'I landed on your ' + name(L.rentSpace) + ' and paid you ' + money(L.rentAmount) + ' rent; land on someone else’s space and you pay them. Each owned space wears a frame in its owner’s colour.'; },
+      text: function (c) { return 'I landed on your ' + name(L.rentSpace) + ' and paid you ' + money(L.rentAmount) + ' rent; land on someone else’s space and you pay them. Each owned space wears a frame in its owner’s colour.' + (movesBox() ? ' Your moves lists your last moves, newest first.' : ''); },
       when: function () { return L.rentSpace !== null && L.rentSpace !== undefined; },
-      space: function () { return L.rentSpace; } },
+      space: function () { return L.rentSpace; },
+      keep: function () { return [movesBox()]; } },
+    { id: 'menu', title: function () { return 'Menu'; }, tap: false,
+      text: function () { return 'Menu' + (touchy() ? '' : ' (or Esc)') + ' has Home, How to play, Settings and the computer players’ speed: Slow, Normal, Fast, Very fast or Instant. Then ROLL.'; },
+      when: function (c) { return c.mine && c.st.phase === 'roll' && !c.st.rolled && !c.me.stuck && !c.open && (c.st.round | 0) >= 2 && !!A().target('menu'); },
+      target: function () { return A().target('menu'); } },
     { id: 'card', title: function (c) { var Cd = C(); return Cd && Cd.DECKS[(c.st.pending || {}).deck] ? Cd.DECKS[c.st.pending.deck].name + ' card' : 'A card'; }, tap: true,
       text: function (c) { var e = cardEffect(c.st); return 'Card spaces draw a ' + deckName('rain', 'Rain Check') + ' or a ' + deckName('buzz', 'Local Buzz') + ' card: they move you or change your cash. ' + (e && e.traffic ? 'This one sends you to ' + trafficThe() + '.' : 'Read it, then ' + tapW(true) + ' its button.'); },
       when: function (c) { return c.mine && c.st.phase === 'card' && c.top === 'card'; },
@@ -17391,11 +17639,12 @@
       when: function (c) { var s = space((c.st.pending || {}).space) || {}; return c.mine && c.st.phase === 'buy' && c.top === 'buy' && s.district === DISTRICT && owned(c.st, c.you, c.ws).length > 0 && !L.auctioned && !!inDialog('buy', '[data-k="decline"]'); },
       target: function () { return inDialog('buy', '[data-k="decline"]'); } },
     { id: 'bid', title: function () { return 'Bid'; }, tap: true,
-      text: function (c) { var pd = c.st.pending || {}; return (pd.bid > 0 ? (pd.leader === c.guide ? 'I bid ' : 'The bid is ') + money(pd.bid) + '. ' : '') + 'Bid more, or Pass to drop out: the last bidder standing buys it. ' + tapW() + ' +$50.'; },
+      text: function (c) { var pd = c.st.pending || {}; return (pd.bid > 0 ? (pd.leader === c.guide ? 'I bid ' : 'The bid is ') + money(pd.bid) + '. ' : '') + (bidField() ? 'Bid more with +$10, +$50 or +$100, or Pass to drop out: the last bidder standing buys it. Later you can also type an amount and ' + tapW(true) + ' Bid. Now ' + tapW(true) + ' +$50.' : 'Bid more, or Pass to drop out: the last bidder standing buys it. ' + tapW() + ' +$50.'); },
       when: function (c) { return c.mine && c.st.phase === 'auction' && c.top === 'auction' && !!inDialog('auction', '[data-k="bid50"]'); },
-      target: function () { return inDialog('auction', '[data-k="bid50"]'); } },
+      target: function () { return inDialog('auction', '[data-k="bid50"]'); },
+      keep: function () { return [inDialog('auction', '.ui-space-head'), inDialog('auction', '.ui-bidf')]; }, gaps: true },
     { id: 'accept', title: function () { return 'A trade'; }, tap: true,
-      text: function (c) { var o = (c.st.pending || {}).offer || {}; var g = arr((o.give || {}).spaces).map(name).join(' and '); return 'I’ll sell you ' + g + ' for ' + money((o.get || {}).cash || 0) + ': it finishes your ' + c.d.name + say('. In a real game players ask more for the last street of a district. ') + tapW() + ' Accept.'; },
+      text: function (c) { var o = (c.st.pending || {}).offer || {}; var g = arr((o.give || {}).spaces).map(name).join(' and '); return 'I’ll sell you ' + g + ' for ' + money((o.get || {}).cash || 0) + ': it finishes your ' + c.d.name + say(counterBtn() ? '. In a real game players ask more for the last street of a district: Counter lets you change an offer and type the cash. ' : '. In a real game players ask more for the last street of a district. ') + tapW() + ' Accept.'; },
       when: function (c) { var o = (c.st.pending || {}).offer; return c.st.phase === 'trade' && !!o && o.to === c.you && o.from === c.guide && c.top === 'offer' && !!inDialog('offer', '[data-k="accept"]'); },
       target: function () { return inDialog('offer', '[data-k="accept"]'); },
       keep: function () { return [inDialog('offer', '.ui-trade-cols')]; } },
@@ -17404,7 +17653,7 @@
       when: function (c) { return c.mine && (c.st.phase === 'roll' || c.st.phase === 'end') && !c.open && fullDistrict(c) && !built(c) && c.me.cash >= c.d.build && !!A().target('manage'); },
       target: function () { return A().target('manage'); } },
     { id: 'home', title: function () { return 'Homes'; }, tap: true,
-      text: function (c) { return 'A home here costs ' + money(c.d.build) + say('. Build evenly: one on each street before a second. 3 homes is the big jump in rent. ') + tapW() + ' Home.'; },
+      text: function (c) { return 'A home here costs ' + money(c.d.build) + say('. Build evenly: one on each street before a second. 3 homes is the big jump in rent. After 4 homes come a tower, then a skyscraper for ' + money(skyCost(c)) + '. ') + tapW() + ' Home.'; },
       when: function (c) { return c.top === 'manage' && !!L.seen.manage && !!homeBtn(c); },
       target: function (c) { return homeBtn(c); },
       keep: function (c) { return distRows(c).concat([inDialog('manage', '[data-k="done"]')]); } },
@@ -17441,6 +17690,23 @@
     for (var i = 0; i < list.length; i++) if (/^PAY /.test(list[i].textContent || '') && !list[i].disabled && shown(list[i])) return list[i];
     return null;
   }
+  function skyCost(c) {
+    try { var Bd = ECE.BoardData, j = distSpaces()[0]; if (Bd && typeof Bd.levelCost === 'function' && j !== undefined) return Bd.levelCost(j, Bd.RULES.maxLevel); } catch (e) { report(e, 'skyCost'); }
+    return ((c && c.d && c.d.build) | 0) * ((ECE.BoardData && ECE.BoardData.RULES && ECE.BoardData.RULES.skyscraperCost) | 0);
+  }
+  function movesBox() {
+    try {
+      var P = A() && A().panel, e = P && P.movesEl;
+      if (!shown(e) || e.hidden) return null;
+      if (e.classList && (e.classList.contains('ui-moves-none') || e.classList.contains('ui-moves-away'))) return null;
+      var r = e.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 ? e : null;
+    } catch (x) { return null; }
+  }
+  function bidField() {
+    try { var top = D() && D().get ? D().get('auction') : null; var e = top && top.box ? top.box.querySelector('.ui-bidf-input') || top.box.querySelector('input') : null; return shown(e) ? e : null; } catch (x) { return null; }
+  }
+  function counterBtn() { try { return inDialog('offer', '[data-k="counter"]'); } catch (x) { return null; } }
   function fullDistrict(c) { try { return !!R().ownsDistrict(c.st, c.you, DISTRICT); } catch (e) { return false; } }
   function built(c) { return c.ws.some(function (j) { var pp = prop(c.st, j); return pp && pp.owner === c.you && (pp.level | 0) > 0; }); }
   function works(b) { return !!b && !b.classList.contains('ui-off') && (b.getAttribute('aria-disabled') !== 'true' || b.hasAttribute('data-quiet')); }
@@ -17655,6 +17921,15 @@
     }
     return out;
   }
+  function ringBox(r, pad, vw, vh) {
+    var l = Math.round(r.left - pad), t = Math.round(r.top - pad), w = Math.round(r.width + pad * 2), hh = Math.round(r.height + pad * 2);
+    if (l < 0) { w += l; l = 0; }
+    if (t < 0) { hh += t; t = 0; }
+    if (l + w > vw) w = vw - l;
+    if (t + hh > vh) hh = vh - t;
+    return { left: l, top: t, width: Math.max(0, w), height: Math.max(0, hh) };
+  }
+  T.ringBox = ringBox;
   function insets() { try { return ECE.Mobile && ECE.Mobile.insets ? ECE.Mobile.insets() : { top: 0, bottom: 0, left: 0, right: 0 }; } catch (e) { return { top: 0, bottom: 0, left: 0, right: 0 }; } }
   function place(tip) {
     try {
@@ -17665,7 +17940,7 @@
       var pad = 6;
       var box = function (d, x0, y0, w0, h0) { d.style.left = Math.round(x0) + 'px'; d.style.top = Math.round(y0) + 'px'; d.style.width = Math.max(0, Math.round(w0)) + 'px'; d.style.height = Math.max(0, Math.round(h0)) + 'px'; };
       if (r) {
-        var L0 = Math.round(r.left - pad), T0 = Math.round(r.top - pad), W0 = Math.round(r.width + pad * 2), H0 = Math.round(r.height + pad * 2);
+        var rb = ringBox(r, pad, vw, vh), L0 = rb.left, T0 = rb.top, W0 = rb.width, H0 = rb.height;
         E.ring.hidden = false;
         box(E.ring, L0, T0, W0, H0);
         box(E.dims[0], 0, 0, vw, Math.max(0, T0));
@@ -17718,7 +17993,9 @@
         var best = { x: x, y: y, side: side, a: cover(x, y) };
         if (best.a > 0) {
           var cx = Math.max(12, Math.min(vw - 12 - bw, r.left + r.width / 2 - bw / 2));
-          [{ y: r.top + r.height + pad + 14, side: 'below' }, { y: r.top - pad - 14 - bh, side: 'above' }, { y: topSafe, side: 'none' }, { y: botSafe - bh, side: 'none' }].forEach(function (o) {
+          var spots = [{ y: r.top + r.height + pad + 14, side: 'below' }, { y: r.top - pad - 14 - bh, side: 'above' }, { y: topSafe, side: 'none' }, { y: botSafe - bh, side: 'none' }];
+          if (tip.t.gaps) keep.forEach(function (k) { spots.push({ y: k.bottom + 8, side: 'none' }, { y: k.top - 8 - bh, side: 'none' }); });
+          spots.forEach(function (o) {
             if (o.y < topSafe - 0.5 || o.y + bh > botSafe + 0.5 || onRing(cx, o.y)) return;
             var a = cover(cx, o.y);
             if (a < best.a - 0.5) best = { x: cx, y: o.y, side: o.side, a: a };
@@ -18542,7 +18819,8 @@
       exportSave: function () { try { return ECE.Save.exportCode(App.save); } catch (e) { App.report(e, 'export'); return ''; } },
       saveStatus: saveStatusLine(),
       showTipsAgain: function () { App.save.tips = {}; App.saveSoon(); },
-      showTheme: showTheme
+      showTheme: showTheme,
+      openGames: function () { return ECE.Dialogs.games({ save: App.save }); }
     };
   }
 
@@ -18641,8 +18919,12 @@
     if (App.lesson) quitLesson('home');
     var G = App.game && App.game.phase !== 'over';
     if (!G) { App.newGame(setup, {}); return Promise.resolve(true); }
-    return ECE.Dialogs.confirm({ title: 'Start a new game?', text: 'Your current game ends.', yes: 'Start new game', no: 'Keep playing' }).then(function (yes) {
-      if (yes) App.newGame(setup, {});
+    return ECE.Dialogs.confirm({ title: 'Start a new game?', text: 'Your current game ends. It counts as played, not won.', yes: 'Start new game', no: 'Keep playing' }).then(function (yes) {
+      if (!yes) return yes;
+      var old = App.game && App.game.phase !== 'over' && !App.lesson ? App.game : null;
+      var rec = old ? historyEntry(old, App.you, true) : null;
+      var st = App.newGame(setup, {});
+      if (st && old && st !== old) { countEnded(old, null, rec.entry); App.saveNow(); }
       return yes;
     });
   };
@@ -18671,6 +18953,7 @@
       seeOnBoard: function (id) { return demo ? false : App.seeOnBoard(id); },
       newGame: function () { App.go('setup'); },
       home: function () { App.home(); },
+      endGame: demo ? null : function () { return App.askEndGame(); },
       go: function (n) { App.go(n); },
       openLog: function () { openLog(); },
       lastAuctionEnd: function () { return App.lastAuctionEnd; },
@@ -19173,15 +19456,28 @@
     ECE.Dialogs.menu(App.gameCtx());
   }
 
+  function historyEntry(st, you, ended) {
+    var list = ECE.Dialogs.standingsOf(st);
+    var mine = null;
+    for (var i = 0; i < list.length; i++) if (list[i].id === you) mine = list[i];
+    var winner = ended ? null : st.winner !== null && st.winner !== undefined ? st.winner : list.length ? list[0].id : null;
+    var wp = winner === null ? null : Dom.player(st, winner);
+    var lim = (st.rules && st.rules.limit) || { kind: 'none' };
+    var entry = { at: Date.now(), rounds: st.round | 0, rank: mine ? mine.rank : 0, of: list.length, net: mine ? Math.round(mine.net) : 0, winnerName: wp ? wp.name : '', limit: lim.kind === 'none' ? 'none' : lim.kind + ':' + lim.value, theme: themeOfGame(st) };
+    if (ended) entry.ended = true;
+    return { entry: entry, mine: mine, winner: winner };
+  }
+  App.historyEntry = historyEntry;
+  function pushHistory(entry) {
+    if (!Array.isArray(App.save.history)) App.save.history = [];
+    App.save.history.push(entry);
+    if (App.save.history.length > 20) App.save.history.splice(0, App.save.history.length - 20);
+  }
   function onGameOver(st) {
     if (App.recordedFor === st || !App.save) return;
     if (App.lesson) { lessonOver(st); return; }
     App.recordedFor = st;
-    var list = ECE.Dialogs.standingsOf(st);
-    var mine = null;
-    for (var i = 0; i < list.length; i++) if (list[i].id === App.you) mine = list[i];
-    var winner = st.winner !== null && st.winner !== undefined ? st.winner : list.length ? list[0].id : null;
-    var wp = Dom.player(st, winner);
+    var rec = historyEntry(st, App.you, false), mine = rec.mine, winner = rec.winner;
     var S = App.save.stats;
     S.played = (S.played | 0) + 1;
     var won = winner === App.you;
@@ -19193,14 +19489,44 @@
       if (mine.net > (S.bestNet | 0)) S.bestNet = Math.round(mine.net);
       if (!S.bestRank || mine.rank < S.bestRank) S.bestRank = mine.rank;
     }
-    var lim = (st.rules && st.rules.limit) || { kind: 'none' };
-    App.save.history.push({ at: Date.now(), rounds: st.round | 0, rank: mine ? mine.rank : 0, of: list.length, net: mine ? Math.round(mine.net) : 0, winnerName: wp ? wp.name : '', limit: lim.kind === 'none' ? 'none' : lim.kind + ':' + lim.value });
-    if (App.save.history.length > 20) App.save.history.splice(0, App.save.history.length - 20);
+    pushHistory(rec.entry);
     App.save.game = null;
     delete App.save.playOn;
     App.saveNow();
     if (ECE.Sound && !App.auto) { try { ECE.Sound.play(won ? 'win' : 'out'); } catch (e) { } }
   }
+
+  function countEnded(st, you, entry) {
+    if (!App.save || !st || st.phase === 'over' || App.recordedFor === st) return false;
+    App.recordedFor = st;
+    pushHistory(entry || historyEntry(st, you, true).entry);
+    App.save.stats.played = (App.save.stats.played | 0) + 1;
+    return true;
+  }
+  App.endGame = function () {
+    if (App.lesson || !App.game || App.game.phase === 'over') return false;
+    var st = App.game;
+    stopTimers();
+    ECE.Dialogs.closeAll();
+    hideNote();
+    clearPick();
+    countEnded(st, App.you);
+    App.game = null;
+    App.you = null;
+    App.save.game = null;
+    delete App.save.playOn;
+    resetGameMemory();
+    App.home();
+    return true;
+  };
+  App.askEndGame = function () {
+    if (App.lesson || !App.game || App.game.phase === 'over') return Promise.resolve(false);
+    var st = App.game;
+    return ECE.Dialogs.confirm({ id: 'endgame', title: 'End this game?', text: 'It counts as played, not won.', yes: 'End game', no: 'Keep playing', danger: true }).then(function (yes) {
+      if (!yes || App.game !== st) return false;
+      return App.endGame();
+    });
+  };
 
   function noteEl() { return App.el && App.el.note; }
   var noteSeq = 0;
@@ -19511,7 +19837,7 @@
     for (i = end - 1; i >= 0; i--) if (log[i] && log[i].t === 'turn' && log[i].p === you) { prev = i; break; }
     var start = 0;
     var from = prev >= 0 ? prev + 1 : 0;
-    if (prev >= 0 || log.length >= ((ECE.BoardData.RULES && ECE.BoardData.RULES.logMax) || 200)) {
+    if (prev >= 0 || log.length >= ((ECE.BoardData.RULES && ECE.BoardData.RULES.logMax) || 200) || !logFromStart(log)) {
       start = end;
       for (i = from; i < end; i++) if (log[i] && log[i].t === 'turn' && log[i].p !== you) { start = i; break; }
     }
@@ -19609,6 +19935,15 @@
   }
   App.canFinish = canFinish;
   function gameKey(st) { return st ? String(st.seed) + '|' + String(st.createdAt) : ''; }
+  function logFromStart(log) {
+    for (var i = 0; i < (log || []).length && i < 2; i++) {
+      var e = log[i];
+      if (e && e.t === 'turn') return e.round === 1;
+      if (!e || e.t !== 'limit') return false;
+    }
+    return false;
+  }
+  App.logFromStart = logFromStart;
   function playOnMark(st) {
     var po = App.lesson ? App.lessonPlayOn : App.save && App.save.playOn;
     return po && typeof po === 'object' && po.key === gameKey(st) && typeof po.pct === 'number' ? po : null;
@@ -19777,7 +20112,7 @@
   function yourMoves(st, you) {
     var P = ECE.Panel, fresh = P.yourMoves(st, you, MOVES_N);
     var max = (ECE.BoardData.RULES && ECE.BoardData.RULES.logMax) || 200;
-    var trimmed = !!(st.log && st.log.length >= max);
+    var trimmed = !!(st.log && (st.log.length >= max || !logFromStart(st.log)));
     var key = gameKey(st), mem = App.save && App.save.moves && App.save.moves.key === key && Array.isArray(App.save.moves.lines) ? App.save.moves.lines : [];
     var out = P.mergeMoves(fresh, mem, MOVES_N, trimmed);
     if (App.save && !App.lesson && st === App.game) {
@@ -20666,7 +21001,7 @@
     App.query = Dom.query();
     App.test = App.query.test === '1';
     App.debug = App.query.debug === '1';
-    App.version = ECE.VERSION || '1.4.0';
+    App.version = ECE.VERSION || '1.4.1';
     installCatchers();
     if (App.test) installTestHooks();
     try {

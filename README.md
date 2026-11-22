@@ -1,6 +1,6 @@
 # Emerald City Estates
 
-An original offline property-trading board game on real greater Seattle streets: buy, build homes and towers, trade and outlast 1-5 computer players.
+An original offline property-trading board game on real greater Seattle streets: buy, build homes, towers and skyscrapers, trade and outlast 1-5 computer players.
 
 **Play:** https://g-zack-nguyen.github.io/emerald-city-estates/
 
@@ -36,5 +36,5 @@ area except Diablo Dam, one of the Skagit River dams that help power Seattle. No
 Two themes, picked on New game: Emerald City (Puget Sound) and Day 1 (an office campus in South Lake Union and
 Bellevue; each building name has a typo on purpose).
 
-Version 1.4.0 (build f6b25cab75673440). These files are the finished game for GitHub Pages; a new version
+Version 1.4.1 (build 44e827e818ace394). These files are the finished game for GitHub Pages; a new version
 replaces all of them.
